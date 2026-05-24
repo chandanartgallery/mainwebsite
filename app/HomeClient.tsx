@@ -417,8 +417,8 @@ export default function HomeClient({ banners, categories, featuredProducts, test
 
       {/* 7. LUXURY NEWSLETTER */}
       <section className="relative py-24 bg-luxury-black overflow-hidden text-white">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-luxury-gold/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-luxury-walnut/5 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
+<div className="absolute top-0 left-0 w-72 h-72 sm:w-96 sm:h-96 bg-luxury-gold/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+      <div className="absolute bottom-0 right-0 w-72 h-72 sm:w-96 sm:h-96 bg-luxury-walnut/5 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
 
         <div className="max-w-xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10 relative">
           <div className="inline-flex p-3 bg-luxury-gold/15 border border-luxury-gold/20 text-luxury-gold rounded-full mb-6">

@@ -255,7 +255,7 @@ export default function Navbar() {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
-                        className="absolute right-0 mt-3 w-80 bg-white/90 dark:bg-zinc-950/95 border border-gray-100 dark:border-zinc-800/80 rounded-2xl p-4 shadow-2xl backdrop-blur-xl z-50 max-h-80 overflow-y-auto"
+                        className="absolute left-0 right-0 sm:left-auto sm:right-0 mt-3 w-full sm:w-80 bg-white/90 dark:bg-zinc-950/95 border border-gray-100 dark:border-zinc-800/80 rounded-2xl p-4 shadow-2xl backdrop-blur-xl z-50 max-h-80 overflow-y-auto"
                       >
                         {searching ? (
                           <div className="text-xs text-gray-400 text-center py-2">Searching suggestions...</div>
