@@ -144,7 +144,7 @@ export default function Navbar() {
         }`}
       >
         {/* Top Banner Bar */}
-        <div className="bg-luxury-black text-luxury-beige text-[10px] font-bold py-2 px-4 sm:px-6 lg:px-8 flex justify-between items-center select-none uppercase tracking-[0.25em] relative border-b border-luxury-gold/15">
+        <div className="bg-black/70 text-luxury-beige text-[10px] font-bold py-2 px-4 sm:px-6 lg:px-8 flex justify-between items-center select-none uppercase tracking-[0.25em] relative backdrop-blur-sm border-b border-white/10">
           <div className="hidden sm:flex items-center space-x-5">
             <span className="flex items-center text-gray-400 hover:text-luxury-gold transition-colors duration-300">
               <Phone className="w-3.5 h-3.5 mr-1.5 text-luxury-gold" /> +91 8468845759
@@ -163,10 +163,10 @@ export default function Navbar() {
 
         {/* Main Sticky Navbar */}
         <nav
-          className={`w-full border-b transition-all duration-500 ease-in-out ${
+          className={`w-full transition-all duration-500 ease-in-out ${
             isScrolled
               ? 'glass-nav-scrolled shadow-lg shadow-luxury-black/5'
-              : 'glass-nav border-gray-200/20 dark:border-zinc-900/30'
+              : 'glass-nav border-transparent'
           }`}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
