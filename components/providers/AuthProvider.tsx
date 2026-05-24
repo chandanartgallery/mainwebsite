@@ -9,6 +9,17 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   const setLoading = useAuthStore((state) => state.setLoading);
 
   useEffect(() => {
+    const secureAttr = window.location.protocol === 'https:' ? '; Secure' : '';
+    const setSessionCookies = (accessToken: string, refreshToken: string) => {
+      const commonAttrs = `path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax${secureAttr}`;
+      document.cookie = `sb-access-token=${accessToken}; ${commonAttrs}`;
+      document.cookie = `sb-refresh-token=${refreshToken}; ${commonAttrs}`;
+    };
+    const clearSessionCookies = () => {
+      const commonAttrs = `path=/; max-age=0; SameSite=Lax${secureAttr}`;
+      document.cookie = `sb-access-token=; ${commonAttrs}`;
+      document.cookie = `sb-refresh-token=; ${commonAttrs}`;
+    };
     // Initial load
     const loadSession = async () => {
       try {
@@ -16,6 +27,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         const { data: { session } } = await supabase.auth.getSession();
         
         if (session?.user) {
+          setSessionCookies(session.access_token, session.refresh_token);
           // Fetch role from profile table
           const { data: profile } = await supabase
             .from('profiles')
@@ -25,10 +37,12 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
           setAuth(session.user, (profile?.role as 'user' | 'admin') || 'user');
         } else {
+          clearSessionCookies();
           setAuth(null, null);
         }
       } catch (error) {
         console.error('Error loading session:', error);
+        clearSessionCookies();
         setAuth(null, null);
       } finally {
         setLoading(false);
@@ -40,9 +54,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     // Listen to changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
-        // Set cookies for access token and refresh token
-        document.cookie = `sb-access-token=${session.access_token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax; Secure`;
-        document.cookie = `sb-refresh-token=${session.refresh_token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax; Secure`;
+        setSessionCookies(session.access_token, session.refresh_token);
 
         // Fetch user profile role
         const { data: profile } = await supabase
@@ -54,8 +66,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         setAuth(session.user, (profile?.role as 'user' | 'admin') || 'user');
       } else if (event === 'SIGNED_OUT' || event === 'INITIAL_SESSION') {
         // Clear cookies only on explicit sign out or if initial load has no session
-        document.cookie = 'sb-access-token=; path=/; max-age=0; SameSite=Lax; Secure';
-        document.cookie = 'sb-refresh-token=; path=/; max-age=0; SameSite=Lax; Secure';
+        clearSessionCookies();
         setAuth(null, null);
       }
     });

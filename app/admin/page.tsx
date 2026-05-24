@@ -3,17 +3,11 @@ import AdminClient from './AdminClient';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { redirect } from 'next/navigation';
-import { cookies } from 'next/headers';
+import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminDashboardPage() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('sb-access-token')?.value || null;
-
-  if (!token) {
-    redirect('/login');
-  }
 
   // Get server-side Supabase client with authentic user JWT
   const userSupabase = await getServerClient();
@@ -45,12 +39,12 @@ export default async function AdminDashboardPage() {
             <p className="text-xs text-gray-400 leading-relaxed mb-6 font-sans">
               This terminal is reserved for Chandan Art Gallery curators and admins. If you are a curator, please sign in with an authorized administrator account.
             </p>
-            <a 
+            <Link 
               href="/"
               className="inline-flex px-6 py-3 bg-luxury-black dark:bg-luxury-gold text-white dark:text-luxury-black text-xs font-bold uppercase tracking-wider rounded-lg"
             >
               Return to Storefront
-            </a>
+            </Link>
           </div>
         </main>
         <Footer />

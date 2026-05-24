@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import { parseMaterials, parseColors, DEFAULT_MATERIALS, DEFAULT_COLORS } from '@/lib/productOptions';
 
 function ShopContent() {
   const router = useRouter();
@@ -22,6 +23,7 @@ function ShopContent() {
 
   // States
   const [products, setProducts] = useState<any[]>([]);
+  const [catalogProducts, setCatalogProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [wishlistIds, setWishlistIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -112,16 +114,6 @@ function ShopContent() {
       // Price filter
       query = query.lte('price', priceRange);
 
-      // Material filter
-      if (selectedMaterial !== 'all') {
-        query = query.eq('material', selectedMaterial);
-      }
-
-      // Color filter
-      if (selectedColor !== 'all') {
-        query = query.eq('color', selectedColor);
-      }
-
       // Sort
       if (sortBy === 'price-low') {
         query = query.order('price', { ascending: true });
@@ -136,7 +128,16 @@ function ShopContent() {
 
       const { data, error } = await query;
       if (error) throw error;
-      setProducts(data || []);
+      const fetchedProducts = data || [];
+      setCatalogProducts(fetchedProducts);
+      const filteredByOptions = fetchedProducts.filter((prod: any) => {
+        const productMaterials = parseMaterials(prod.material).map((m) => m.value);
+        const productColors = parseColors(prod.color).map((c) => c.label);
+        const matchesMaterial = selectedMaterial === 'all' || productMaterials.includes(selectedMaterial);
+        const matchesColor = selectedColor === 'all' || productColors.includes(selectedColor);
+        return matchesMaterial && matchesColor;
+      });
+      setProducts(filteredByOptions);
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {
@@ -180,8 +181,14 @@ function ShopContent() {
     router.push('/shop');
   };
 
-  const materials = ['Solid Pine Wood', 'Teak Wood', 'Premium Cast Plexiglass', 'Seasoned Mango Wood', 'Seasoned MDF'];
-  const colors = ['Walnut Brown', 'Gold & Crimson', 'Crystal Clear', 'Distressed White Wash', 'Matte Black'];
+  const materialOptions = Array.from(
+    new Set(catalogProducts.flatMap((prod: any) => parseMaterials(prod.material).map((m) => m.value)))
+  );
+  const colorOptions = Array.from(
+    new Set(catalogProducts.flatMap((prod: any) => parseColors(prod.color).map((c) => c.label)))
+  );
+  const availableMaterials = materialOptions.length > 0 ? materialOptions : DEFAULT_MATERIALS.map((m) => m.value);
+  const availableColors = colorOptions.length > 0 ? colorOptions : DEFAULT_COLORS.map((c) => c.label);
 
   return (
     <div className="min-h-screen flex flex-col bg-luxury-offwhite dark:bg-luxury-black">
@@ -322,7 +329,7 @@ function ShopContent() {
                     <span>All Materials</span>
                     {selectedMaterial === 'all' && <Check className="w-3 h-3" />}
                   </button>
-                  {materials.map((mat) => (
+                  {availableMaterials.map((mat) => (
                     <button
                       key={mat}
                       onClick={() => setSelectedMaterial(mat)}
@@ -356,7 +363,7 @@ function ShopContent() {
                     <span>All Finishes</span>
                     {selectedColor === 'all' && <Check className="w-3 h-3" />}
                   </button>
-                  {colors.map((color) => (
+                  {availableColors.map((color) => (
                     <button
                       key={color}
                       onClick={() => setSelectedColor(color)}
@@ -574,7 +581,7 @@ function ShopContent() {
                     Material
                   </h4>
                   <div className="space-y-1">
-                    {materials.map((mat) => (
+                    {availableMaterials.map((mat) => (
                       <button
                         key={mat}
                         onClick={() => { setSelectedMaterial(mat === selectedMaterial ? 'all' : mat); setShowMobileFilters(false); }}
@@ -594,7 +601,7 @@ function ShopContent() {
                     Finish / Color
                   </h4>
                   <div className="space-y-1">
-                    {colors.map((color) => (
+                    {availableColors.map((color) => (
                       <button
                         key={color}
                         onClick={() => { setSelectedColor(color === selectedColor ? 'all' : color); setShowMobileFilters(false); }}

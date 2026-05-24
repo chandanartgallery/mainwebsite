@@ -213,10 +213,10 @@ function ProfileContent() {
         <div className="w-full lg:w-1/4">
           <div className="bg-white dark:bg-zinc-900/60 border border-gray-100 dark:border-zinc-800 rounded-2xl p-6 shadow-sm">
             <div className="flex flex-col items-center text-center">
-              {user.user_metadata?.avatar_url ? (
+              {(avatarUrl || user.user_metadata?.avatar_url) ? (
                 <div className="w-20 h-20 rounded-full overflow-hidden mb-4 border border-luxury-gold/30 hover:border-luxury-gold transition-colors duration-300">
                   <img 
-                    src={user.user_metadata.avatar_url} 
+                    src={avatarUrl || user.user_metadata.avatar_url} 
                     alt="Profile" 
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
@@ -315,7 +315,7 @@ function ProfileContent() {
                     <div className="pb-2">
                       <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Profile Photo</label>
                       <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 rounded-full overflow-hidden border border-luxury-gold/30 bg-zinc-155 flex-shrink-0 relative">
+                        <div className="w-12 h-12 rounded-full overflow-hidden border border-luxury-gold/30 bg-zinc-100 dark:bg-zinc-800 flex-shrink-0 relative">
                           {avatarUrl ? (
                             <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                           ) : (
