@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { ImageOff } from 'lucide-react';
 import { useMemo, useState, type HTMLAttributeReferrerPolicy } from 'react';
 
@@ -15,6 +16,8 @@ type SmartImageProps = {
   referrerPolicy?: HTMLAttributeReferrerPolicy;
   onClick?: () => void;
   onLoaded?: () => void;
+  /** If true, render using next/image optimization when possible */
+  optimize?: boolean;
 };
 
 export default function SmartImage({
@@ -29,6 +32,7 @@ export default function SmartImage({
   referrerPolicy,
   onClick,
   onLoaded,
+  optimize = true,
 }: SmartImageProps) {
   const [imageState, setImageState] = useState<Record<string, { loaded: boolean; failed: boolean; usingFallback: boolean }>>({});
   const normalizedSrc = typeof src === 'string' ? src.trim() : '';
@@ -40,54 +44,83 @@ export default function SmartImage({
   const safeAlt = useMemo(() => alt || 'Image', [alt]);
 
   return (
-    <div className={`image-shell ${containerClassName}`}>
+    <div className={`image-shell ${containerClassName} relative`}>
       {!currentState.loaded && hasSrc && !currentState.failed && <div className="image-skeleton" aria-hidden="true" />}
 
       {hasSrc && !currentState.failed ? (
-        <img
-          key={imageKey}
-          src={imageSrc}
-          alt={safeAlt}
-          loading={priority ? 'eager' : 'lazy'}
-          decoding="async"
-          draggable={draggable}
-          referrerPolicy={referrerPolicy ?? 'no-referrer'}
-          className={`${className} ${currentState.loaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-500`}
-          onLoad={() => {
-            setImageState((prev) => ({
-              ...prev,
-              [imageKey]: {
-                loaded: true,
-                failed: false,
-                usingFallback: currentState.usingFallback,
-              },
-            }));
-            onLoaded?.();
-          }}
-          onError={(event) => {
-            if (!currentState.usingFallback && normalizedFallbackSrc && normalizedSrc && event.currentTarget.src !== normalizedFallbackSrc) {
+        // Use Next.js Image for optimization when allowed; fall back to img
+        optimize ? (
+          <>
+            <Image
+              key={imageKey}
+              src={imageSrc}
+              alt={safeAlt}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              priority={priority}
+              draggable={draggable}
+              onLoadingComplete={() => {
+                setImageState((prev) => ({
+                  ...prev,
+                  [imageKey]: { loaded: true, failed: false, usingFallback: currentState.usingFallback },
+                }));
+                onLoaded?.();
+              }}
+              onError={() => {
+                setImageState((prev) => ({
+                  ...prev,
+                  [imageKey]: { loaded: false, failed: true, usingFallback: currentState.usingFallback },
+                }));
+              }}
+              className={`${className} ${currentState.loaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-500 object-cover`}
+            />
+          </>
+        ) : (
+          <img
+            key={imageKey}
+            src={imageSrc}
+            alt={safeAlt}
+            loading={priority ? 'eager' : 'lazy'}
+            decoding="async"
+            draggable={draggable}
+            referrerPolicy={referrerPolicy ?? 'no-referrer'}
+            className={`${className} ${currentState.loaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-500`}
+            onLoad={() => {
+              setImageState((prev) => ({
+                ...prev,
+                [imageKey]: {
+                  loaded: true,
+                  failed: false,
+                  usingFallback: currentState.usingFallback,
+                },
+              }));
+              onLoaded?.();
+            }}
+            onError={(event) => {
+              if (!currentState.usingFallback && normalizedFallbackSrc && normalizedSrc && event.currentTarget.src !== normalizedFallbackSrc) {
+                setImageState((prev) => ({
+                  ...prev,
+                  [imageKey]: {
+                    loaded: false,
+                    failed: false,
+                    usingFallback: true,
+                  },
+                }));
+                event.currentTarget.src = normalizedFallbackSrc;
+                return;
+              }
               setImageState((prev) => ({
                 ...prev,
                 [imageKey]: {
                   loaded: false,
-                  failed: false,
+                  failed: true,
                   usingFallback: true,
                 },
               }));
-              event.currentTarget.src = normalizedFallbackSrc;
-              return;
-            }
-            setImageState((prev) => ({
-              ...prev,
-              [imageKey]: {
-                loaded: false,
-                failed: true,
-                usingFallback: true,
-              },
-            }));
-          }}
-          onClick={onClick}
-        />
+            }}
+            onClick={onClick}
+          />
+        )
       ) : (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-4 text-center text-stone-500 dark:text-stone-400">
           <ImageOff className="h-5 w-5" aria-hidden="true" />
