@@ -140,7 +140,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-luxury-offwhite dark:bg-luxury-black">
+    <div className="commerce-page min-h-screen flex flex-col bg-luxury-offwhite dark:bg-luxury-black">
       {/* Insert JSON-LD schemas inside the head */}
       <script
         type="application/ld+json"

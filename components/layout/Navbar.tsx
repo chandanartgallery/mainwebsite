@@ -1,19 +1,56 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useCartStore } from '@/store/cartStore';
-import { useUIStore } from '@/store/uiStore';
-import { useAuthStore } from '@/store/authStore';
-import { supabase } from '@/lib/supabase/client';
-import CartDrawer from './CartDrawer';
-import { 
-  ShoppingBag, Heart, User, Search, Menu, X, ChevronDown, 
-  MapPin, Phone, Mail, Sparkles, MessageCircle, LogIn,
-  Sun, Moon
-} from 'lucide-react';
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  ChevronDown,
+  Heart,
+  LogIn,
+  Menu,
+  Moon,
+  Search,
+  ShoppingBag,
+  Sparkles,
+  Sun,
+  User,
+  X,
+} from "lucide-react";
+import { supabase } from "@/lib/supabase/client";
+import { useAuthStore } from "@/store/authStore";
+import { useCartStore } from "@/store/cartStore";
+import { useUIStore } from "@/store/uiStore";
+import CartDrawer from "./CartDrawer";
+import SmartImage from "@/components/ui/SmartImage";
+
+const categories = [
+  {
+    name: "Photo Frames",
+    href: "/shop?category=photo-frames",
+    note: "Classic timber borders",
+  },
+  {
+    name: "Custom Frames",
+    href: "/shop?category=custom-photo-frames",
+    note: "Made to your dimensions",
+  },
+  {
+    name: "Acrylic Prints",
+    href: "/shop?category=acrylic-frames",
+    note: "Clean gallery depth",
+  },
+  {
+    name: "Canvas Prints",
+    href: "/shop?category=canvas-prints",
+    note: "Soft wall-scale editions",
+  },
+  {
+    name: "Religious Art",
+    href: "/shop?category=religious-frames",
+    note: "Mandir-ready pieces",
+  },
+];
 
 export default function Navbar() {
   const router = useRouter();
@@ -21,71 +58,92 @@ export default function Navbar() {
   const { setCartOpen } = useUIStore();
   const cartItemsCount = useCartStore((state) => state.getTotalItems());
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [searching, setSearching] = useState(false);
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+  const lastScrollYRef = useRef(0);
+  const scrollAccumulatorRef = useRef(0);
+  const lastDirectionRef = useRef<1 | -1 | 0>(0);
+  const tickingRef = useRef(false);
 
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [theme, setTheme] = useState<"light" | "dark">("light");
   const [navVisible, setNavVisible] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // Sync theme and scroll listeners on mount
   useEffect(() => {
-    const isDark = document.documentElement.classList.contains('dark');
-    setTheme(isDark ? 'dark' : 'light');
+    setTheme(
+      document.documentElement.classList.contains("dark") ? "dark" : "light",
+    );
 
-    let lastScrollY = window.scrollY;
-    const handleScroll = () => {
+    lastScrollYRef.current = window.scrollY;
+    scrollAccumulatorRef.current = 0;
+    lastDirectionRef.current = 0;
+
+    const updateNavVisibility = () => {
       const currentScrollY = window.scrollY;
-      setIsScrolled(currentScrollY > 20);
+      const delta = currentScrollY - lastScrollYRef.current;
+      lastScrollYRef.current = currentScrollY;
+      tickingRef.current = false;
 
-      if (currentScrollY < 50) {
+      setIsScrolled(currentScrollY > 16);
+
+      if (currentScrollY <= 24) {
         setNavVisible(true);
-        lastScrollY = currentScrollY;
+        scrollAccumulatorRef.current = 0;
+        lastDirectionRef.current = 0;
         return;
       }
 
-      const diff = currentScrollY - lastScrollY;
-      if (Math.abs(diff) > 5) {
-        if (diff > 0 && currentScrollY > 120) {
-          setNavVisible(false);
-        } else {
-          setNavVisible(true);
-        }
-        lastScrollY = currentScrollY;
+      if (Math.abs(delta) < 2) return;
+
+      const direction: 1 | -1 = delta > 0 ? 1 : -1;
+      if (lastDirectionRef.current !== direction) {
+        scrollAccumulatorRef.current = 0;
+        lastDirectionRef.current = direction;
+      }
+
+      scrollAccumulatorRef.current += delta;
+
+      if (
+        direction === 1 &&
+        scrollAccumulatorRef.current > 30 &&
+        currentScrollY > 90
+      ) {
+        setNavVisible(false);
+        scrollAccumulatorRef.current = 0;
+      }
+
+      if (direction === -1 && scrollAccumulatorRef.current < -18) {
+        setNavVisible(true);
+        scrollAccumulatorRef.current = 0;
       }
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    const handleScroll = () => {
+      if (tickingRef.current) return;
+      tickingRef.current = true;
+      requestAnimationFrame(updateNavVisibility);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    if (newTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  };
-
-  // Close search dropdown on click outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target as Node)
+      ) {
         setShowSearchDropdown(false);
       }
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Fetch search suggestions
   useEffect(() => {
     if (searchQuery.length < 2) {
       setSearchResults([]);
@@ -96,22 +154,24 @@ export default function Navbar() {
       try {
         setSearching(true);
         const { data, error } = await supabase
-          .from('products')
-          .select(`
+          .from("products")
+          .select(
+            `
             name,
             slug,
             price,
             product_images (
               image_url
             )
-          `)
-          .ilike('name', `%${searchQuery}%`)
+          `,
+          )
+          .ilike("name", `%${searchQuery}%`)
           .limit(5);
 
         if (error) throw error;
         setSearchResults(data || []);
       } catch (error) {
-        console.error('Search error:', error);
+        console.error("Search error:", error);
       } finally {
         setSearching(false);
       }
@@ -120,175 +180,203 @@ export default function Navbar() {
     return () => clearTimeout(delayDebounceFn);
   }, [searchQuery]);
 
+  const toggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    document.documentElement.classList.toggle("dark", newTheme === "dark");
+    localStorage.setItem("theme", newTheme);
+  };
+
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
+      setMobileMenuOpen(false);
       setShowSearchDropdown(false);
       router.push(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
 
-  const categories = [
-    { name: 'Photo Frames', href: '/shop?category=photo-frames' },
-    { name: 'Custom Frames', href: '/shop?category=custom-photo-frames' },
-    { name: 'Acrylic Prints', href: '/shop?category=acrylic-frames' },
-    { name: 'Canvas Prints', href: '/shop?category=canvas-prints' },
-    { name: 'Religious Art', href: '/shop?category=religious-frames' },
-  ];
+  const iconButton =
+    "inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/18 bg-white/12 text-luxury-beige shadow-sm backdrop-blur-md transition hover:-translate-y-0.5 hover:border-luxury-gold/45 hover:bg-white/18 hover:text-luxury-gold dark:border-white/10 dark:bg-white/5 dark:text-luxury-beige";
 
   return (
     <>
-      <header
-        className={`fixed left-0 right-0 z-50 transition-[top] duration-500 ease-in-out ${
-          navVisible ? 'top-0' : '-top-36'
-        }`}
+      <motion.header
+        initial={false}
+        animate={{ y: navVisible ? "0%" : "-100%" }}
+        transition={{ type: "spring", stiffness: 300, damping: 34, mass: 0.52 }}
+        className="fixed left-0 right-0 z-50 px-3 pt-3 sm:px-5"
       >
-        {/* Top Banner Bar */}
-        <div className="bg-black/70 text-luxury-beige text-[10px] font-bold py-2 px-4 sm:px-6 lg:px-8 flex justify-between items-center select-none uppercase tracking-[0.25em] relative backdrop-blur-sm border-b border-white/10">
-          <div className="hidden sm:flex items-center space-x-5">
-            <span className="flex items-center text-gray-400 hover:text-luxury-gold transition-colors duration-300">
-              <Phone className="w-3.5 h-3.5 mr-1.5 text-luxury-gold" /> +91 8468845759
-            </span>
-            <span className="flex items-center text-gray-400 hover:text-luxury-gold transition-colors duration-300">
-              <Mail className="w-3.5 h-3.5 mr-1.5 text-luxury-gold" /> info@chandanart.com
-            </span>
-          </div>
-          <div className="flex items-center space-x-4 mx-auto sm:mx-0">
-            <span className="flex items-center font-bold text-luxury-beige">
-              <Sparkles className="w-3.5 h-3.5 mr-1.5 text-luxury-gold animate-pulse" />
-              Premium Craftsmanship & Global Scaling
-            </span>
-          </div>
-        </div>
-
-        {/* Main Sticky Navbar */}
         <nav
-          className={`w-full transition-all duration-500 ease-in-out ${
-            isScrolled
-              ? 'glass-nav-scrolled shadow-lg shadow-luxury-black/5'
-              : 'glass-nav border-transparent'
-          }`}
+          className={`${isScrolled ? "glass-nav-scrolled" : "glass-nav"} relative z-30 mx-auto max-w-[1420px] overflow-visible rounded-full px-3.5 py-2 sm:px-4`}
+          style={{
+            backdropFilter: isScrolled
+              ? "blur(30px) saturate(160%)"
+              : "blur(26px) saturate(155%)",
+            WebkitBackdropFilter: isScrolled
+              ? "blur(30px) saturate(160%)"
+              : "blur(26px) saturate(155%)",
+          }}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className={`flex justify-between items-center transition-all duration-500 ${isScrolled ? 'h-16' : 'h-20'}`}>
-              {/* Mobile Menu Icon */}
-              <div className="flex items-center lg:hidden">
-                <button
-                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  className="text-luxury-charcoal dark:text-luxury-beige p-2 cursor-pointer rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-                >
-                  {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          <div className="flex min-h-[62px] items-center justify-between gap-3 sm:min-h-[66px]">
+            <div className="flex items-center gap-2 lg:hidden">
+              <button
+                onClick={() => setMobileMenuOpen((open) => !open)}
+                className={iconButton}
+                aria-label="Open navigation"
+              >
+                {mobileMenuOpen ? (
+                  <X className="h-4 w-4" />
+                ) : (
+                  <Menu className="h-4 w-4" />
+                )}
+              </button>
+            </div>
+
+            <Link
+              href="/"
+              className="group hidden min-w-fit items-center gap-2.5 rounded-full px-1.5 sm:flex ml-2"
+            >
+              <span className="leading-none">
+                <span className="brand-logotype block text-[1.46rem] text-luxury-beige transition group-hover:text-luxury-gold">
+                  Chandan Art Gallery
+                </span>
+                <span className="mt-1 block text-[0.58rem] font-extrabold uppercase tracking-[0.26em] text-luxury-beige/68">
+                  New Delhi - India
+                </span>
+              </span>
+            </Link>
+
+            <div className="hidden items-center gap-6 xl:gap-7 lg:flex">
+              <Link
+                href="/shop"
+                className="nav-link text-[0.7rem] font-extrabold uppercase tracking-[0.16em] text-luxury-beige hover:text-luxury-gold"
+              >
+                Shop
+              </Link>
+
+              <div className="group relative">
+                <button className="nav-link flex items-center text-[0.7rem] font-extrabold uppercase tracking-[0.16em] text-luxury-beige hover:text-luxury-gold">
+                  Collections <ChevronDown className="ml-1 h-3.5 w-3.5" />
                 </button>
-              </div>
 
-              {/* Brand Logo */}
-              <div className="flex-1 lg:flex-none flex justify-center lg:justify-start">
-                <Link href="/" className="flex flex-col items-center lg:items-start group select-none">
-                  <span className="font-serif text-lg sm:text-2xl font-extrabold tracking-[0.25em] uppercase text-luxury-black dark:text-luxury-beige group-hover:text-luxury-gold transition-colors duration-300">
-                    Chandan
-                  </span>
-                  <span className="text-[8px] tracking-[0.35em] font-sans font-extrabold text-gray-400 dark:text-zinc-500 uppercase -mt-0.5 group-hover:text-luxury-gold-dark transition-colors duration-300">
-                    Art Gallery • Delhi
-                  </span>
-                </Link>
-              </div>
-
-              {/* Desktop Navigation Links & Mega Menu trigger */}
-              <div className="hidden lg:flex items-center space-x-8">
-                <Link href="/shop" className="nav-link text-xs font-bold tracking-[0.15em] text-luxury-charcoal dark:text-luxury-beige hover:text-luxury-gold duration-200 uppercase">
-                  Shop All
-                </Link>
-
-                {/* Custom Mega Menu Item */}
-                <div className="relative group">
-                  <button className="nav-link flex items-center text-xs font-bold tracking-[0.15em] text-luxury-charcoal dark:text-luxury-beige hover:text-luxury-gold duration-200 uppercase cursor-pointer">
-                    Categories <ChevronDown className="w-3.5 h-3.5 ml-1" />
-                  </button>
-                  <div className="absolute left-1/2 -translate-x-1/2 top-full pt-4 hidden group-hover:block w-60">
-                    <div className="bg-white/90 dark:bg-zinc-950/90 border border-white/20 dark:border-zinc-900/60 rounded-2xl p-4 shadow-xl backdrop-blur-xl flex flex-col space-y-3">
+                <div className="absolute left-0 top-full z-50 mt-2 min-w-[520px] w-[520px] opacity-0 invisible transition-all duration-250 ease-out group-hover:visible group-hover:opacity-100">
+                  <div className="relative overflow-hidden rounded-[28px] border border-white/15 bg-[rgba(18,16,13,0.86)] shadow-[0_40px_110px_rgba(0,0,0,0.28)] backdrop-blur-[48px] backdrop-saturate-[140%]" style={{ WebkitBackdropFilter: 'blur(48px) saturate(140%)', backdropFilter: 'blur(48px) saturate(140%)' }}>
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/[0.12] via-transparent to-black/[0.06]" />
+                    <div className="relative grid gap-2 px-6 py-5">
                       {categories.map((cat) => (
                         <Link
                           key={cat.name}
                           href={cat.href}
-                          className="text-xs font-bold text-gray-600 dark:text-gray-300 hover:text-luxury-gold transition-colors duration-200 uppercase tracking-wider pl-2 py-1 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg"
+                          className="group/item rounded-[18px] px-4 py-3 transition duration-200 hover:bg-white/5"
                         >
-                          {cat.name}
+                          <span className="block text-[1rem] font-semibold leading-tight text-white transition-colors group-hover/item:text-luxury-gold">
+                            {cat.name}
+                          </span>
+                          <span className="mt-1 block text-[0.86rem] leading-relaxed text-stone-300">
+                            {cat.note}
+                          </span>
                         </Link>
                       ))}
                     </div>
                   </div>
                 </div>
-
-                <Link href="/blog" className="nav-link text-xs font-bold tracking-[0.15em] text-luxury-charcoal dark:text-luxury-beige hover:text-luxury-gold duration-200 uppercase">
-                  Journal
-                </Link>
-                <Link href="/about" className="nav-link text-xs font-bold tracking-[0.15em] text-luxury-charcoal dark:text-luxury-beige hover:text-luxury-gold duration-200 uppercase">
-                  Heritage
-                </Link>
-                <Link href="/contact" className="nav-link text-xs font-bold tracking-[0.15em] text-luxury-charcoal dark:text-luxury-beige hover:text-luxury-gold duration-200 uppercase">
-                  Contact
-                </Link>
               </div>
 
-              {/* Search, Wishlist, Cart Actions */}
-              <div className="flex items-center space-x-3 sm:space-x-4">
-                {/* Search Bar Desktop */}
-                <div ref={searchRef} className="relative hidden md:block w-48 lg:w-64">
-                  <form onSubmit={handleSearchSubmit}>
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => {
-                        setSearchQuery(e.target.value);
-                        setShowSearchDropdown(true);
-                      }}
-                      placeholder="Search bespoke frames..."
-                      className="w-full px-4 py-2 pl-9 rounded-2xl border border-gray-200/50 dark:border-zinc-800 bg-white/40 dark:bg-zinc-950/20 text-xs focus:outline-none focus:ring-1 focus:ring-luxury-gold/50 backdrop-blur-sm transition-all duration-300 font-medium text-luxury-black dark:text-white"
-                    />
-                    <Search className="w-3.5 h-3.5 absolute left-3.5 top-2.5 text-gray-400" />
-                  </form>
+              <Link
+                href="/blog"
+                className="nav-link text-[0.7rem] font-extrabold uppercase tracking-[0.16em] text-luxury-beige hover:text-luxury-gold"
+              >
+                Journal
+              </Link>
+              <Link
+                href="/about"
+                className="nav-link text-[0.7rem] font-extrabold uppercase tracking-[0.16em] text-luxury-beige hover:text-luxury-gold"
+              >
+                Heritage
+              </Link>
+              <Link
+                href="/contact"
+                className="nav-link text-[0.7rem] font-extrabold uppercase tracking-[0.16em] text-luxury-beige hover:text-luxury-gold"
+              >
+                Contact
+              </Link>
+              {role === "admin" && (
+                <Link
+                  href="/admin"
+                  className="nav-link text-[0.7rem] font-extrabold uppercase tracking-[0.16em] text-luxury-gold"
+                >
+                  Studio
+                </Link>
+              )}
+            </div>
 
-                  {/* Live Search Results Dropdown */}
-                  <AnimatePresence>
-                    {showSearchDropdown && (searchQuery.length >= 2 || searching) && (
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <div ref={searchRef} className="relative hidden md:block">
+                <form onSubmit={handleSearchSubmit} className="relative">
+                  <Search className="pointer-events-none absolute left-4 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-luxury-gold" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setShowSearchDropdown(true);
+                    }}
+                    placeholder="Search pieces"
+                    className="lux-input h-11 w-44 rounded-full py-2 pl-10 pr-4 text-xs font-semibold placeholder:text-stone-400 lg:w-56"
+                  />
+                </form>
+
+                <AnimatePresence>
+                  {showSearchDropdown &&
+                    (searchQuery.length >= 2 || searching) && (
                       <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        className="absolute left-0 right-0 sm:left-auto sm:right-0 mt-3 w-full sm:w-80 bg-white/90 dark:bg-zinc-950/95 border border-gray-100 dark:border-zinc-800/80 rounded-2xl p-4 shadow-2xl backdrop-blur-xl z-50 max-h-80 overflow-y-auto"
+                        initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                        transition={{ duration: 0.22 }}
+                        className="lux-card absolute right-0 mt-3 w-80 rounded-[18px] p-3"
                       >
                         {searching ? (
-                          <div className="text-xs text-gray-400 text-center py-2">Searching suggestions...</div>
+                          <div className="py-5 text-center text-xs text-stone-500">
+                            Searching the collection...
+                          </div>
                         ) : searchResults.length === 0 ? (
-                          <div className="text-xs text-gray-400 text-center py-2">No frames found matching your query</div>
+                          <div className="py-5 text-center text-xs text-stone-500">
+                            No matching pieces found.
+                          </div>
                         ) : (
-                          <div className="space-y-2">
-                            <p className="text-[9px] uppercase tracking-widest text-luxury-gold font-extrabold border-b border-gray-50 dark:border-zinc-800/50 pb-1">
-                              Matching Collections
-                            </p>
+                          <div className="space-y-1">
                             {searchResults.map((prod) => (
                               <Link
                                 key={prod.slug}
                                 href={`/product/${prod.slug}`}
                                 onClick={() => {
                                   setShowSearchDropdown(false);
-                                  setSearchQuery('');
+                                  setSearchQuery("");
                                 }}
-                                className="flex items-center space-x-3 p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl duration-200"
+                                className="flex items-center gap-3 rounded-[18px] p-2 transition hover:bg-luxury-gold/10"
                               >
-                                <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-zinc-900 overflow-hidden flex-shrink-0 border border-gray-200/50 dark:border-zinc-800/50">
-                                  <img
-                                    src={prod.product_images?.[0]?.image_url || 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=150'}
+                                <div className="h-12 w-12 overflow-hidden rounded-[12px] bg-stone-100 dark:bg-stone-900">
+                                  <SmartImage
+                                    src={
+                                      prod.product_images?.[0]?.image_url ||
+                                      "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=150"
+                                    }
                                     alt={prod.name}
-                                    className="w-full h-full object-cover"
+                                    className="h-full w-full object-cover"
+                                    containerClassName="h-full w-full"
+                                    fallbackLabel="No image"
                                   />
                                 </div>
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-xs font-bold text-luxury-black dark:text-white truncate">
+                                <div className="min-w-0 flex-1">
+                                  <p className="truncate font-serif text-sm text-luxury-charcoal dark:text-luxury-beige">
                                     {prod.name}
                                   </p>
-                                  <p className="text-[10px] font-extrabold text-luxury-gold mt-0.5">
-                                    ₹{prod.price ? prod.price.toLocaleString() : 'Price on request'}
+                                  <p className="text-[0.68rem] font-bold text-luxury-gold">
+                                    {prod.price
+                                      ? `₹${prod.price.toLocaleString()}`
+                                      : "Price on request"}
                                   </p>
                                 </div>
                               </Link>
@@ -297,171 +385,146 @@ export default function Navbar() {
                         )}
                       </motion.div>
                     )}
-                  </AnimatePresence>
-                </div>
-
-                {/* Theme Toggle */}
-                <button
-                  onClick={toggleTheme}
-                  className="text-luxury-charcoal dark:text-luxury-beige hover:text-luxury-gold p-2 duration-200 cursor-pointer rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-                  title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
-                >
-                  {theme === 'light' ? (
-                    <Moon className="w-5 h-5 transition-transform duration-300 rotate-0 hover:rotate-12" />
-                  ) : (
-                    <Sun className="w-5 h-5 transition-transform duration-500 rotate-0 hover:rotate-45" />
-                  )}
-                </button>
-
-                {/* Wishlist */}
-                <Link
-                  href="/profile?tab=wishlist"
-                  className="text-luxury-charcoal dark:text-luxury-beige hover:text-luxury-gold p-2 duration-200 rounded-full hover:bg-black/5 dark:hover:bg-white/5"
-                  title="Wishlist"
-                >
-                  <Heart className="w-5 h-5" />
-                </Link>
-
-                {/* Cart Drawer Trigger */}
-                <button
-                  onClick={() => setCartOpen(true)}
-                  className="text-luxury-charcoal dark:text-luxury-beige hover:text-luxury-gold p-2 relative duration-200 cursor-pointer rounded-full hover:bg-black/5 dark:hover:bg-white/5"
-                  title="Open Cart"
-                >
-                  <ShoppingBag className="w-5 h-5" />
-                  {cartItemsCount > 0 && (
-                    <span className="absolute top-0 right-0 bg-luxury-black text-white dark:bg-luxury-gold dark:text-luxury-black text-[9px] font-extrabold w-4.5 h-4.5 rounded-full flex items-center justify-center border border-white dark:border-zinc-950 scale-90">
-                      {cartItemsCount}
-                    </span>
-                  )}
-                </button>
-                {/* Profile Portal */}
-                {user ? (
-                  <Link
-                    href="/profile"
-                    className="flex items-center justify-center duration-200"
-                    title="My Profile"
-                  >
-                    {user.user_metadata?.avatar_url ? (
-                      <div className="w-8 h-8 rounded-full overflow-hidden border border-luxury-gold/30 hover:border-luxury-gold transition-colors duration-300">
-                        <img 
-                          src={user.user_metadata.avatar_url} 
-                          alt="Profile" 
-                          className="w-full h-full object-cover"
-                          referrerPolicy="no-referrer"
-                        />
-                      </div>
-                    ) : (
-                      <div className="w-8 h-8 rounded-full bg-luxury-gold/20 text-luxury-gold font-bold flex items-center justify-center text-sm uppercase border border-luxury-gold/30 hover:border-luxury-gold hover:bg-luxury-gold/30 transition-all duration-300">
-                        {(user.user_metadata?.full_name || user.email || 'U').charAt(0).toUpperCase()}
-                      </div>
-                    )}
-                  </Link>
-                ) : (
-                  <Link
-                    href="/login"
-                    className="text-luxury-charcoal dark:text-luxury-beige hover:text-luxury-gold p-2 duration-200 rounded-full hover:bg-black/5 dark:hover:bg-white/5"
-                    title="Sign In"
-                  >
-                    <LogIn className="w-5 h-5" />
-                  </Link>
-                )}
-
+                </AnimatePresence>
               </div>
+
+              <button
+                onClick={toggleTheme}
+                className={iconButton}
+                title={
+                  theme === "light"
+                    ? "Switch to Dark Mode"
+                    : "Switch to Light Mode"
+                }
+              >
+                {theme === "light" ? (
+                  <Moon className="h-4 w-4" />
+                ) : (
+                  <Sun className="h-4 w-4" />
+                )}
+              </button>
+              <Link
+                href="/profile?tab=wishlist"
+                className={`${iconButton} hidden sm:inline-flex`}
+                title="Wishlist"
+              >
+                <Heart className="h-4 w-4" />
+              </Link>
+              <button
+                onClick={() => setCartOpen(true)}
+                className={`${iconButton} relative`}
+                title="Open Cart"
+              >
+                <ShoppingBag className="h-4 w-4" />
+                {cartItemsCount > 0 && (
+                  <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-[12px] bg-luxury-gold px-1 text-[0.62rem] font-black text-luxury-black ring-2 ring-luxury-offwhite dark:ring-luxury-black">
+                    {cartItemsCount}
+                  </span>
+                )}
+              </button>
+              {user ? (
+                <Link href="/profile" className={iconButton} title="My Profile">
+                  {user.user_metadata?.avatar_url ? (
+                    <SmartImage
+                      src={user.user_metadata.avatar_url}
+                      alt="Profile"
+                      className="h-8 w-8 rounded-full object-cover"
+                      containerClassName="h-8 w-8 rounded-full"
+                      referrerPolicy="no-referrer"
+                      fallbackLabel="User"
+                    />
+                  ) : (
+                    <User className="h-4 w-4" />
+                  )}
+                </Link>
+              ) : (
+                <Link href="/login" className={iconButton} title="Sign In">
+                  <LogIn className="h-4 w-4" />
+                </Link>
+              )}
             </div>
           </div>
+        </nav>
 
-          {/* Mobile Navigation Drawer */}
-          <AnimatePresence>
-            {mobileMenuOpen && (
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <>
+              <motion.button
+                type="button"
+                aria-label="Close menu backdrop"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.22 }}
+                onClick={() => setMobileMenuOpen(false)}
+                className="fixed inset-0 z-10 bg-black/40 backdrop-blur-xl lg:hidden"
+              />
               <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="lg:hidden bg-white/95 dark:bg-zinc-950/95 border-t border-gray-200/30 dark:border-zinc-900/40 backdrop-blur-xl overflow-hidden shadow-lg"
+                initial={{ opacity: 0, y: -12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                className="lux-card relative z-20 mx-auto mt-3 max-h-[calc(100svh-6.5rem)] max-w-7xl overflow-hidden rounded-[22px] border-white/12 bg-[rgba(13,11,9,0.74)] p-4 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur-2xl lg:hidden"
               >
-                <div className="px-4 py-6 space-y-4 flex flex-col">
-                  {/* Search Bar Mobile */}
-                  <form onSubmit={handleSearchSubmit} className="relative">
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search bespoke frames..."
-                      className="w-full px-4 py-2.5 pl-10 rounded-2xl border border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-950/20 text-xs focus:outline-none focus:ring-1 focus:ring-luxury-gold text-luxury-black dark:text-white"
-                    />
-                    <Search className="w-4.5 h-4.5 absolute left-3.5 top-3 text-gray-400" />
-                  </form>
+                <form onSubmit={handleSearchSubmit} className="relative mb-3">
+                  <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search the collection"
+                    className="lux-input h-11 w-full rounded-full py-2 pl-11 pr-4 text-sm"
+                  />
+                </form>
 
-                  <div className="flex flex-col space-y-3 font-serif text-lg border-b border-gray-50 dark:border-zinc-900 pb-4">
-                    <Link href="/shop" onClick={() => setMobileMenuOpen(false)} className="hover:text-luxury-gold uppercase text-sm font-bold">
-                      Shop All
-                    </Link>
-                    {categories.map((cat) => (
-                      <Link
-                        key={cat.name}
-                        href={cat.href}
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="hover:text-luxury-gold uppercase text-sm pl-4 font-bold"
-                      >
+                <div className="grid gap-0.5">
+                  <Link
+                    href="/shop"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="rounded-[16px] px-4 py-2 font-serif text-2xl leading-none text-luxury-charcoal dark:text-luxury-beige"
+                  >
+                    Shop all
+                  </Link>
+                  {categories.map((cat) => (
+                    <Link
+                      key={cat.name}
+                      href={cat.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="rounded-[16px] px-4 py-2 transition hover:bg-luxury-gold/10"
+                    >
+                      <span className="block font-serif text-xl leading-none text-luxury-charcoal dark:text-luxury-beige">
                         {cat.name}
-                      </Link>
-                    ))}
-                    <Link href="/blog" onClick={() => setMobileMenuOpen(false)} className="hover:text-luxury-gold uppercase text-sm font-bold">
-                      Journal
+                      </span>
+                      <span className="text-[0.82rem] leading-tight text-stone-500 dark:text-stone-400">
+                        {cat.note}
+                      </span>
                     </Link>
-                    <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="hover:text-luxury-gold uppercase text-sm font-bold">
-                      Heritage
+                  ))}
+                  {[
+                    ["Journal", "/blog"],
+                    ["Heritage", "/about"],
+                    ["Contact", "/contact"],
+                  ].map(([label, href]) => (
+                    <Link
+                      key={href}
+                      href={href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="rounded-[16px] px-4 py-1.5 font-serif text-lg leading-none text-luxury-charcoal transition hover:bg-luxury-gold/10 dark:text-luxury-beige"
+                    >
+                      {label}
                     </Link>
-                    <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="hover:text-luxury-gold uppercase text-sm font-bold">
-                      Contact
-                    </Link>
-                    {user ? (
-                      <Link 
-                        href="/profile" 
-                        onClick={() => setMobileMenuOpen(false)} 
-                        className="hover:text-luxury-gold uppercase text-sm font-bold flex items-center space-x-2.5 pt-2 border-t border-gray-100 dark:border-zinc-900/50"
-                      >
-                        {user.user_metadata?.avatar_url ? (
-                          <img 
-                            src={user.user_metadata.avatar_url} 
-                            alt="Profile" 
-                            className="w-6 h-6 rounded-full object-cover border border-luxury-gold/30"
-                            referrerPolicy="no-referrer"
-                          />
-                        ) : (
-                          <div className="w-6 h-6 rounded-full bg-luxury-gold/20 text-luxury-gold font-bold flex items-center justify-center text-xs uppercase border border-luxury-gold/30">
-                            {(user.user_metadata?.full_name || user.email || 'U').charAt(0).toUpperCase()}
-                          </div>
-                        )}
-                        <span>My Profile</span>
-                      </Link>
-                    ) : (
-                      <Link 
-                        href="/login" 
-                        onClick={() => setMobileMenuOpen(false)} 
-                        className="hover:text-luxury-gold uppercase text-sm font-bold flex items-center space-x-2.5 pt-2 border-t border-gray-100 dark:border-zinc-900/50"
-                      >
-                        <LogIn className="w-4 h-4 text-luxury-gold" />
-                        <span>Sign In</span>
-                      </Link>
-                    )}
-                  </div>
-                  
-                  <div className="flex justify-between items-center text-[10px] text-gray-400 pt-2 font-bold uppercase tracking-wider">
-                    <span className="flex items-center"><Phone className="w-3.5 h-3.5 mr-1.5 text-luxury-gold" /> +91 8468845759</span>
-                    <span className="flex items-center"><MapPin className="w-3.5 h-3.5 mr-1.5 text-luxury-gold" /> New Delhi, India</span>
-                  </div>
+                  ))}
+                </div>
+
+                <div className="mt-3 flex items-center gap-1.5 border-t border-black/10 pt-3 text-[0.68rem] text-stone-500 dark:border-white/10 dark:text-stone-400">
+                  <Sparkles className="h-3.5 w-3.5 text-luxury-gold" />
+                  Bespoke consultation by WhatsApp, crafted in India.
                 </div>
               </motion.div>
-            )}
-          </AnimatePresence>
-        </nav>
-      </header>
+            </>
+          )}
+        </AnimatePresence>
+      </motion.header>
 
-      {/* Spacers to prevent fixed header overlap - wait, pages themselves will have top spacing or top-padding */}
-
-      {/* Mounting Cart Drawer */}
       <CartDrawer />
     </>
   );

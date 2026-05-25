@@ -1,19 +1,22 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Outfit } from "next/font/google";
+import { Manrope, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import "lenis/dist/lenis.css";
 import AuthProvider from "@/components/providers/AuthProvider";
+import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
 import ToastContainer from "@/components/ui/Toast";
 
-const cormorant = Cormorant_Garamond({
+const playfair = Playfair_Display({
   subsets: ["latin"],
-  variable: "--font-cormorant",
-  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-playfair",
+  weight: ["500", "600", "700"],
   display: "swap",
 });
 
-const outfit = Outfit({
+const manrope = Manrope({
   subsets: ["latin"],
-  variable: "--font-outfit",
+  variable: "--font-manrope",
+  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
 });
 
@@ -36,7 +39,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${cormorant.variable} ${outfit.variable} h-full antialiased`}
+      className={`${playfair.variable} ${manrope.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>
@@ -57,10 +60,12 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col bg-luxury-offwhite text-luxury-charcoal dark:bg-luxury-black dark:text-luxury-beige transition-colors duration-300">
-        <AuthProvider>
-          {children}
-          <ToastContainer />
-        </AuthProvider>
+        <SmoothScrollProvider>
+          <AuthProvider>
+            {children}
+            <ToastContainer />
+          </AuthProvider>
+        </SmoothScrollProvider>
       </body>
     </html>
   );

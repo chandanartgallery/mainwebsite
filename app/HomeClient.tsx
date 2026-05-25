@@ -1,13 +1,22 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { 
-  Sparkles, ShieldCheck, Heart, ArrowRight, Star, 
-  HelpCircle, ChevronDown, MessageSquare, Mail, Play, CheckCircle 
-} from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+  ArrowRight,
+  ChevronDown,
+  Gem,
+  type LucideIcon,
+  Mail,
+  MessageSquare,
+  ShieldCheck,
+  Sparkles,
+  Star,
+  Trees,
+} from 'lucide-react';
 import { useUIStore } from '@/store/uiStore';
+import SmartImage from '@/components/ui/SmartImage';
 
 interface HomeClientProps {
   banners: any[];
@@ -16,311 +25,294 @@ interface HomeClientProps {
   testimonials: any[];
 }
 
+const fallbackSlides = [
+  {
+    id: 'default-1',
+    title: 'Bespoke frames for homes with memory.',
+    subtitle: 'Solid timber frames, acrylic showcases, canvas editions, and devotional art finished through one-to-one curator dialogue.',
+    image_url: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=1920',
+    link_url: '/shop',
+  },
+  {
+    id: 'default-2',
+    title: 'Quiet craft, made with real wood.',
+    subtitle: 'Museum-grade protection, warm Indian materials, and restrained details for considered interiors.',
+    image_url: 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=1920',
+    link_url: '/shop?category=custom-photo-frames',
+  },
+];
+
+const fallbackCategoryMedia: Record<string, string> = {
+  'photo-frames': 'https://images.unsplash.com/photo-1591129841117-3adfd313a6dd?q=80&w=1400',
+  'custom-photo-frames': 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=1400',
+  'acrylic-frames': 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1400',
+  'canvas-prints': 'https://images.unsplash.com/photo-1577083552431-6e5fd01988f1?q=80&w=1400',
+  'religious-frames': 'https://images.unsplash.com/photo-1518998053901-5348d3961a04?q=80&w=1400',
+};
+
+const fallbackArtworkMedia = 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=900';
+
+const faqs = [
+  {
+    q: 'How does the WhatsApp ordering process work?',
+    a: 'Choose a piece, select your preferred options, and send the curated order note to our studio. A specialist confirms dimensions, finish, pricing, and shipping before production begins.',
+  },
+  {
+    q: 'Which woods do you use?',
+    a: 'Our core collections use seasoned pine, teak, mango wood, and selected hardwood profiles depending on the finish and structural requirement.',
+  },
+  {
+    q: 'Can I request a custom size?',
+    a: 'Yes. Most frame and canvas formats can be tailored from desk portraits to large wall compositions after a quick consultation.',
+  },
+  {
+    q: 'How are fragile pieces shipped?',
+    a: 'Orders are packed with layered protection, reinforced corners, and courier-ready cartons. Damage cases are handled with repair or replacement support.',
+  },
+];
+
+const pillars: Array<{ title: string; copy: string; Icon: LucideIcon }> = [
+  { title: 'Real materials', copy: 'Seasoned hardwood profiles, refined finishes, and honest grain.', Icon: Trees },
+  { title: 'Museum protection', copy: 'Premium acrylic, UV-conscious detailing, and careful assembly.', Icon: ShieldCheck },
+  { title: 'Curator led', copy: 'No cold checkout. Every custom order is confirmed by a specialist.', Icon: MessageSquare },
+];
+
 export default function HomeClient({ banners, categories, featuredProducts, testimonials }: HomeClientProps) {
   const { addToast } = useUIStore();
-  // Banner slider index
   const [currentSlide, setCurrentSlide] = useState(0);
-
-  // Fallback banner if none are returned
-  const slides = banners.length > 0 ? banners : [
-    {
-      id: 'default-1',
-      title: 'Bespoke Framing, Handcrafted Heritage',
-      subtitle: 'Premium Teakwood Photo Frames & Spiritual Mandir Sculptures Built for Your Home.',
-      image_url: 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=1920',
-      link_url: '/shop'
-    }
-  ];
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [loadedSlides, setLoadedSlides] = useState<Record<string, boolean>>({});
+  const slides = banners.length > 0 ? banners : fallbackSlides;
 
   useEffect(() => {
     if (slides.length <= 1) return;
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 6000);
+    const interval = setInterval(() => setCurrentSlide((prev) => (prev + 1) % slides.length), 6500);
     return () => clearInterval(interval);
   }, [slides.length]);
 
-  // FAQ Accordion State
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
-
-  const faqs = [
-    {
-      q: 'How does the "Buy on WhatsApp" process work?',
-      a: 'We craft our frames on a bespoke, custom basis to match your specific sizing and colors. When you click "Buy on WhatsApp", our system packages your choices into a neat link description. You are redirected to chat with our lead curator who will finalize the frame dimensions, print choices, and secure shipping layout before starting.'
-    },
-    {
-      q: 'What types of wood do you source for your frames?',
-      a: 'We strictly employ raw, premium seasoned New Zealand pine wood, authentic Rajasthani teak wood, and natural seasoned mango wood. We never use cheap composites or synthetic vinyl wraps for our primary collections. Every texture and grain is real.'
-    },
-    {
-      q: 'Can I request a custom size not listed on the product page?',
-      a: 'Absolutely. We specialize in custom gallery-wall collections. You can request any size from small desk portraits (4x6 inches) up to massive lounge canvas backdrops (60x80 inches). Simply state your dimensions during our WhatsApp consultation.'
-    },
-    {
-      q: 'Do you ship fragile items (like acrylic stands & glass fronts) safely?',
-      a: 'Yes, we ship nationwide across India. Every order is packaged using five-ply corrugated cartons, layered bubble wrapping, and corner guards to ensure zero breakage. If any damage does occur in transit, we will replace the item free of charge.'
-    }
-  ];
-
   return (
     <div className="relative overflow-hidden">
-      {/* 1. HERO BANNER SLIDER */}
-      <section className="relative h-screen bg-luxury-black text-white overflow-hidden select-none">
+      <section className="relative min-h-[100svh] overflow-hidden bg-luxury-black text-luxury-beige">
         <AnimatePresence mode="wait">
           {slides.map((slide, index) => {
             if (index !== currentSlide) return null;
             return (
               <motion.div
                 key={slide.id}
-                initial={{ opacity: 0, scale: 1.03 }}
+                initial={{ opacity: 0, scale: 1.025 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 1, ease: 'easeInOut' }}
-                className="absolute inset-0 w-full h-full"
+                exit={{ opacity: 0, scale: 1.01 }}
+                transition={{ duration: 1.15, ease: [0.22, 1, 0.36, 1] }}
+                className="absolute inset-0"
               >
-                {/* Overlay gradient */}
-                <div className="absolute inset-0 bg-gradient-to-r from-luxury-black via-luxury-black/75 to-transparent z-10" />
-                <img 
-                  src={slide.image_url} 
-                  alt={slide.title} 
-                  className="w-full h-full object-cover opacity-80"
+                <SmartImage
+                  src={slide.image_url}
+                  alt={slide.title}
+                  className={`h-full w-full object-cover transition duration-700 ${loadedSlides[slide.id] ? 'opacity-78 blur-0' : 'opacity-0 blur-sm'}`}
+                  containerClassName="h-full w-full"
+                  priority
+                  onLoaded={() => setLoadedSlides((prev) => ({ ...prev, [slide.id]: true }))}
+                  fallbackLabel="Hero media unavailable"
                 />
-
-                {/* Content */}
-                <div className="absolute inset-0 flex items-center z-20">
-                  <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="max-w-xl space-y-6">
-                      <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3, duration: 0.8 }}
-                        className="flex items-center space-x-2 text-luxury-gold uppercase tracking-widest text-xs font-semibold"
-                      >
-                        <Sparkles className="w-4.5 h-4.5" />
-                        <span>Ultra-Premium Indian Woodworks</span>
-                      </motion.div>
-
-                      <motion.h2
-                        initial={{ opacity: 0, y: 25 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.5, duration: 0.8 }}
-                        className="text-4xl sm:text-6xl font-serif leading-tight tracking-wide text-luxury-beige"
-                      >
-                        {slide.title}
-                      </motion.h2>
-
-                      <motion.p
-                        initial={{ opacity: 0, y: 25 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.7, duration: 0.8 }}
-                        className="text-sm text-gray-300 leading-relaxed max-w-md font-sans"
-                      >
-                        {slide.subtitle}
-                      </motion.p>
-
-                      <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.9, duration: 0.8 }}
-                        className="pt-4"
-                      >
-                        <Link 
-                          href={slide.link_url || '/shop'}
-                          className="inline-flex items-center px-7 py-4 bg-luxury-gold hover:bg-luxury-beige text-luxury-black text-xs font-bold uppercase tracking-widest rounded-xl transition-all duration-300 shadow-lg hover:shadow-luxury-gold/15"
-                        >
-                          Explore Collections
-                          <ArrowRight className="w-4 h-4 ml-2" />
-                        </Link>
-                      </motion.div>
-                    </div>
-                  </div>
-                </div>
+                <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(9,8,7,0.92),rgba(9,8,7,0.55)_43%,rgba(9,8,7,0.12)),linear-gradient(0deg,rgba(9,8,7,0.72),transparent_45%)]" />
               </motion.div>
             );
           })}
         </AnimatePresence>
+        {!loadedSlides[slides[currentSlide]?.id] && (
+          <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(18,15,12,0.98),rgba(30,24,19,0.94))]" aria-hidden="true" />
+        )}
 
-        {/* Slide Indicators */}
+        <div className="lux-container relative z-10 flex min-h-[100svh] items-end pb-16 pt-36 sm:pb-20">
+          <div className="grid w-full gap-10 lg:grid-cols-[minmax(0,0.95fr)_22rem] lg:items-end">
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+              className="max-w-4xl"
+            >
+              <div className="lux-eyebrow mb-5 flex items-center gap-2 text-luxury-gold">
+                <Sparkles className="h-4 w-4" />
+                Chandan Art Gallery
+              </div>
+              <h1 key={slides[currentSlide].id} className="lux-title hero-title-readable text-luxury-beige" aria-label={slides[currentSlide].title}>
+                {slides[currentSlide].title.split(' ').map((word: string, wordIndex: number, words: string[]) => (
+                  <span key={`${word}-${wordIndex}`} className="typewriter-word" aria-hidden="true">
+                    {word.split('').map((char: string, charIndex: number) => {
+                      const previousLength = words.slice(0, wordIndex).reduce((acc, item) => acc + item.length, 0);
+                      const globalIndex = previousLength + wordIndex + charIndex;
+                      return (
+                        <span
+                          key={`${char}-${wordIndex}-${charIndex}`}
+                          className="typewriter-char"
+                          style={{ animationDelay: `${Math.min(globalIndex * 0.026, 1.7)}s` }}
+                        >
+                          {char}
+                        </span>
+                      );
+                    })}
+                    {wordIndex < words.length - 1 && <span>&nbsp;</span>}
+                  </span>
+                ))}
+                <span className="typewriter-cursor" aria-hidden="true" />
+              </h1>
+              <p className="mt-7 max-w-xl text-base leading-8 text-luxury-beige/76 sm:text-lg">
+                {slides[currentSlide].subtitle}
+              </p>
+              <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+                <Link href={slides[currentSlide].link_url || '/shop'} className="lux-button lux-button-primary bg-luxury-beige text-luxury-black">
+                  Explore collection <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link href="/contact" className="lux-button border border-white/20 bg-white/10 text-luxury-beige backdrop-blur hover:bg-white/15">
+                  Studio consultation
+                </Link>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+              className="hidden rounded-[22px] border border-white/14 bg-white/10 p-5 shadow-2xl backdrop-blur-xl lg:block"
+            >
+              <div className="aspect-[4/5] overflow-hidden rounded-[18px] bg-luxury-black/30">
+                <SmartImage
+                  src="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=900"
+                  alt="Warm framed interior"
+                  className="h-full w-full object-cover"
+                  containerClassName="h-full w-full"
+                  fallbackLabel="Studio visual unavailable"
+                />
+              </div>
+              <div className="mt-5 flex items-center justify-between gap-5">
+                <div>
+                  <p className="font-serif text-xl text-luxury-beige">Hand-finished in India</p>
+                  <p className="mt-1 text-xs leading-relaxed text-luxury-beige/60">Each order is reviewed before it enters production.</p>
+                </div>
+                <span className="rounded-[12px] border border-luxury-gold/35 px-3 py-1 text-[0.62rem] font-black uppercase tracking-[0.18em] text-luxury-gold">
+                  Bespoke
+                </span>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+
         {slides.length > 1 && (
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex space-x-2.5">
+          <div className="absolute bottom-7 left-1/2 z-20 flex -translate-x-1/2 gap-2">
             {slides.map((_, idx) => (
               <button
                 key={idx}
                 onClick={() => setCurrentSlide(idx)}
-                className={`w-2.5 h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
-                  idx === currentSlide ? 'bg-luxury-gold w-8' : 'bg-white/40'
-                }`}
+                className={`h-1.5 rounded-[12px] transition-all duration-500 ${idx === currentSlide ? 'w-10 bg-luxury-gold' : 'w-2.5 bg-white/40'}`}
+                aria-label={`Show slide ${idx + 1}`}
               />
             ))}
           </div>
         )}
       </section>
 
-      {/* 2. PREMIUM BRAND PILLARS */}
-      <section className="bg-white dark:bg-zinc-950 py-16 border-b border-gray-100 dark:border-zinc-900 select-none">
-        <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="flex items-start space-x-4 border-r border-gray-50 dark:border-zinc-900 last:border-0 pr-4">
-            <div className="p-3 bg-luxury-gold/10 dark:bg-luxury-gold/5 rounded-2xl text-luxury-gold flex-shrink-0">
-              <Sparkles className="w-5.5 h-5.5" />
+      <section className="bg-luxury-offwhite py-12 dark:bg-luxury-black">
+        <div className="lux-container grid gap-8 border-b border-black/10 py-8 dark:border-white/10 md:grid-cols-3 md:gap-px md:divide-x md:divide-black/10 md:dark:divide-white/10">
+          {pillars.map(({ title, copy, Icon }) => (
+            <div key={title} className="px-1 md:px-7">
+              <Icon className="mb-5 h-5 w-5 text-luxury-gold" />
+              <h2 className="font-serif text-2xl text-luxury-charcoal dark:text-luxury-beige">{title}</h2>
+              <p className="mt-2 text-sm leading-7 text-stone-600 dark:text-stone-400">{copy}</p>
             </div>
-            <div>
-              <h4 className="text-xs uppercase tracking-widest font-bold text-luxury-black dark:text-white mb-1.5 font-sans">
-                True Artisan Handcrafting
-              </h4>
-              <p className="text-xs text-gray-400 leading-relaxed font-sans">
-                Every photo frame and CNC jali cutting is individually assembled by our traditional Rajasthani wood artisans.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start space-x-4 border-r border-gray-50 dark:border-zinc-900 last:border-0 pr-4">
-            <div className="p-3 bg-luxury-gold/10 dark:bg-luxury-gold/5 rounded-2xl text-luxury-gold flex-shrink-0">
-              <ShieldCheck className="w-5.5 h-5.5" />
-            </div>
-            <div>
-              <h4 className="text-xs uppercase tracking-widest font-bold text-luxury-black dark:text-white mb-1.5 font-sans">
-                UV Anti-Glare Protection
-              </h4>
-              <p className="text-xs text-gray-400 leading-relaxed font-sans">
-                We employ thick premium cast plexiglass and museum-grade acrylic sheet layer to isolate dust and prevent UV yellowing.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start space-x-4">
-            <div className="p-3 bg-luxury-gold/10 dark:bg-luxury-gold/5 rounded-2xl text-luxury-gold flex-shrink-0">
-              <MessageSquare className="w-5.5 h-5.5" />
-            </div>
-            <div>
-              <h4 className="text-xs uppercase tracking-widest font-bold text-luxury-black dark:text-white mb-1.5 font-sans">
-                Bespoke WhatsApp Curation
-              </h4>
-              <p className="text-xs text-gray-400 leading-relaxed font-sans">
-                Direct contact ensures proper sizes, mock render reviews, and customizable layouts before secure logistics dispatch.
-              </p>
-            </div>
-          </div>
+          ))}
         </div>
       </section>
 
-      {/* 3. FEATURED CATEGORIES SHOWCASE */}
-      <section className="py-24 bg-luxury-offwhite dark:bg-luxury-black">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <span className="text-xs uppercase tracking-[0.2em] text-luxury-gold font-semibold">Curated Layouts</span>
-            <h3 className="text-3xl sm:text-4xl font-serif text-luxury-black dark:text-white uppercase tracking-wider mt-2.5 font-light">
-              Explore Our <span className="italic font-light text-luxury-gold">Core Disciplines</span>
-            </h3>
-            <p className="text-[11px] text-gray-400 dark:text-zinc-500 tracking-widest uppercase mt-2 max-w-lg mx-auto leading-relaxed">
-              Select a bespoke framing collection to browse architectural-grade custom finishes
+      <section className="py-20 sm:py-28">
+        <div className="lux-container">
+          <div className="mb-12 grid gap-6 lg:grid-cols-[0.8fr_1fr] lg:items-end">
+            <div>
+              <p className="lux-eyebrow">Curated disciplines</p>
+              <h2 className="lux-section-title mt-3">Materials, memories, and sacred spaces.</h2>
+            </div>
+            <p className="lux-copy max-w-xl lg:justify-self-end">
+              A restrained catalog for homes that prefer warmth over spectacle: framed photographs, devotional art, acrylic depth, and canvas surfaces chosen with care.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {categories.map((cat, idx) => {
-              const sizes = ['col-span-1', 'col-span-1', 'col-span-1', 'col-span-1 sm:col-span-2 lg:col-span-1'];
-              const classStr = `bg-white dark:bg-zinc-900 border border-stone-200/50 dark:border-zinc-800/50 rounded-none overflow-hidden group hover:shadow-xl transition-all duration-500 relative aspect-[4/3] flex flex-col justify-end ${sizes[idx % 4]}`;
-              
-              return (
-                <Link 
-                  key={cat.id} 
-                  href={`/shop?category=${cat.slug}`}
-                  className={classStr}
-                >
-                  <img 
-                    src={cat.image_url} 
-                    alt={cat.name} 
-                    className="absolute inset-0 w-full h-full object-cover scale-100 group-hover:scale-105 transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/20 to-transparent z-10" />
-                  
-                  <div className="p-6 z-20 relative text-white">
-                    <h4 className="font-serif text-lg text-luxury-beige uppercase tracking-wide line-clamp-1 font-light">{cat.name}</h4>
-                    <p className="text-[10px] text-gray-300 mt-1 line-clamp-1 font-sans font-light tracking-wide">{cat.description}</p>
-                    <span className="inline-flex items-center text-[9px] uppercase tracking-[0.25em] font-bold text-luxury-gold mt-4 group-hover:text-white transition-colors duration-300">
-                      Explore Collection <ArrowRight className="w-3 h-3 ml-1.5 transition-transform duration-300 group-hover:translate-x-1" />
-                    </span>
-                  </div>
-                </Link>
-              );
-            })}
+          <div className="grid auto-rows-[21rem] grid-cols-1 gap-4 md:grid-cols-6">
+            {categories.slice(0, 5).map((cat, idx) => (
+              <Link
+                key={cat.id}
+                href={`/shop?category=${cat.slug}`}
+                className={`group relative overflow-hidden rounded-[22px] bg-luxury-black shadow-2xl ${
+                  idx === 0 ? 'md:col-span-3 md:row-span-2' : idx === 1 ? 'md:col-span-3' : 'md:col-span-2'
+                }`}
+              >
+                <SmartImage
+                  src={cat.image_url || fallbackCategoryMedia[cat.slug] || fallbackArtworkMedia}
+                  fallbackSrc={fallbackCategoryMedia[cat.slug] || fallbackArtworkMedia}
+                  alt={cat.name}
+                  className="image-lift h-full w-full object-cover opacity-86"
+                  containerClassName="h-full w-full"
+                  fallbackLabel="Collection media unavailable"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-luxury-black/88 via-luxury-black/18 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-7">
+                  <span className="text-[0.62rem] font-black uppercase tracking-[0.2em] text-luxury-gold">Collection</span>
+                  <h3 className="mt-2 font-serif text-3xl text-luxury-beige">{cat.name}</h3>
+                  <p className="mt-2 max-w-sm text-sm leading-6 text-luxury-beige/65">{cat.description}</p>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* 4. CURATED ARTISAN HIGHLIGHTS */}
-      <section className="py-24 bg-white dark:bg-zinc-950 border-t border-b border-stone-200/40 dark:border-zinc-900/60">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row justify-between items-baseline mb-16 gap-4">
+      <section className="bg-luxury-charcoal py-20 text-luxury-beige dark:bg-[#0c0a08] sm:py-28">
+        <div className="lux-container">
+          <div className="mb-12 flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
             <div>
-              <span className="text-xs uppercase tracking-[0.2em] text-luxury-gold font-semibold">Collector Favorites</span>
-              <h3 className="text-3xl sm:text-4xl font-serif text-luxury-black dark:text-white uppercase tracking-wider mt-2.5 font-light">
-                Featured <span className="italic font-light text-luxury-gold">Wood Sculptures</span>
-              </h3>
+              <p className="lux-eyebrow text-luxury-gold">Collector favorites</p>
+              <h2 className="lux-section-title mt-3 text-luxury-beige">Objects with a quieter presence.</h2>
             </div>
-            <Link 
-              href="/shop" 
-              className="inline-flex items-center text-xs font-bold text-luxury-gold hover:text-luxury-gold-dark uppercase tracking-[0.2em] group border-b border-luxury-gold/30 pb-1"
-            >
-              View Full Gallery <ArrowRight className="w-3.5 h-3.5 ml-2 group-hover:translate-x-1 duration-200" />
+            <Link href="/shop" className="lux-button border border-white/15 bg-white/8 text-luxury-beige hover:bg-white/12">
+              View gallery <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {featuredProducts.length === 0 ? (
-              <p className="text-xs text-gray-400 italic col-span-4 text-center">Loading custom artworks...</p>
+              <p className="col-span-full text-center text-sm text-luxury-beige/60">Loading custom artworks...</p>
             ) : (
               featuredProducts.map((prod) => {
-                const img = prod.product_images?.[0]?.image_url || 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=400';
-                
+                const img = prod.product_images?.[0]?.image_url || 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=700';
                 return (
-                  <div 
-                    key={prod.id} 
-                    className="bg-white dark:bg-zinc-900 border border-stone-200/60 dark:border-zinc-800/80 rounded-none overflow-hidden group hover:shadow-lg transition-all duration-500 flex flex-col h-full relative"
+                  <Link
+                    key={prod.id}
+                    href={`/product/${prod.slug}`}
+                    className="group rounded-[18px] border border-white/12 bg-[#1f1b17]/82 p-3 text-luxury-beige shadow-[0_16px_34px_rgba(0,0,0,0.28)] transition duration-300 hover:-translate-y-0.5 hover:border-luxury-gold/32 hover:bg-[#28231d]/88"
                   >
-                    {prod.is_best_seller && (
-                      <span className="absolute top-3 left-3 z-10 bg-luxury-gold text-zinc-950 text-[8px] font-bold px-2.5 py-1 rounded-none uppercase tracking-widest font-sans">
-                        Bestseller
-                      </span>
-                    )}
-
-                    <Link href={`/product/${prod.slug}`} className="block aspect-[4/5] bg-gray-50 overflow-hidden relative">
-                      <img 
-                        src={img} 
-                        alt={prod.name} 
-                        className="w-full h-full object-cover scale-100 group-hover:scale-105 transition-transform duration-700 ease-out"
+                    <div className="relative aspect-[4/5] overflow-hidden rounded-[18px] bg-black/20">
+                      <SmartImage
+                        src={img}
+                        fallbackSrc={fallbackArtworkMedia}
+                        alt={prod.name}
+                        className="image-lift h-full w-full object-cover"
+                        containerClassName="h-full w-full"
+                        fallbackLabel="Artwork preview unavailable"
                       />
-                    </Link>
-
-                    <div className="p-5 flex-grow flex flex-col justify-between">
-                      <div>
-                        <span className="text-[9px] text-gray-400 dark:text-zinc-500 block uppercase tracking-widest font-semibold font-sans">{prod.dimensions}</span>
-                        <Link href={`/product/${prod.slug}`} className="block mt-1.5">
-                          <h4 className="font-serif text-sm font-medium text-luxury-black dark:text-white group-hover:text-luxury-gold duration-200 transition-colors line-clamp-1">
-                            {prod.name}
-                          </h4>
-                        </Link>
-                        <p className="text-xs text-gray-400 dark:text-zinc-500 mt-2 line-clamp-2 leading-relaxed font-sans font-light">
-                          {prod.short_description}
-                        </p>
-                      </div>
-
-                      <div className="mt-5 pt-4 border-t border-stone-100 dark:border-zinc-800/80 flex justify-between items-center">
-                        <div>
-                          <span className="text-[8px] text-gray-400 dark:text-zinc-500 uppercase tracking-widest block font-sans">Est. Price</span>
-                          <span className="font-bold text-luxury-black dark:text-luxury-beige text-xs font-sans">
-                            ₹{prod.price ? prod.price.toLocaleString() : 'Price on request'}
-                          </span>
-                        </div>
-                        <Link 
-                          href={`/product/${prod.slug}`}
-                          className="text-[9px] font-bold text-luxury-gold hover:text-luxury-gold-dark uppercase tracking-widest font-sans border-b border-transparent hover:border-luxury-gold duration-300 pb-0.5"
-                        >
-                          Details
-                        </Link>
+                      {prod.is_best_seller && (
+                        <span className="commerce-label absolute left-4 top-4 bg-luxury-beige text-luxury-black">
+                          Bestseller
+                        </span>
+                      )}
+                    </div>
+                    <div className="px-2 py-5">
+                      <p className="text-[0.62rem] font-black uppercase tracking-[0.18em] text-luxury-gold">{prod.dimensions}</p>
+                      <h3 className="mt-2 font-serif text-xl leading-tight text-luxury-beige">{prod.name}</h3>
+                      <p className="mt-2 line-clamp-2 text-xs leading-6 text-luxury-beige/74">{prod.short_description}</p>
+                      <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4">
+                        <span className="text-sm font-extrabold">{prod.price ? `₹${prod.price.toLocaleString()}` : 'Price on request'}</span>
+                        <ArrowRight className="h-4 w-4 text-luxury-gold transition group-hover:translate-x-1" />
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 );
               })
             )}
@@ -328,83 +320,93 @@ export default function HomeClient({ banners, categories, featuredProducts, test
         </div>
       </section>
 
-      {/* 5. TESTIMONIAL CAROUSEL */}
-      {testimonials.length > 0 && (
-        <section className="py-24 bg-luxury-offwhite dark:bg-luxury-black">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <span className="text-xs uppercase tracking-widest text-luxury-gold font-bold">Collector Reviews</span>
-            <h3 className="text-3xl font-serif text-luxury-black dark:text-white uppercase tracking-wide mt-1.5 mb-12">
-              Endorsed by Connoisseurs
-            </h3>
-
-            <div className="space-y-6">
-              <div className="flex justify-center text-amber-400">
-                {[1, 2, 3, 4, 5].map((s) => <Star key={s} className="w-5 h-5 fill-current" />)}
-              </div>
-              <p className="text-lg sm:text-xl font-serif text-luxury-charcoal dark:text-luxury-beige italic leading-relaxed">
-                "{testimonials[0].comment}"
+      <section className="py-20 sm:py-28">
+        <div className="lux-container grid gap-8 lg:grid-cols-[1fr_0.82fr] lg:items-center">
+          <div className="relative min-h-[34rem] overflow-hidden rounded-[24px] bg-luxury-black">
+            <SmartImage
+              src="https://images.unsplash.com/photo-1600210491369-e753d80a41f3?q=80&w=1400"
+              alt="Premium framed interior"
+              className="h-full min-h-[34rem] w-full object-cover opacity-82"
+              containerClassName="h-full min-h-[34rem] w-full"
+              fallbackLabel="Interior preview unavailable"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-luxury-black/82 via-transparent to-transparent" />
+            <div className="absolute bottom-0 max-w-xl p-8 sm:p-10">
+              <p className="lux-eyebrow text-luxury-gold">The studio method</p>
+              <h2 className="mt-3 font-serif text-4xl leading-none text-luxury-beige sm:text-6xl">Slow decisions. Better walls.</h2>
+              <p className="mt-5 text-sm leading-7 text-luxury-beige/68">
+                We treat proportion, finish, photo scale, and room mood as one composition before your frame is made.
               </p>
-              <div className="flex items-center justify-center space-x-3 mt-8">
-                {testimonials[0].avatar_url && (
-                  <img 
-                    src={testimonials[0].avatar_url} 
-                    alt={testimonials[0].name} 
-                    className="w-10 h-10 rounded-full object-cover border border-luxury-gold/30"
-                  />
-                )}
-                <div className="text-left">
-                  <h4 className="text-xs font-bold text-luxury-black dark:text-white uppercase font-sans tracking-wide">{testimonials[0].name}</h4>
-                  <p className="text-[10px] text-gray-400 font-sans">{testimonials[0].role || 'Art Enthusiast'}</p>
-                </div>
-              </div>
             </div>
-          </div>
-        </section>
-      )}
-
-      {/* 6. FAQ ACCORDION SECTION */}
-      <section className="py-24 bg-white dark:bg-zinc-950 border-t border-gray-100 dark:border-zinc-900">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <span className="text-xs uppercase tracking-widest text-luxury-gold font-bold flex items-center justify-center">
-              <HelpCircle className="w-3.5 h-3.5 mr-1" /> Help & Support
-            </span>
-            <h3 className="text-3xl font-serif text-luxury-black dark:text-white uppercase tracking-wide mt-1.5">
-              Frequently Queried Items
-            </h3>
           </div>
 
           <div className="space-y-4">
+            {testimonials.length > 0 && (
+              <div className="commerce-module p-8">
+                <div className="mb-6 flex gap-1 text-luxury-gold">
+                  {[1, 2, 3, 4, 5].map((s) => <Star key={s} className="h-4 w-4 fill-current" />)}
+                </div>
+                <p className="font-serif text-3xl leading-snug text-luxury-charcoal dark:text-luxury-beige">
+                  "{testimonials[0].comment}"
+                </p>
+                <div className="mt-7 flex items-center gap-3">
+                  {testimonials[0].avatar_url && (
+                    <SmartImage
+                      src={testimonials[0].avatar_url}
+                      alt={testimonials[0].name}
+                      className="h-11 w-11 rounded-[12px] object-cover"
+                      containerClassName="h-11 w-11 rounded-[12px]"
+                      fallbackLabel="User"
+                    />
+                  )}
+                  <div>
+                    <p className="text-sm font-extrabold text-luxury-charcoal dark:text-luxury-beige">{testimonials[0].name}</p>
+                    <p className="text-xs text-stone-500 dark:text-stone-400">{testimonials[0].role || 'Collector'}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="commerce-module p-8">
+              <Gem className="mb-5 h-6 w-6 text-luxury-gold" />
+              <h3 className="font-serif text-3xl text-luxury-charcoal dark:text-luxury-beige">Designed for direct curation.</h3>
+              <p className="mt-3 text-sm leading-7 text-stone-600 dark:text-stone-400">
+                Product pages preserve the familiar flow, but the purchase moment stays personal through WhatsApp confirmation.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-y border-black/10 bg-white/35 py-20 dark:border-white/10 dark:bg-white/[0.035]">
+        <div className="lux-container grid gap-12 lg:grid-cols-[0.72fr_1fr]">
+          <div>
+            <p className="lux-eyebrow">Questions</p>
+            <h2 className="lux-section-title mt-3">Before the first consultation.</h2>
+          </div>
+          <div className="space-y-3">
             {faqs.map((faq, idx) => {
               const isOpen = openFaq === idx;
-              
               return (
-                <div 
-                  key={idx} 
-                  className="border border-gray-100 dark:border-zinc-800/80 rounded-xl overflow-hidden transition-all duration-300"
-                >
+                <div key={faq.q} className="commerce-module overflow-hidden">
                   <button
                     onClick={() => setOpenFaq(isOpen ? null : idx)}
-                    className="w-full flex justify-between items-center p-5 bg-gray-50/20 hover:bg-gray-50/50 dark:bg-transparent dark:hover:bg-zinc-900/40 text-left cursor-pointer"
+                    className="flex w-full items-center justify-between gap-5 p-6 text-left"
                   >
-                    <span className="text-xs font-bold text-luxury-charcoal dark:text-white uppercase tracking-wide">
-                      {faq.q}
-                    </span>
-                    <ChevronDown className={`w-4 h-4 text-luxury-gold transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                    <span className="font-serif text-xl text-luxury-charcoal dark:text-luxury-beige">{faq.q}</span>
+                    <ChevronDown className={`h-5 w-5 text-luxury-gold transition ${isOpen ? 'rotate-180' : ''}`} />
                   </button>
-                  
                   <AnimatePresence initial={false}>
                     {isOpen && (
                       <motion.div
-                        initial={{ height: 0 }}
-                        animate={{ height: 'auto' }}
-                        exit={{ height: 0 }}
-                        transition={{ duration: 0.2 }}
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
                         className="overflow-hidden"
                       >
-                        <div className="p-5 border-t border-gray-50 dark:border-zinc-800 text-xs text-gray-500 leading-relaxed font-sans bg-white dark:bg-zinc-950">
+                        <p className="border-t border-black/10 px-6 py-5 text-sm leading-7 text-stone-600 dark:border-white/10 dark:text-stone-400">
                           {faq.a}
-                        </div>
+                        </p>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -415,31 +417,29 @@ export default function HomeClient({ banners, categories, featuredProducts, test
         </div>
       </section>
 
-      {/* 7. LUXURY NEWSLETTER */}
-      <section className="relative py-24 bg-luxury-black overflow-hidden text-white">
-<div className="absolute top-0 left-0 w-72 h-72 sm:w-96 sm:h-96 bg-luxury-gold/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
-      <div className="absolute bottom-0 right-0 w-72 h-72 sm:w-96 sm:h-96 bg-luxury-walnut/5 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
-
-        <div className="max-w-xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10 relative">
-          <div className="inline-flex p-3 bg-luxury-gold/15 border border-luxury-gold/20 text-luxury-gold rounded-full mb-6">
-            <Mail className="w-5 h-5" />
+      <section className="bg-luxury-black py-20 text-luxury-beige sm:py-24">
+        <div className="lux-container grid gap-8 lg:grid-cols-[0.9fr_1fr] lg:items-center">
+          <div>
+            <p className="lux-eyebrow text-luxury-gold">Private notes</p>
+            <h2 className="mt-3 font-serif text-4xl leading-none text-luxury-beige sm:text-6xl">Join the heritage circle.</h2>
           </div>
-          <h3 className="text-3xl font-serif text-luxury-beige uppercase tracking-wide mb-3">Join the Heritage Circle</h3>
-          <p className="text-xs text-gray-300 leading-relaxed max-w-sm mx-auto mb-8 font-light">
-            Receive exclusive early collection previews, architectural styling insights, and special festive invitations.
-          </p>
-
-          <form onSubmit={(e) => { e.preventDefault(); addToast('Thank you for subscribing to our premium newsletter!', 'success'); }} className="flex gap-2 max-w-md mx-auto">
-            <input
-              type="email"
-              required
-              placeholder="Enter your email address..."
-              className="flex-1 px-4.5 py-3.5 rounded-xl border border-zinc-800 bg-zinc-950/65 text-xs text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-luxury-gold font-sans"
-            />
-            <button
-              type="submit"
-              className="px-6 py-3.5 bg-luxury-gold hover:bg-luxury-beige text-luxury-black text-xs font-bold rounded-xl uppercase tracking-widest transition-colors font-sans cursor-pointer"
-            >
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              addToast('Thank you for subscribing to our journal.', 'success');
+            }}
+            className="flex flex-col gap-3 rounded-[12px] border border-white/12 bg-white/8 p-2 backdrop-blur sm:flex-row"
+          >
+            <div className="relative flex-1">
+              <Mail className="absolute left-5 top-1/2 h-4 w-4 -translate-y-1/2 text-luxury-gold" />
+              <input
+                type="email"
+                required
+                placeholder="Email address"
+                className="h-14 w-full rounded-[12px] border border-transparent bg-transparent pl-12 pr-5 text-sm text-luxury-beige outline-none placeholder:text-luxury-beige/38"
+              />
+            </div>
+            <button type="submit" className="lux-button bg-luxury-beige text-luxury-black">
               Subscribe
             </button>
           </form>

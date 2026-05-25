@@ -28,11 +28,11 @@ export default async function AdminDashboardPage() {
   if (!profile || profile.role !== 'admin') {
     // Elegant curator only screen
     return (
-      <div className="min-h-screen flex flex-col bg-luxury-offwhite dark:bg-luxury-black">
+      <div className="commerce-page min-h-screen flex flex-col bg-luxury-offwhite dark:bg-luxury-black">
         <Navbar />
         <main className="flex-grow flex flex-col justify-center items-center pt-36 pb-24 px-4 text-center">
-          <div className="max-w-md bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/80 p-8 rounded-2xl shadow-sm">
-            <span className="text-3xl">🏺</span>
+          <div className="commerce-surface max-w-md p-8">
+            <span className="commerce-label inline-flex">CAG</span>
             <h1 className="font-serif text-2xl text-luxury-black dark:text-white uppercase tracking-wider mt-4 mb-2">
               Gallery Curator Verification Required
             </h1>
@@ -41,7 +41,7 @@ export default async function AdminDashboardPage() {
             </p>
             <Link 
               href="/"
-              className="inline-flex px-6 py-3 bg-luxury-black dark:bg-luxury-gold text-white dark:text-luxury-black text-xs font-bold uppercase tracking-wider rounded-lg"
+              className="inline-flex px-6 py-3 bg-luxury-black dark:bg-luxury-gold text-white dark:text-luxury-black text-xs font-bold uppercase tracking-wider rounded-[12px]"
             >
               Return to Storefront
             </Link>
@@ -120,7 +120,7 @@ export default async function AdminDashboardPage() {
     .select('id, name');
 
   return (
-    <div className="min-h-screen flex flex-col bg-luxury-offwhite dark:bg-luxury-black">
+    <div className="commerce-page min-h-screen flex flex-col bg-luxury-offwhite dark:bg-luxury-black">
       <Navbar />
       <main className="flex-grow pt-36">
         <AdminClient 

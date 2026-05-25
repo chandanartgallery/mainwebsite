@@ -8,13 +8,10 @@ import Footer from '@/components/layout/Footer';
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex flex-col bg-luxury-offwhite dark:bg-luxury-black">
+    <div className="commerce-page min-h-screen flex flex-col bg-luxury-offwhite dark:bg-luxury-black">
       <Navbar />
       <main className="flex-grow flex items-center justify-center py-20 px-4">
         <div className="max-w-xl w-full text-center relative space-y-8">
-          {/* Decorative gold vector background glow */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-16 w-32 h-32 bg-luxury-gold/5 rounded-full blur-2xl pointer-events-none" />
-          
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -22,7 +19,7 @@ export default function NotFound() {
             className="space-y-6"
           >
             {/* The Luxury Double-Framed Canvas */}
-            <div className="relative mx-auto max-w-sm p-12 bg-white dark:bg-zinc-900 border-[12px] border-double border-luxury-gold shadow-2xl rounded-sm group overflow-hidden select-none">
+            <div className="lux-card relative mx-auto max-w-sm p-12 border-[12px] border-double border-luxury-gold shadow-2xl rounded-[18px] group overflow-hidden select-none">
               {/* Inner framing shadow lines */}
               <div className="absolute inset-0 border border-luxury-walnut/10 dark:border-luxury-beige/10 pointer-events-none" />
               
@@ -48,11 +45,11 @@ export default function NotFound() {
             
             {/* Context branding text */}
             <div className="space-y-3 px-4">
-              <h3 className="text-xl sm:text-2xl font-serif text-luxury-black dark:text-white uppercase tracking-wider">
+              <h3 className="text-3xl sm:text-4xl font-serif text-luxury-black dark:text-white">
                 Slipped Past the Curator's Touch
               </h3>
-              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 leading-relaxed max-w-md mx-auto font-sans font-light">
-                Every masterpiece in our gallery is framed with meticulous handcrafting. However, the exact perspective or curation you are seeking seems to have vanished from our collection's active display.
+              <p className="text-sm text-stone-700 dark:text-stone-400 leading-relaxed max-w-md mx-auto font-sans">
+                This page is not available, but the gallery, shop, and consultation paths are still ready.
               </p>
             </div>
           </motion.div>
@@ -66,14 +63,14 @@ export default function NotFound() {
           >
             <Link
               href="/shop"
-              className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 bg-luxury-black hover:bg-luxury-gold text-luxury-beige hover:text-luxury-black text-xs font-bold uppercase tracking-widest rounded-xl transition-all duration-300 shadow-lg cursor-pointer"
+              className="lux-button lux-button-primary"
             >
               <Compass className="w-4 h-4 mr-2" />
               Explore Shop
             </Link>
             <Link
               href="/"
-              className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 border border-luxury-gold/50 hover:border-luxury-gold hover:bg-luxury-gold/5 text-luxury-black dark:text-luxury-beige text-xs font-bold uppercase tracking-widest rounded-xl transition-all duration-300 cursor-pointer"
+              className="lux-button lux-button-secondary"
             >
               <Home className="w-4 h-4 mr-2" />
               Return Home

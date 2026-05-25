@@ -1,6 +1,5 @@
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { Sparkles, Calendar, BookOpen, User } from 'lucide-react';
 
 export const metadata = {
   title: 'Our Heritage | Chandan Art Gallery',
@@ -12,21 +11,21 @@ export default function AboutPage() {
     <div className="min-h-screen flex flex-col bg-luxury-offwhite dark:bg-luxury-black">
       <Navbar />
 
-      <main className="flex-grow max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-36 pb-16 space-y-16">
+      <main className="lux-container flex-grow pt-36 pb-20 space-y-16">
         
         {/* Intro Hero Section */}
-        <div className="text-center space-y-4 max-w-2xl mx-auto">
-          <span className="text-xs uppercase tracking-widest text-luxury-gold font-bold">The Artisan Story</span>
-          <h1 className="text-4xl sm:text-5xl font-serif text-luxury-black dark:text-white uppercase tracking-wider leading-tight">
+        <div className="mx-auto max-w-3xl text-center">
+          <span className="lux-eyebrow">The artisan story</span>
+          <h1 className="lux-section-title mt-4">
             Our Heritage & Craft
           </h1>
-          <p className="text-xs text-gray-400 tracking-widest uppercase">
+          <p className="lux-copy mx-auto mt-5 max-w-2xl">
             Bridging age-old Rajasthani wood carving with high-end modern framing
           </p>
         </div>
 
         {/* Large Story Cover */}
-        <div className="aspect-[21/9] bg-white rounded-2xl overflow-hidden border border-gray-100 dark:border-zinc-800 shadow-sm select-none">
+        <div className="aspect-[21/10] bg-white rounded-[24px] overflow-hidden border border-black/10 dark:border-white/10 shadow-2xl select-none">
           <img 
             src="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=1200" 
             alt="Artisan workspace" 
@@ -35,7 +34,7 @@ export default function AboutPage() {
         </div>
 
         {/* Two-Column Story Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 text-sm text-gray-500 dark:text-gray-400 leading-relaxed font-sans">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 text-sm text-stone-600 dark:text-stone-400 leading-8 font-sans">
           <div className="space-y-6">
             <h3 className="font-serif text-xl text-luxury-black dark:text-white uppercase tracking-wider border-l-2 border-luxury-gold pl-4">
               Bespoke Beginnings
@@ -62,7 +61,7 @@ export default function AboutPage() {
         </div>
 
         {/* Brand Milestones Grid */}
-        <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/80 p-8 sm:p-10 rounded-3xl grid grid-cols-1 sm:grid-cols-3 gap-8 text-center select-none shadow-sm">
+        <div className="lux-card p-8 sm:p-10 rounded-[24px] grid grid-cols-1 sm:grid-cols-3 gap-8 text-center select-none">
           <div className="space-y-3">
             <span className="text-4xl font-serif text-luxury-gold font-bold">15,000+</span>
             <span className="block text-xs uppercase font-bold text-luxury-charcoal dark:text-white tracking-widest">Custom Frames Crafted</span>

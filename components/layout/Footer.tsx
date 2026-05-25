@@ -1,8 +1,8 @@
 'use client';
 
-import Link from 'next/link';
-import { Mail, Phone, MapPin, Heart, ArrowRight, MessageSquare } from 'lucide-react';
 import { useState } from 'react';
+import Link from 'next/link';
+import { ArrowRight, Camera, Heart, Mail, MapPin, MessageSquare, Phone } from 'lucide-react';
 
 export default function Footer() {
   const [email, setEmail] = useState('');
@@ -16,150 +16,126 @@ export default function Footer() {
     }
   };
 
-  const categories = [
-    { name: 'Photo Frames', href: '/shop?category=photo-frames' },
-    { name: 'Custom Photo Frames', href: '/shop?category=custom-photo-frames' },
-    { name: 'Acrylic Frames', href: '/shop?category=acrylic-frames' },
-    { name: 'Canvas Prints', href: '/shop?category=canvas-prints' },
-    { name: 'Religious Frames', href: '/shop?category=religious-frames' },
-    { name: 'Home Decor', href: '/shop?category=home-decor' },
-  ];
-
-  const quickLinks = [
-    { name: 'Home Store', href: '/' },
-    { name: 'Journal', href: '/blog' },
-    { name: 'Our Heritage', href: '/about' },
-    { name: 'Get in Touch', href: '/contact' },
-  ];
-
-  const policyLinks = [
-    { name: 'Privacy Policy', href: '/privacy' },
-    { name: 'Terms of Service', href: '/terms' },
-    { name: 'Returns & Customizations', href: '/returns' },
-    { name: 'FAQ', href: '/faq' },
+  const columns = [
+    {
+      title: 'Collections',
+      links: [
+        ['Photo Frames', '/shop?category=photo-frames'],
+        ['Custom Photo Frames', '/shop?category=custom-photo-frames'],
+        ['Acrylic Frames', '/shop?category=acrylic-frames'],
+        ['Canvas Prints', '/shop?category=canvas-prints'],
+        ['Religious Frames', '/shop?category=religious-frames'],
+        ['Home Decor', '/shop?category=home-decor'],
+      ],
+    },
+    {
+      title: 'Gallery',
+      links: [
+        ['Home Store', '/'],
+        ['Journal', '/blog'],
+        ['Our Heritage', '/about'],
+        ['Get in Touch', '/contact'],
+        ['FAQ', '/faq'],
+      ],
+    },
+    {
+      title: 'Care',
+      links: [
+        ['Privacy Policy', '/privacy'],
+        ['Terms of Service', '/terms'],
+        ['Returns & Customizations', '/returns'],
+      ],
+    },
   ];
 
   return (
-    <footer className="bg-zinc-950 text-gray-400 border-t border-zinc-900 pt-16 pb-12 w-full mt-auto select-none">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Top Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-zinc-900">
-          
-          {/* Brand Info */}
-          <div className="space-y-4">
-            <h3 className="font-serif text-xl text-white tracking-wide">Chandan Art Gallery</h3>
-            <p className="text-xs leading-relaxed text-zinc-400">
-              For three generations, Chandan Art Gallery has preserved traditional Indian craftsmanship through bespoke premium framing, heritage wood carvings, and fine home decor. Evolving from a local luxury supplier to a global curated experience.
+    <footer className="mt-auto bg-luxury-black text-luxury-beige">
+      <div className="lux-container py-16 sm:py-20">
+        <div className="grid gap-12 border-b border-white/10 pb-12 lg:grid-cols-[1.1fr_1.25fr_0.95fr]">
+          <div>
+            <Link href="/" className="inline-flex items-center gap-3">
+              <span className="flex h-12 w-12 items-center justify-center rounded-[12px] bg-luxury-beige text-[0.72rem] font-black tracking-[0.18em] text-luxury-black">
+                CAG
+              </span>
+              <span>
+                <span className="block font-serif text-2xl">Chandan Art Gallery</span>
+                <span className="text-[0.62rem] font-black uppercase tracking-[0.26em] text-luxury-gold">New Delhi studio</span>
+              </span>
+            </Link>
+            <p className="mt-6 max-w-sm text-sm leading-7 text-luxury-beige/62">
+              Bespoke wood framing, devotional art, acrylic depth pieces, and canvas editions for homes that value restraint, memory, and material honesty.
             </p>
-            <div className="flex space-x-3 pt-2">
-              <a href="https://instagram.com" className="w-8 h-8 rounded-full bg-zinc-900 flex items-center justify-center hover:bg-luxury-gold hover:text-zinc-950 duration-200" title="Instagram">
-                <svg className="w-4 h-4 stroke-current fill-none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-                </svg>
+            <div className="mt-7 flex gap-2">
+              <a href="https://instagram.com" className="flex h-10 w-10 items-center justify-center rounded-[12px] border border-white/10 bg-white/5 transition hover:border-luxury-gold/40 hover:text-luxury-gold" title="Instagram">
+                <Camera className="h-4 w-4" />
               </a>
-              <a href="https://facebook.com" className="w-8 h-8 rounded-full bg-zinc-900 flex items-center justify-center hover:bg-luxury-gold hover:text-zinc-950 duration-200" title="Facebook">
-                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c4.56-.93 8-4.96 8-9.75z"/>
-                </svg>
+              <a href="https://wa.me/918468845759" className="flex h-10 w-10 items-center justify-center rounded-[12px] border border-white/10 bg-white/5 transition hover:border-luxury-gold/40 hover:text-luxury-gold" title="WhatsApp">
+                <MessageSquare className="h-4 w-4" />
               </a>
-              <a href="https://twitter.com" className="w-8 h-8 rounded-full bg-zinc-900 flex items-center justify-center hover:bg-luxury-gold hover:text-zinc-950 duration-200" title="Twitter">
-                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                </svg>
+              <a href="mailto:support@chandanartgallery.com" className="flex h-10 w-10 items-center justify-center rounded-[12px] border border-white/10 bg-white/5 transition hover:border-luxury-gold/40 hover:text-luxury-gold" title="Email">
+                <Mail className="h-4 w-4" />
               </a>
             </div>
           </div>
 
-          {/* Categories Links */}
-          <div className="space-y-4">
-            <h4 className="font-serif text-sm text-white uppercase tracking-wider">Collections</h4>
-            <ul className="space-y-2 text-xs">
-              {categories.map((cat) => (
-                <li key={cat.name}>
-                  <Link href={cat.href} className="hover:text-luxury-gold transition-colors duration-200">
-                    {cat.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+          <div className="grid gap-8 sm:grid-cols-3">
+            {columns.map((column) => (
+              <div key={column.title}>
+                <h3 className="text-[0.66rem] font-black uppercase tracking-[0.22em] text-luxury-gold">{column.title}</h3>
+                <ul className="mt-5 space-y-3">
+                  {column.links.map(([name, href]) => (
+                    <li key={href}>
+                      <Link href={href} className="text-sm text-luxury-beige/62 transition hover:text-luxury-beige">
+                        {name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
 
-          {/* Quick Support Links */}
-          <div className="space-y-4">
-            <h4 className="font-serif text-sm text-white uppercase tracking-wider">Company</h4>
-            <ul className="space-y-2 text-xs">
-              {quickLinks.map((link) => (
-                <li key={link.name}>
-                  <Link href={link.href} className="hover:text-luxury-gold transition-colors duration-200">
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-              {policyLinks.map((link) => (
-                <li key={link.name}>
-                  <Link href={link.href} className="hover:text-luxury-gold transition-colors duration-200">
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Newsletter Signup */}
-          <div className="space-y-4">
-            <h4 className="font-serif text-sm text-white uppercase tracking-wider">The Journal Subscription</h4>
-            <p className="text-xs text-zinc-400 leading-relaxed">
-              Subscribe to receive styling advice, heritage stories, and priority access to limited edition launches.
+          <div className="rounded-[22px] border border-white/10 bg-white/[0.055] p-6 backdrop-blur">
+            <h3 className="font-serif text-3xl">Private journal</h3>
+            <p className="mt-3 text-sm leading-7 text-luxury-beige/62">
+              Styling notes, heritage stories, and first previews of limited studio releases.
             </p>
             {subscribed ? (
-              <div className="bg-zinc-900 border border-luxury-gold/30 rounded-lg p-3 text-xs text-luxury-gold font-medium">
-                Thank you for subscribing to our journal!
+              <div className="mt-6 rounded-[18px] border border-luxury-gold/30 bg-luxury-gold/10 p-4 text-sm text-luxury-gold">
+                Thank you for subscribing to our journal.
               </div>
             ) : (
-              <form onSubmit={handleSubscribe} className="relative mt-2">
+              <form onSubmit={handleSubscribe} className="mt-6 flex rounded-[12px] border border-white/12 bg-black/20 p-1.5">
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Your email address"
-                  className="w-full px-4 py-2.5 rounded-lg border border-zinc-800 bg-zinc-900 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-luxury-gold"
+                  placeholder="Email address"
+                  className="min-w-0 flex-1 rounded-[12px] bg-transparent px-4 text-sm text-luxury-beige outline-none placeholder:text-luxury-beige/36"
                 />
-                <button type="submit" className="absolute right-1 top-1 bg-luxury-gold hover:bg-luxury-gold-dark duration-200 text-zinc-950 p-1.5 rounded-md cursor-pointer">
-                  <ArrowRight className="w-3.5 h-3.5" />
+                <button type="submit" className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-luxury-beige text-luxury-black transition hover:bg-luxury-gold">
+                  <ArrowRight className="h-4 w-4" />
                 </button>
               </form>
             )}
-            <div className="flex items-center space-x-2 text-xs text-zinc-400 pt-2 border-t border-zinc-900">
-              <Phone className="w-3.5 h-3.5 text-luxury-gold" />
-              <span>Support: +91 8468845759</span>
-            </div>
-          </div>
-
-        </div>
-
-        {/* Bottom Bar */}
-        <div className="pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-zinc-400 space-y-4 md:space-y-0">
-          <div className="flex items-center space-x-1">
-            <span>© {new Date().getFullYear()} Chandan Art Gallery. All rights reserved. Made with</span>
-            <Heart className="w-3 h-3 text-luxury-gold fill-luxury-gold inline mx-0.5" />
-            <span>in New Delhi, India.</span>
-          </div>
-
-          {/* Boutique Inquiry */}
-          <div className="flex items-center space-x-3 text-zinc-400">
-            <span className="tracking-widest text-[9px] uppercase font-semibold text-zinc-400">Boutique Art Ordering</span>
-            <div className="flex space-x-1.5 font-bold tracking-widest text-[10px] uppercase bg-zinc-900 border border-zinc-800 rounded px-2.5 py-1">
-              <span className="text-luxury-gold flex items-center">
-                <MessageSquare className="w-3.5 h-3.5 mr-1" /> WhatsApp Direct
-              </span>
-            </div>
           </div>
         </div>
 
+        <div className="grid gap-6 pt-8 text-xs text-luxury-beige/55 md:grid-cols-3 md:items-center">
+          <div className="flex items-center gap-2">
+            <Phone className="h-3.5 w-3.5 text-luxury-gold" />
+            <span>+91 8468845759</span>
+          </div>
+          <div className="flex items-center gap-2 md:justify-center">
+            <MapPin className="h-3.5 w-3.5 text-luxury-gold" />
+            <span>New Delhi, India</span>
+          </div>
+          <div className="flex items-center gap-1 md:justify-end">
+            <span>© {new Date().getFullYear()} Chandan Art Gallery. Made with</span>
+            <Heart className="h-3 w-3 fill-luxury-gold text-luxury-gold" />
+          </div>
+        </div>
       </div>
     </footer>
   );

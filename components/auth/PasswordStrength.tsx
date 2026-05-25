@@ -66,7 +66,7 @@ export default function PasswordStrength({ value, onValidationChange }: Password
           {feedback}
         </span>
       </div>
-      <div className="h-1.5 w-full bg-gray-800 rounded-full overflow-hidden">
+      <div className="h-1.5 w-full bg-gray-800 rounded-[12px] overflow-hidden">
         <div 
           className={`h-full ${getColor()} transition-all duration-300`} 
           style={{ width: `${strength}%` }}

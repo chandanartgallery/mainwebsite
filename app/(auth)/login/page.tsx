@@ -4,9 +4,9 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { AlertCircle, ArrowLeft, Lock, Mail, ShieldCheck, Sparkles } from 'lucide-react';
 import { supabase, setGlobalRecaptchaToken } from '@/lib/supabase/client';
 import Recaptcha from '@/components/ui/Recaptcha';
-import { LogIn, Mail, Lock, Sparkles, AlertCircle, ArrowLeft } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -21,14 +21,10 @@ export default function LoginPage() {
     try {
       setLoading(true);
       setError(null);
-      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/api/supabase/auth/callback`,
-        },
+        options: { redirectTo: `${window.location.origin}/api/supabase/auth/callback` },
       });
-
       if (error) throw error;
     } catch (err: any) {
       setError(err.message || 'Failed to authenticate with Google');
@@ -38,11 +34,10 @@ export default function LoginPage() {
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) {
-      setError('Please enter your email address');
+    if (!email || !password) {
+      setError('Please enter your email and password');
       return;
     }
-
     if (process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && !captchaToken) {
       setError('Please complete the reCAPTCHA verification');
       return;
@@ -52,25 +47,12 @@ export default function LoginPage() {
       setLoading(true);
       setError(null);
       setMessage(null);
-
-      // Inject the reCAPTCHA token into our Supabase requests
       setGlobalRecaptchaToken(captchaToken);
-
-      if (!password) {
-        setError('Please enter your password');
-        setLoading(false);
-        return;
-      }
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      
       router.push('/');
       router.refresh();
     } catch (err: any) {
-      console.error(err);
       setError(err.message || 'Invalid email or password');
     } finally {
       setLoading(false);
@@ -78,136 +60,81 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex-1 flex flex-col justify-center py-12 sm:px-6 lg:px-8 bg-luxury-offwhite dark:bg-luxury-black relative overflow-hidden">
-      {/* Background Ornaments */}
-      <div className="absolute top-0 left-0 w-72 h-72 sm:w-96 sm:h-96 bg-luxury-gold/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
-      <div className="absolute bottom-0 right-0 w-72 h-72 sm:w-96 sm:h-96 bg-luxury-walnut/5 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
-
-      <div className="sm:mx-auto sm:w-full sm:max-w-md z-10">
-        <Link 
-          href="/" 
-          className="inline-flex items-center text-xs tracking-wider text-gray-500 hover:text-luxury-gold transition-colors duration-200 mb-6 uppercase"
-        >
+    <div className="commerce-page flex-1 flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-8 bg-luxury-offwhite dark:bg-luxury-black">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <Link href="/" className="inline-flex items-center text-xs tracking-wider text-stone-600 hover:text-luxury-gold transition-colors duration-200 mb-6 uppercase">
           <ArrowLeft className="w-3.5 h-3.5 mr-1" /> Back to Store
         </Link>
-        <h2 className="text-center text-4xl font-serif tracking-tight text-luxury-black dark:text-luxury-beige">
+        <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-[12px] bg-luxury-charcoal text-luxury-beige dark:bg-luxury-beige dark:text-luxury-black">
+          <ShieldCheck className="h-5 w-5" />
+        </div>
+        <h1 className="text-center text-4xl font-serif tracking-tight text-luxury-black dark:text-luxury-beige">
           Chandan Art Gallery
-        </h2>
-        <p className="mt-2 text-center text-xs tracking-widest text-gray-500 uppercase">
-          Welcome Back | Sign In
+        </h1>
+        <p className="mt-2 text-center text-xs tracking-widest text-stone-600 dark:text-stone-400 uppercase">
+          Customer account sign in
         </p>
       </div>
 
-      <motion.div 
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
-        className="mt-8 sm:mx-auto sm:w-full sm:max-w-md z-10"
-      >
-        <div className="bg-white dark:bg-zinc-900/60 dark:border dark:border-zinc-800/80 py-8 px-4 shadow-xl rounded-2xl sm:px-10 backdrop-blur-md">
+      <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="lux-card rounded-[22px] px-5 py-8 sm:px-10">
           {error && (
-            <div className="mb-4 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg flex items-start text-sm">
-              <AlertCircle className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
+            <div className="mb-4 flex items-start rounded-[12px] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
+              <AlertCircle className="mr-2 mt-0.5 h-4 w-4 flex-shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
           {message && (
-            <div className="mb-4 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900 text-emerald-700 dark:text-emerald-300 px-4 py-3 rounded-lg flex items-start text-sm">
-              <Sparkles className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
+            <div className="mb-4 flex items-start rounded-[12px] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-300">
+              <Sparkles className="mr-2 mt-0.5 h-4 w-4 flex-shrink-0" />
               <span>{message}</span>
             </div>
           )}
 
           <form onSubmit={handleEmailLogin} className="space-y-5">
             <div>
-              <label className="block text-xs font-medium tracking-wider text-gray-400 uppercase">
-                Email Address
-              </label>
+              <label className="block text-xs font-extrabold tracking-wider text-stone-600 dark:text-stone-400 uppercase">Email Address</label>
               <div className="mt-1 relative">
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-950/50 text-luxury-charcoal dark:text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-luxury-gold focus:border-luxury-gold text-sm"
-                  placeholder="name@example.com"
-                />
-                <Mail className="absolute right-3.5 top-3.5 w-4 h-4 text-gray-400" />
+                <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="lux-input block w-full rounded-[12px] px-4 py-3 text-sm" placeholder="name@example.com" />
+                <Mail className="absolute right-3.5 top-3.5 h-4 w-4 text-stone-500" />
               </div>
             </div>
 
             <div>
-              <div className="flex justify-between items-center">
-                <label className="block text-xs font-medium tracking-wider text-gray-400 uppercase">
-                  Password
-                </label>
-                <Link
-                  href="/forgot-password"
-                  className="text-xs text-gray-400 hover:text-luxury-gold transition-colors duration-200"
-                >
-                  Forgot password?
-                </Link>
+              <div className="flex items-center justify-between">
+                <label className="block text-xs font-extrabold tracking-wider text-stone-600 dark:text-stone-400 uppercase">Password</label>
+                <Link href="/forgot-password" className="text-xs text-stone-600 hover:text-luxury-gold dark:text-stone-400">Forgot password?</Link>
               </div>
               <div className="mt-1 relative">
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-950/50 text-luxury-charcoal dark:text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-luxury-gold focus:border-luxury-gold text-sm"
-                  placeholder="••••••••"
-                />
-                <Lock className="absolute right-3.5 top-3.5 w-4 h-4 text-gray-400" />
+                <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className="lux-input block w-full rounded-[12px] px-4 py-3 text-sm" placeholder="••••••••" />
+                <Lock className="absolute right-3.5 top-3.5 h-4 w-4 text-stone-500" />
               </div>
             </div>
 
-            {/* reCAPTCHA Widget */}
-            {process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && (
-              <Recaptcha onChange={setCaptchaToken} />
-            )}
+            {process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && <Recaptcha onChange={setCaptchaToken} />}
 
-            <div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg text-sm font-semibold text-white bg-luxury-black dark:bg-luxury-gold dark:text-luxury-black hover:bg-luxury-gold dark:hover:bg-luxury-beige transition-colors duration-300 focus:outline-none disabled:opacity-50 tracking-wider uppercase cursor-pointer"
-              >
-                {loading ? 'Processing...' : 'Sign In'}
-              </button>
-            </div>
+            <button type="submit" disabled={loading} className="lux-button lux-button-primary w-full disabled:opacity-50">
+              {loading ? 'Processing...' : 'Sign In'}
+            </button>
           </form>
 
-          <div className="mt-6">
-            <div className="relative flex justify-center text-xs uppercase tracking-widest my-4">
-              <span className="bg-white dark:bg-zinc-900 px-3 text-gray-400">Or continue with</span>
-            </div>
-
-            <div>
-              <button
-                type="button"
-                onClick={handleOAuthLogin}
-                disabled={loading}
-                className="w-full flex justify-center items-center py-2.5 px-4 border border-gray-200 dark:border-zinc-800 rounded-lg text-xs font-medium text-gray-600 dark:text-gray-300 bg-white hover:bg-gray-50 dark:bg-transparent dark:hover:bg-zinc-800/50 transition-colors duration-200 cursor-pointer"
-              >
-                {/* SVG Google icon */}
-                <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
-                  <path
-                    fill="#EA4335"
-                    d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.114-5.136 4.114-3.486 0-6.315-2.829-6.315-6.315s2.83-6.315 6.315-6.315c1.5 0 2.87.525 3.96 1.402l3.1-3.1C18.99 2.062 15.82 1 12.24 1 6.033 1 1 6.033 1 12.24s5.033 11.24 11.24 11.24c5.845 0 10.748-4.14 10.748-11.24 0-.58-.063-1.135-.175-1.67L12.24 10.285z"
-                  />
-                </svg>
-                Sign In with Google
-              </button>
-            </div>
+          <div className="my-6 flex items-center gap-3 text-xs uppercase tracking-widest text-stone-600 dark:text-stone-400">
+            <span className="h-px flex-1 bg-black/10 dark:bg-white/10" />
+            Or continue with
+            <span className="h-px flex-1 bg-black/10 dark:bg-white/10" />
           </div>
 
-          <p className="mt-8 text-center text-xs text-gray-400">
-            Don't have an account?{' '}
-            <Link 
-              href="/signup" 
-              className="font-medium text-luxury-gold hover:underline transition-all duration-200"
-            >
+          <button type="button" onClick={handleOAuthLogin} disabled={loading} className="w-full flex justify-center items-center py-3 px-4 border border-black/10 dark:border-white/10 rounded-[12px] text-xs font-bold text-stone-700 dark:text-stone-300 bg-white/60 hover:bg-white dark:bg-transparent dark:hover:bg-white/5 transition-colors duration-200 cursor-pointer">
+            <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
+              <path fill="#EA4335" d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.114-5.136 4.114-3.486 0-6.315-2.829-6.315-6.315s2.83-6.315 6.315-6.315c1.5 0 2.87.525 3.96 1.402l3.1-3.1C18.99 2.062 15.82 1 12.24 1 6.033 1 1 6.033 1 12.24s5.033 11.24 11.24 11.24c5.845 0 10.748-4.14 10.748-11.24 0-.58-.063-1.135-.175-1.67L12.24 10.285z" />
+            </svg>
+            Sign In with Google
+          </button>
+
+          <p className="mt-8 text-center text-xs text-stone-600 dark:text-stone-400">
+            Don&apos;t have an account?{' '}
+            <Link href="/signup" className="font-bold text-luxury-gold hover:underline">
               Sign Up
             </Link>
           </p>

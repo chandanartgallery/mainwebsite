@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -518,44 +518,49 @@ export default function AdminClient({
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-baseline mb-10 gap-4">
-        <div>
-          <div className="flex items-center space-x-1.5 text-xs text-luxury-gold font-semibold uppercase tracking-widest mb-1.5">
-            <Sparkles className="w-3.5 h-3.5" />
+      <div className="space-y-8 mb-10">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3 text-xs uppercase tracking-[0.32em] font-semibold text-luxury-gold">
+            <Sparkles className="w-4 h-4" />
             <span>Chandan Art Gallery Curators</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-serif text-luxury-black dark:text-white uppercase tracking-wider">
-            Curator Control Terminal
-          </h1>
+          <div className="space-y-3">
+            <h1 className="text-3xl sm:text-4xl font-serif text-luxury-black dark:text-white uppercase tracking-wider">
+              Curator Control Terminal
+            </h1>
+            <p className="max-w-2xl text-sm leading-relaxed text-gray-500 dark:text-gray-400">
+              Manage inventory, respond to inquiries, publish new editorials, and handle moderation from a polished curator dashboard built for the Chandan Art Gallery team.
+            </p>
+          </div>
         </div>
 
-        {/* Tab Controls */}
-        <div className="flex space-x-1.5 border-b border-gray-100 dark:border-zinc-800/60 pb-1.5">
-          {[
-            { id: 'analytics', label: 'Analytics Insights', icon: BarChart3 },
-            { id: 'inquiries', label: 'Inquiries Logs', icon: MessageSquare },
-            { id: 'inventory', label: 'Art Inventory', icon: ShoppingBag },
-            { id: 'moderation', label: 'Moderation Portal', icon: ListOrdered },
-            { id: 'blog', label: 'Blog CMS', icon: Edit }
-          ].map((t) => {
-            const Icon = t.icon;
-            const active = activeTab === t.id;
-            return (
-              <button
-                key={t.id}
-                onClick={() => setActiveTab(t.id as any)}
-                className={`flex items-center px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer ${
-                  active 
-                    ? 'bg-luxury-black text-white dark:bg-luxury-gold dark:text-luxury-black' 
-                    : 'text-gray-400 hover:text-luxury-gold'
-                }`}
-              >
-                <Icon className="w-3.5 h-3.5 mr-2" />
-                {t.label}
-              </button>
-            );
-          })}
+        <div className="commerce-surface border border-gray-200 dark:border-zinc-800 p-4 sm:p-5 rounded-[28px] shadow-sm">
+          <div className="flex flex-wrap gap-2">
+            {[
+              { id: 'analytics', label: 'Analytics Insights', icon: BarChart3 },
+              { id: 'inquiries', label: 'Inquiries Logs', icon: MessageSquare },
+              { id: 'inventory', label: 'Art Inventory', icon: ShoppingBag },
+              { id: 'moderation', label: 'Moderation Portal', icon: ListOrdered },
+              { id: 'blog', label: 'Blog CMS', icon: Edit }
+            ].map((t) => {
+              const Icon = t.icon;
+              const active = activeTab === t.id;
+              return (
+                <button
+                  key={t.id}
+                  onClick={() => setActiveTab(t.id as any)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-semibold uppercase tracking-[0.26em] transition-all duration-200 ${
+                    active
+                      ? 'bg-luxury-black text-white dark:bg-luxury-gold dark:text-luxury-black shadow-sm'
+                      : 'bg-white/90 text-gray-600 hover:bg-luxury-gold/10 dark:bg-zinc-950/80 dark:text-gray-300 dark:hover:bg-zinc-800'
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  {t.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
@@ -566,13 +571,13 @@ export default function AdminClient({
           <div className="space-y-8 animate-fade-in">
             {/* Stat summaries bar */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/80 p-6 rounded-2xl shadow-sm flex flex-col justify-between">
+              <div className="commerce-module flex flex-col justify-between p-6">
                 <span className="text-xs uppercase tracking-widest text-gray-400 block font-bold mb-2">Total Page Views</span>
                 <span className="text-4xl font-bold font-serif text-luxury-black dark:text-luxury-beige">{totalViews}</span>
                 <span className="text-[10px] text-gray-400 mt-2">Active click events over last 14 days</span>
               </div>
 
-              <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/80 p-6 rounded-2xl shadow-sm flex flex-col justify-between">
+              <div className="commerce-module flex flex-col justify-between p-6">
                 <span className="text-xs uppercase tracking-widest text-gray-400 block font-bold mb-2">WhatsApp Checkouts</span>
                 <span className="text-4xl font-bold font-serif text-luxury-black dark:text-luxury-beige">{totalClicks}</span>
                 <span className="text-[10px] text-luxury-gold-dark mt-2 font-bold flex items-center">
@@ -580,7 +585,7 @@ export default function AdminClient({
                 </span>
               </div>
 
-              <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/80 p-6 rounded-2xl shadow-sm flex flex-col justify-between">
+              <div className="commerce-module flex flex-col justify-between p-6">
                 <span className="text-xs uppercase tracking-widest text-gray-400 block font-bold mb-2">Overall Conversion Rate</span>
                 <span className="text-4xl font-bold font-serif text-luxury-black dark:text-luxury-beige">{conversionRate}%</span>
                 <span className="text-[10px] text-gray-400 mt-2">Calculated visitor-to-click index</span>
@@ -598,18 +603,21 @@ export default function AdminClient({
 
         {/* B. INQUIRIES LOGS TAB */}
         {activeTab === 'inquiries' && (
-          <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/80 rounded-2xl overflow-hidden shadow-sm animate-fade-in">
-            <div className="p-6 border-b border-gray-100 dark:border-zinc-800 flex justify-between items-center bg-gray-50/50 dark:bg-zinc-950/20">
-              <h3 className="font-serif text-base text-luxury-black dark:text-white uppercase tracking-wider">WhatsApp & Form Inquiry Queue</h3>
-              <span className="bg-luxury-gold/15 text-luxury-gold-dark text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+          <div className="commerce-surface overflow-hidden animate-fade-in rounded-[28px] border border-gray-200 dark:border-zinc-800 shadow-sm">
+            <div className="p-6 border-b border-gray-100 dark:border-zinc-800 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 bg-gray-50/60 dark:bg-zinc-950/25">
+              <div>
+                <h3 className="font-serif text-base text-luxury-black dark:text-white uppercase tracking-wider">WhatsApp & Form Inquiry Queue</h3>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1 max-w-2xl">Track pending customer requests and resolve inquiries with curator-led responses.</p>
+              </div>
+              <span className="inline-flex items-center justify-center rounded-full bg-luxury-gold/15 text-luxury-gold-dark text-[10px] font-bold px-3 py-1 uppercase tracking-wider">
                 {inquiries.filter(i => i.status === 'pending').length} Action Required
               </span>
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
+              <table className="min-w-full text-left text-xs border-separate border-spacing-0">
                 <thead>
-                  <tr className="border-b border-gray-100 dark:border-zinc-800 text-gray-400 uppercase tracking-widest font-bold bg-gray-50/20 dark:bg-zinc-950/10">
+                  <tr className="text-gray-500 uppercase tracking-[0.24em] font-semibold bg-gray-100/80 dark:bg-zinc-950/70 dark:text-gray-300">
                     <th className="p-4">Customer Details</th>
                     <th className="p-4">Requested Artwork</th>
                     <th className="p-4">Inquiry Summary</th>
@@ -618,7 +626,7 @@ export default function AdminClient({
                     <th className="p-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50 dark:divide-zinc-850">
+                <tbody className="divide-y divide-gray-100 dark:divide-zinc-850">
                   {inquiries.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="p-8 text-center text-gray-400 italic">No inquiries logs captured in queue.</td>
@@ -647,12 +655,12 @@ export default function AdminClient({
                           {new Date(inq.created_at).toLocaleDateString()}
                         </td>
                         <td className="p-4 text-center">
-                          <span className={`inline-block px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${
+                          <span className={`inline-block px-2.5 py-0.5 rounded-[12px] text-[9px] font-bold uppercase tracking-wider ${
                             inq.status === 'pending' 
-                              ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/30 dark:text-amber-300' 
+                              ? 'bg-luxury-gold/12 text-luxury-gold-dark dark:bg-luxury-gold/14 dark:text-luxury-gold' 
                               : inq.status === 'replied'
-                              ? 'bg-blue-100 text-blue-800 dark:bg-blue-950/30 dark:text-blue-300'
-                              : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-300'
+                              ? 'bg-luxury-beige/70 text-luxury-charcoal dark:bg-white/10 dark:text-luxury-beige'
+                              : 'bg-luxury-beige/70 text-luxury-charcoal dark:bg-white/10 dark:text-luxury-beige'
                           }`}>
                             {inq.status}
                           </span>
@@ -661,19 +669,19 @@ export default function AdminClient({
                           {inq.status === 'pending' && (
                             <button
                               onClick={() => handleInquiryStatus(inq.id, 'replied')}
-                              className="p-1.5 border border-blue-200 text-blue-500 hover:bg-blue-50 rounded-lg cursor-pointer transition-colors"
+                              className="inline-flex items-center justify-center w-11 h-11 rounded-[16px] border border-luxury-gold/20 bg-white/90 text-luxury-gold-dark shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-luxury-gold/10 dark:bg-zinc-950/80 dark:border-luxury-gold/20"
                               title="Mark as Replied"
                             >
-                              <Check className="w-3.5 h-3.5" />
+                              <Check className="w-4 h-4" />
                             </button>
                           )}
                           {inq.status !== 'closed' && (
                             <button
                               onClick={() => handleInquiryStatus(inq.id, 'closed')}
-                              className="p-1.5 border border-emerald-200 text-emerald-600 hover:bg-emerald-50 rounded-lg cursor-pointer transition-colors"
+                              className="inline-flex items-center justify-center w-11 h-11 rounded-[16px] border border-luxury-gold/20 bg-white/90 text-luxury-gold-dark shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-luxury-gold/10 dark:bg-zinc-950/80 dark:border-luxury-gold/20"
                               title="Resolve / Mark Closed"
                             >
-                              <CheckSquare className="w-3.5 h-3.5" />
+                              <CheckSquare className="w-4 h-4" />
                             </button>
                           )}
                         </td>
@@ -690,10 +698,13 @@ export default function AdminClient({
         {activeTab === 'inventory' && (
           <div className="space-y-6 animate-fade-in">
             {/* Launch Product button */}
-            <div className="flex justify-end">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Review available artworks, update details, and curate new inventory through the control terminal.</p>
+              </div>
               <button
                 onClick={() => handleOpenProductForm(null)}
-                className="inline-flex items-center px-5 py-3 bg-luxury-black dark:bg-luxury-gold text-white dark:text-luxury-black text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-luxury-gold transition-colors cursor-pointer"
+                className="inline-flex items-center px-5 py-3 bg-luxury-black dark:bg-luxury-gold text-white dark:text-luxury-black text-xs font-bold uppercase tracking-wider rounded-[12px] hover:bg-luxury-gold transition-colors cursor-pointer"
               >
                 <PlusCircle className="w-4 h-4 mr-2" />
                 Launch New Bespoke Artwork
@@ -701,11 +712,11 @@ export default function AdminClient({
             </div>
 
             {/* Inventory Listing */}
-            <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/80 rounded-2xl overflow-hidden shadow-sm">
+            <div className="commerce-surface overflow-hidden rounded-[28px] border border-gray-200 dark:border-zinc-800 shadow-sm">
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs border-collapse">
+                <table className="min-w-full text-left text-xs border-separate border-spacing-0">
                   <thead>
-                    <tr className="border-b border-gray-100 dark:border-zinc-800 text-gray-400 uppercase tracking-widest font-bold bg-gray-50/20 dark:bg-zinc-950/10">
+                    <tr className="text-gray-500 uppercase tracking-[0.24em] font-semibold bg-gray-100/80 dark:bg-zinc-950/70 dark:text-gray-300">
                       <th className="p-4">Artwork Details</th>
                       <th className="p-4">SKU / Code</th>
                       <th className="p-4">Category</th>
@@ -715,7 +726,7 @@ export default function AdminClient({
                       <th className="p-4 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-50 dark:divide-zinc-850">
+                  <tbody className="divide-y divide-gray-100 dark:divide-zinc-850">
                     {products.length === 0 ? (
                       <tr>
                         <td colSpan={7} className="p-8 text-center text-gray-400 italic">No products launched in active gallery database.</td>
@@ -727,7 +738,7 @@ export default function AdminClient({
                         return (
                           <tr key={prod.id} className="hover:bg-gray-50/30 dark:hover:bg-zinc-950/10 transition-colors">
                             <td className="p-4 flex items-center space-x-3.5">
-                              <img src={img} alt="" className="w-10 h-10 object-cover rounded-lg border border-gray-100 dark:border-zinc-800" />
+                              <img src={img} alt="" className="w-10 h-10 object-cover rounded-[12px] border border-gray-100 dark:border-zinc-800" />
                               <div>
                                 <span className="block font-bold text-luxury-charcoal dark:text-white line-clamp-1">{prod.name}</span>
                                 <span className="text-[10px] text-gray-400">{prod.dimensions}</span>
@@ -748,40 +759,40 @@ export default function AdminClient({
                             </td>
                             <td className="p-4 text-center space-y-1">
                               {prod.is_customizable && (
-                                <span className="inline-block bg-luxury-gold/15 text-luxury-gold-dark text-[8px] font-bold px-2 py-0.5 rounded-full uppercase mr-1">Customizable</span>
+                                <span className="inline-block bg-luxury-gold/15 text-luxury-gold-dark text-[8px] font-bold px-2 py-0.5 rounded-[12px] uppercase mr-1">Customizable</span>
                               )}
                               {prod.is_featured && (
-                                <span className="inline-block bg-purple-100 text-purple-800 dark:bg-purple-950/30 dark:text-purple-300 text-[8px] font-bold px-2 py-0.5 rounded-full uppercase mr-1">Featured</span>
+                                <span className="inline-block bg-luxury-gold/12 text-luxury-gold-dark dark:bg-luxury-gold/14 dark:text-luxury-gold text-[8px] font-bold px-2 py-0.5 rounded-[12px] uppercase mr-1">Featured</span>
                               )}
                               {prod.is_best_seller && (
-                                <span className="inline-block bg-amber-100 text-amber-800 dark:bg-amber-950/30 dark:text-amber-300 text-[8px] font-bold px-2 py-0.5 rounded-full uppercase">Bestseller</span>
+                                <span className="inline-block bg-luxury-gold/12 text-luxury-gold-dark dark:bg-luxury-gold/14 dark:text-luxury-gold text-[8px] font-bold px-2 py-0.5 rounded-[12px] uppercase">Bestseller</span>
                               )}
                             </td>
                             <td className="p-4 text-right space-x-1">
                               <button
                                 onClick={() => handleProductFeatureToggle(prod.id, prod.is_featured)}
-                                className={`p-1.5 border rounded-lg cursor-pointer transition-colors duration-200 ${
+                                className={`inline-flex items-center justify-center w-11 h-11 rounded-[16px] border transition duration-200 shadow-sm ${
                                   prod.is_featured 
                                     ? 'border-yellow-200 bg-yellow-50 text-yellow-500 dark:border-yellow-950/30 dark:bg-yellow-950/20 dark:text-yellow-400' 
-                                    : 'border-gray-200 dark:border-zinc-800 text-gray-400 hover:text-yellow-500 dark:hover:text-yellow-400'
+                                    : 'border-gray-200 bg-white/90 text-gray-500 hover:border-yellow-200 hover:text-yellow-500 hover:bg-yellow-50/90 dark:border-zinc-800 dark:bg-zinc-950/80 dark:hover:text-yellow-400 dark:hover:bg-yellow-950/10'
                                 }`}
                                 title={prod.is_featured ? 'Remove from Featured' : 'Feature this Artwork'}
                               >
-                                <Star className={`w-3.5 h-3.5 ${prod.is_featured ? 'fill-current' : ''}`} />
+                                <Star className={`w-4 h-4 ${prod.is_featured ? 'fill-current' : ''}`} />
                               </button>
                               <button
                                 onClick={() => handleOpenProductForm(prod)}
-                                className="p-1.5 border border-gray-200 dark:border-zinc-800 text-gray-500 hover:text-luxury-gold rounded-lg cursor-pointer"
+                                className="inline-flex items-center justify-center w-11 h-11 rounded-[16px] border border-gray-200 bg-white/90 text-gray-500 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-luxury-gold/20 hover:text-luxury-gold dark:border-zinc-800 dark:bg-zinc-950/80 dark:hover:text-luxury-gold"
                                 title="Edit Specifications"
                               >
-                                <Edit className="w-3.5 h-3.5" />
+                                <Edit className="w-4 h-4" />
                               </button>
                               <button
                                 onClick={() => handleProductDelete(prod.id)}
-                                className="p-1.5 border border-red-100 text-red-400 hover:bg-red-50 hover:text-red-600 rounded-lg cursor-pointer"
+                                className="inline-flex items-center justify-center w-11 h-11 rounded-[16px] border border-red-100 bg-white/90 text-red-500 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-red-50 hover:text-red-600 dark:bg-zinc-950/80 dark:border-red-900/40"
                                 title="Retire Artwork"
                               >
-                                <Trash2 className="w-3.5 h-3.5" />
+                                <Trash2 className="w-4 h-4" />
                               </button>
                             </td>
                           </tr>
@@ -807,12 +818,12 @@ export default function AdminClient({
 
               <div className="space-y-4">
                 {reviews.length === 0 ? (
-                  <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/80 p-6 rounded-2xl text-center text-xs text-gray-400 italic">
+                  <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/80 p-6 rounded-[18px] text-center text-xs text-gray-400 italic">
                     All review approvals up to date.
                   </div>
                 ) : (
                   reviews.map((rev) => (
-                    <div key={rev.id} className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/60 p-5 rounded-2xl space-y-3 relative">
+                    <div key={rev.id} className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/60 p-5 rounded-[18px] space-y-3 relative">
                       <div className="flex justify-between items-start">
                         <div>
                           <span className="text-[10px] text-gray-400 block font-bold uppercase tracking-wider">Product: {rev.product?.name}</span>
@@ -830,13 +841,13 @@ export default function AdminClient({
                       <div className="flex space-x-2 pt-2 justify-end border-t border-gray-50 dark:border-zinc-850">
                         <button
                           onClick={() => handleReviewAction(rev.id, 'reject')}
-                          className="px-3.5 py-1.5 border border-red-100 text-red-500 hover:bg-red-50 text-[10px] font-bold rounded-lg uppercase tracking-wide cursor-pointer"
+                          className="px-3.5 py-1.5 border border-red-100 text-red-500 hover:bg-red-50 text-[10px] font-bold rounded-[12px] uppercase tracking-wide cursor-pointer"
                         >
                           Reject
                         </button>
                         <button
                           onClick={() => handleReviewAction(rev.id, 'approve')}
-                          className="px-3.5 py-1.5 bg-emerald-500 text-white text-[10px] font-bold rounded-lg uppercase tracking-wide flex items-center hover:bg-emerald-600 cursor-pointer"
+                          className="px-3.5 py-1.5 bg-emerald-500 text-white text-[10px] font-bold rounded-[12px] uppercase tracking-wide flex items-center hover:bg-emerald-600 cursor-pointer"
                         >
                           <Check className="w-3 h-3 mr-1" /> Approve
                         </button>
@@ -856,17 +867,17 @@ export default function AdminClient({
 
               <div className="space-y-4">
                 {comments.length === 0 ? (
-                  <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/80 p-6 rounded-2xl text-center text-xs text-gray-400 italic">
+                  <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/80 p-6 rounded-[18px] text-center text-xs text-gray-400 italic">
                     All discussion queries moderate.
                   </div>
                 ) : (
                   comments.map((cmt) => (
-                    <div key={cmt.id} className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/60 p-5 rounded-2xl space-y-3 relative">
+                    <div key={cmt.id} className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/60 p-5 rounded-[18px] space-y-3 relative">
                       <div>
                         <span className="text-[10px] text-gray-400 block font-bold uppercase tracking-wider">Product Q&A: {cmt.product?.name}</span>
                         <span className="text-[10px] text-gray-400 block mt-0.5">By {cmt.user_name} | {new Date(cmt.created_at).toLocaleDateString()}</span>
                       </div>
-                      <p className="text-xs text-gray-500 leading-relaxed font-sans bg-gray-50/50 dark:bg-zinc-950/20 p-3.5 rounded-lg border border-gray-50 dark:border-zinc-850">
+                      <p className="text-xs text-gray-500 leading-relaxed font-sans bg-gray-50/50 dark:bg-zinc-950/20 p-3.5 rounded-[12px] border border-gray-50 dark:border-zinc-850">
                         {cmt.comment}
                       </p>
 
@@ -879,7 +890,7 @@ export default function AdminClient({
                             onChange={(e) => setCuratorReplyText(e.target.value)}
                             placeholder="Write curator guidance..."
                             rows={3}
-                            className="w-full p-3 border border-gray-200 dark:border-zinc-800 rounded-lg text-xs bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white"
+                            className="w-full p-3 border border-gray-200 dark:border-zinc-800 rounded-[12px] text-xs bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white"
                           />
                           <div className="flex justify-end space-x-2">
                             <button
@@ -892,7 +903,7 @@ export default function AdminClient({
                             <button
                               type="submit"
                               disabled={loading}
-                              className="px-4.5 py-1.5 bg-luxury-black dark:bg-luxury-gold text-white dark:text-luxury-black text-[10px] font-bold rounded-lg uppercase tracking-wider cursor-pointer"
+                              className="px-4.5 py-1.5 bg-luxury-black dark:bg-luxury-gold text-white dark:text-luxury-black text-[10px] font-bold rounded-[12px] uppercase tracking-wider cursor-pointer"
                             >
                               Post reply & approve original
                             </button>
@@ -902,19 +913,19 @@ export default function AdminClient({
                         <div className="flex space-x-2 pt-2 justify-end border-t border-gray-50 dark:border-zinc-850">
                           <button
                             onClick={() => handleCommentAction(cmt.id, 'reject')}
-                            className="px-3.5 py-1.5 border border-red-100 text-red-500 hover:bg-red-50 text-[10px] font-bold rounded-lg uppercase tracking-wide cursor-pointer"
+                            className="px-3.5 py-1.5 border border-red-100 text-red-500 hover:bg-red-50 text-[10px] font-bold rounded-[12px] uppercase tracking-wide cursor-pointer"
                           >
                             Reject
                           </button>
                           <button
                             onClick={() => setReplyingCommentId(cmt.id)}
-                            className="px-3.5 py-1.5 border border-luxury-gold text-luxury-gold-dark text-[10px] font-bold rounded-lg uppercase tracking-wide hover:bg-luxury-gold/5 cursor-pointer"
+                            className="px-3.5 py-1.5 border border-luxury-gold text-luxury-gold-dark text-[10px] font-bold rounded-[12px] uppercase tracking-wide hover:bg-luxury-gold/5 cursor-pointer"
                           >
                             Reply as Curator
                           </button>
                           <button
                             onClick={() => handleCommentAction(cmt.id, 'approve')}
-                            className="px-3.5 py-1.5 bg-emerald-500 text-white text-[10px] font-bold rounded-lg uppercase tracking-wide flex items-center hover:bg-emerald-600 cursor-pointer"
+                            className="px-3.5 py-1.5 bg-emerald-500 text-white text-[10px] font-bold rounded-[12px] uppercase tracking-wide flex items-center hover:bg-emerald-600 cursor-pointer"
                           >
                             <Check className="w-3 h-3 mr-1" /> Approve
                           </button>
@@ -932,10 +943,13 @@ export default function AdminClient({
         {activeTab === 'blog' && (
           <div className="space-y-6 animate-fade-in">
             {/* Launch Article Button */}
-            <div className="flex justify-end">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Create and manage editorial blog posts, from draft to published chronicle.</p>
+              </div>
               <button
                 onClick={() => handleOpenBlogForm(null)}
-                className="inline-flex items-center px-5 py-3 bg-luxury-black dark:bg-luxury-gold text-white dark:text-luxury-black text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-luxury-gold transition-colors cursor-pointer"
+                className="inline-flex items-center px-5 py-3 bg-luxury-black dark:bg-luxury-gold text-white dark:text-luxury-black text-xs font-bold uppercase tracking-wider rounded-[12px] hover:bg-luxury-gold transition-colors cursor-pointer"
               >
                 <PlusCircle className="w-4 h-4 mr-2" />
                 Write New Chronicle
@@ -943,11 +957,11 @@ export default function AdminClient({
             </div>
 
             {/* Blogs Listing Table */}
-            <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/80 rounded-2xl overflow-hidden shadow-sm">
+            <div className="commerce-surface overflow-hidden rounded-[28px] border border-gray-200 dark:border-zinc-800 shadow-sm">
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs border-collapse">
+                <table className="min-w-full text-left text-xs border-separate border-spacing-0">
                   <thead>
-                    <tr className="border-b border-gray-100 dark:border-zinc-800 text-gray-400 uppercase tracking-widest font-bold bg-gray-50/20 dark:bg-zinc-950/10">
+                    <tr className="text-gray-500 uppercase tracking-[0.24em] font-semibold bg-gray-100/80 dark:bg-zinc-950/70 dark:text-gray-300">
                       <th className="p-4">Chronicle Info</th>
                       <th className="p-4">Category</th>
                       <th className="p-4">Reading Metric</th>
@@ -957,7 +971,7 @@ export default function AdminClient({
                       <th className="p-4 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-50 dark:divide-zinc-850">
+                  <tbody className="divide-y divide-gray-100 dark:divide-zinc-850">
                     {blogPosts.length === 0 ? (
                       <tr>
                         <td colSpan={7} className="p-8 text-center text-gray-400 italic">No chronicles created in active blog database.</td>
@@ -968,7 +982,7 @@ export default function AdminClient({
                         return (
                           <tr key={post.id} className="hover:bg-gray-50/30 dark:hover:bg-zinc-950/10 transition-colors">
                             <td className="p-4 flex items-center space-x-3.5">
-                              <img src={img} alt="" className="w-10.5 h-10.5 object-cover rounded-lg border border-gray-100 dark:border-zinc-800" />
+                              <img src={img} alt="" className="w-10.5 h-10.5 object-cover rounded-[12px] border border-gray-100 dark:border-zinc-800" />
                               <div className="max-w-xs">
                                 <span className="block font-bold text-luxury-charcoal dark:text-white line-clamp-1">{post.title}</span>
                                 <span className="text-[10px] text-gray-400 block mt-0.5">/{post.slug}</span>
@@ -987,9 +1001,9 @@ export default function AdminClient({
                               {new Date(post.created_at).toLocaleDateString()}
                             </td>
                             <td className="p-4 text-center">
-                              <span className={`inline-block px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${
+                              <span className={`inline-block px-2.5 py-0.5 rounded-[12px] text-[9px] font-bold uppercase tracking-wider ${
                                 post.is_published
-                                  ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-300' 
+                                  ? 'bg-luxury-beige/70 text-luxury-charcoal dark:bg-white/10 dark:text-luxury-beige' 
                                   : 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400'
                               }`}>
                                 {post.is_published ? 'Published' : 'Draft'}
@@ -998,17 +1012,17 @@ export default function AdminClient({
                             <td className="p-4 text-right space-x-1">
                               <button
                                 onClick={() => handleOpenBlogForm(post)}
-                                className="p-1.5 border border-gray-200 dark:border-zinc-800 text-gray-500 hover:text-luxury-gold rounded-lg cursor-pointer"
+                                className="inline-flex items-center justify-center w-11 h-11 rounded-[16px] border border-gray-200 bg-white/90 text-gray-500 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-luxury-gold/20 hover:text-luxury-gold dark:border-zinc-800 dark:bg-zinc-950/80 dark:hover:text-luxury-gold"
                                 title="Edit Chronicle"
                               >
-                                <Edit className="w-3.5 h-3.5" />
+                                <Edit className="w-4 h-4" />
                               </button>
                               <button
                                 onClick={() => handleBlogDelete(post.id)}
-                                className="p-1.5 border border-red-100 text-red-400 hover:bg-red-50 hover:text-red-600 rounded-lg cursor-pointer"
+                                className="inline-flex items-center justify-center w-11 h-11 rounded-[16px] border border-red-100 bg-white/90 text-red-500 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-red-50 hover:text-red-600 dark:bg-zinc-950/80 dark:border-red-900/40"
                                 title="Delete Chronicle"
                               >
-                                <Trash2 className="w-3.5 h-3.5" />
+                                <Trash2 className="w-4 h-4" />
                               </button>
                             </td>
                           </tr>
@@ -1038,7 +1052,7 @@ export default function AdminClient({
               initial={{ opacity: 0, scale: 0.95, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 15 }}
-              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/80 rounded-2xl shadow-2xl z-50 p-6 sm:p-8 overflow-y-auto max-h-[90vh]"
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/80 rounded-[18px] shadow-2xl z-50 p-6 sm:p-8 overflow-y-auto max-h-[90vh]"
             >
               <h3 className="font-serif text-2xl text-luxury-black dark:text-white mb-1">
                 {editingBlogPost ? 'Edit Editorial Chronicle' : 'Publish New Editorial Chronicle'}
@@ -1059,7 +1073,7 @@ export default function AdminClient({
                       value={blogTitle}
                       onChange={(e) => setBlogTitle(e.target.value)}
                       placeholder="e.g. Traditional Wall Decor Trends"
-                      className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
+                      className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
                     />
                   </div>
                   <div>
@@ -1069,7 +1083,7 @@ export default function AdminClient({
                       value={blogSlug}
                       onChange={(e) => setBlogSlug(e.target.value)}
                       placeholder="traditional-wall-decor-trends"
-                      className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
+                      className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
                     />
                   </div>
                 </div>
@@ -1083,7 +1097,7 @@ export default function AdminClient({
                     onChange={(e) => setBlogContent(e.target.value)}
                     placeholder="Write the full chronicle story..."
                     rows={8}
-                    className="w-full p-4 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none font-sans leading-relaxed"
+                    className="w-full p-4 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none font-sans leading-relaxed"
                   />
                 </div>
 
@@ -1094,7 +1108,7 @@ export default function AdminClient({
                     <select
                       value={blogCategoryId}
                       onChange={(e) => setBlogCategoryId(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
+                      className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
                     >
                       {blogCategories.map((c: any) => (
                         <option key={c.id} value={c.id}>{c.name}</option>
@@ -1109,7 +1123,7 @@ export default function AdminClient({
                       min={1}
                       value={blogReadingTime}
                       onChange={(e) => setBlogReadingTime(Number(e.target.value))}
-                      className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
+                      className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
                     />
                   </div>
                 </div>
@@ -1123,7 +1137,7 @@ export default function AdminClient({
                       value={blogFeaturedImage}
                       onChange={(e) => setBlogFeaturedImage(e.target.value)}
                       placeholder="https://images.unsplash.com/..."
-                      className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
+                      className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
                     />
                   </div>
                   <div>
@@ -1133,7 +1147,7 @@ export default function AdminClient({
                       value={blogTags}
                       onChange={(e) => setBlogTags(e.target.value)}
                       placeholder="traditional, home decor, framing tips"
-                      className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
+                      className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
                     />
                   </div>
                 </div>
@@ -1147,7 +1161,7 @@ export default function AdminClient({
                       value={blogSeoTitle}
                       onChange={(e) => setBlogSeoTitle(e.target.value)}
                       placeholder="Meta title tag"
-                      className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
+                      className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
                     />
                   </div>
                   <div>
@@ -1157,7 +1171,7 @@ export default function AdminClient({
                       value={blogSeoDescription}
                       onChange={(e) => setBlogSeoDescription(e.target.value)}
                       placeholder="Meta description summary"
-                      className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
+                      className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
                     />
                   </div>
                 </div>
@@ -1180,14 +1194,14 @@ export default function AdminClient({
                   <button
                     type="button"
                     onClick={() => setShowBlogModal(false)}
-                    className="flex-1 py-3 px-4 border border-gray-200 dark:border-zinc-800 rounded-xl text-xs font-bold text-gray-400 uppercase cursor-pointer"
+                    className="flex-1 py-3 px-4 border border-gray-200 dark:border-zinc-800 rounded-[12px] text-xs font-bold text-gray-400 uppercase cursor-pointer"
                   >
                     Discard
                   </button>
                   <button
                     type="submit"
                     disabled={loading || !blogTitle || !blogContent}
-                    className="flex-1 py-3 px-4 bg-luxury-black dark:bg-luxury-gold text-white dark:text-luxury-black hover:bg-luxury-gold dark:hover:bg-luxury-beige transition-colors text-xs font-bold rounded-xl uppercase tracking-wider flex justify-center items-center cursor-pointer"
+                    className="flex-1 py-3 px-4 bg-luxury-black dark:bg-luxury-gold text-white dark:text-luxury-black hover:bg-luxury-gold dark:hover:bg-luxury-beige transition-colors text-xs font-bold rounded-[12px] uppercase tracking-wider flex justify-center items-center cursor-pointer"
                   >
                     {editingBlogPost ? 'Update Chronicle' : 'Publish Chronicle'}
                   </button>
@@ -1214,7 +1228,7 @@ export default function AdminClient({
               initial={{ opacity: 0, scale: 0.95, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 15 }}
-              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/80 rounded-2xl shadow-2xl z-50 p-6 sm:p-8 overflow-y-auto max-h-[90vh]"
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/80 rounded-[18px] shadow-2xl z-50 p-6 sm:p-8 overflow-y-auto max-h-[90vh]"
             >
               <h3 className="font-serif text-2xl text-luxury-black dark:text-white mb-1">
                 {editingProduct ? 'Edit Bespoke Artwork specifications' : 'Launch New Bespoke Artwork'}
@@ -1235,7 +1249,7 @@ export default function AdminClient({
                       value={prodName}
                       onChange={(e) => setProdName(e.target.value)}
                       placeholder="e.g. Classic Walnut Frame"
-                      className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
+                      className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
                     />
                   </div>
                   <div>
@@ -1246,7 +1260,7 @@ export default function AdminClient({
                       value={prodSku}
                       onChange={(e) => setProdSku(e.target.value)}
                       placeholder="CAG-WF-009"
-                      className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
+                      className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
                     />
                   </div>
                 </div>
@@ -1260,7 +1274,7 @@ export default function AdminClient({
                     value={prodShortDescription}
                     onChange={(e) => setProdShortDescription(e.target.value)}
                     placeholder="Brief 1-sentence storefront visual prompt"
-                    className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
+                    className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
                   />
                 </div>
 
@@ -1271,7 +1285,7 @@ export default function AdminClient({
                     onChange={(e) => setProdDescription(e.target.value)}
                     placeholder="Rich structural details about frame grains, Rajasthan mounting craftsmanship, and anti-glare museum acrylic specs..."
                     rows={4}
-                    className="w-full p-4 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
+                    className="w-full p-4 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
                   />
                 </div>
 
@@ -1284,7 +1298,7 @@ export default function AdminClient({
                       required
                       value={prodPrice}
                       onChange={(e) => setProdPrice(Number(e.target.value))}
-                      className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
+                      className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
                     />
                   </div>
                   <div>
@@ -1292,7 +1306,7 @@ export default function AdminClient({
                     <select
                       value={prodCategoryId}
                       onChange={(e) => setProdCategoryId(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
+                      className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
                     >
                       {categories.map(c => (
                         <option key={c.id} value={c.id}>{c.name}</option>
@@ -1302,7 +1316,7 @@ export default function AdminClient({
                 </div>
 
                 {/* Storefront page display — matches product detail page */}
-                <div className="space-y-3 border border-luxury-gold/20 bg-luxury-gold/5 p-4 rounded-xl">
+                <div className="space-y-3 border border-luxury-gold/20 bg-luxury-gold/5 p-4 rounded-[12px]">
                   <p className="text-[10px] font-bold uppercase text-luxury-gold tracking-widest">Storefront page (what buyers see)</p>
 
                   <div className="grid grid-cols-2 gap-3">
@@ -1312,7 +1326,7 @@ export default function AdminClient({
                         type="text"
                         value={pageConfig.tagline}
                         onChange={(e) => setPageConfig({ ...pageConfig, tagline: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-200 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-950/40 text-luxury-charcoal dark:text-white focus:outline-none"
+                        className="w-full px-3 py-2 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-white dark:bg-zinc-950/40 text-luxury-charcoal dark:text-white focus:outline-none"
                       />
                     </div>
                     <div>
@@ -1321,7 +1335,7 @@ export default function AdminClient({
                         type="text"
                         value={pageConfig.storyTitle}
                         onChange={(e) => setPageConfig({ ...pageConfig, storyTitle: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-200 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-950/40 text-luxury-charcoal dark:text-white focus:outline-none"
+                        className="w-full px-3 py-2 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-white dark:bg-zinc-950/40 text-luxury-charcoal dark:text-white focus:outline-none"
                       />
                     </div>
                   </div>
@@ -1338,7 +1352,7 @@ export default function AdminClient({
                             sectionLabels: { ...pageConfig.sectionLabels, dimensions: e.target.value },
                           })
                         }
-                        className="w-full px-2 py-2 border border-gray-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-zinc-950/40 text-luxury-charcoal dark:text-white text-[11px] focus:outline-none"
+                        className="w-full px-2 py-2 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-white dark:bg-zinc-950/40 text-luxury-charcoal dark:text-white text-[11px] focus:outline-none"
                       />
                     </div>
                     <div>
@@ -1352,7 +1366,7 @@ export default function AdminClient({
                             sectionLabels: { ...pageConfig.sectionLabels, materials: e.target.value },
                           })
                         }
-                        className="w-full px-2 py-2 border border-gray-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-zinc-950/40 text-luxury-charcoal dark:text-white text-[11px] focus:outline-none"
+                        className="w-full px-2 py-2 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-white dark:bg-zinc-950/40 text-luxury-charcoal dark:text-white text-[11px] focus:outline-none"
                       />
                     </div>
                     <div>
@@ -1366,7 +1380,7 @@ export default function AdminClient({
                             sectionLabels: { ...pageConfig.sectionLabels, colors: e.target.value },
                           })
                         }
-                        className="w-full px-2 py-2 border border-gray-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-zinc-950/40 text-luxury-charcoal dark:text-white text-[11px] focus:outline-none"
+                        className="w-full px-2 py-2 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-white dark:bg-zinc-950/40 text-luxury-charcoal dark:text-white text-[11px] focus:outline-none"
                       />
                     </div>
                   </div>
@@ -1393,7 +1407,7 @@ export default function AdminClient({
                         type="text"
                         value={pageConfig.customizableYesText}
                         onChange={(e) => setPageConfig({ ...pageConfig, customizableYesText: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-200 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-950/40 text-luxury-charcoal dark:text-white focus:outline-none"
+                        className="w-full px-3 py-2 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-white dark:bg-zinc-950/40 text-luxury-charcoal dark:text-white focus:outline-none"
                       />
                     </div>
                     <div>
@@ -1402,7 +1416,7 @@ export default function AdminClient({
                         type="text"
                         value={pageConfig.customizableNoText}
                         onChange={(e) => setPageConfig({ ...pageConfig, customizableNoText: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-200 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-950/40 text-luxury-charcoal dark:text-white focus:outline-none"
+                        className="w-full px-3 py-2 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-white dark:bg-zinc-950/40 text-luxury-charcoal dark:text-white focus:outline-none"
                       />
                     </div>
                   </div>
@@ -1432,7 +1446,7 @@ export default function AdminClient({
                             updated[index] = { ...updated[index], icon: e.target.value as typeof badge.icon };
                             setPageConfig({ ...pageConfig, trustBadges: updated });
                           }}
-                          className="px-2 py-2 border border-gray-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-zinc-950/40 text-xs"
+                          className="px-2 py-2 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-white dark:bg-zinc-950/40 text-xs"
                         >
                           <option value="truck">Delivery</option>
                           <option value="shield">Shield</option>
@@ -1449,7 +1463,7 @@ export default function AdminClient({
                             updated[index] = { ...updated[index], title: e.target.value };
                             setPageConfig({ ...pageConfig, trustBadges: updated });
                           }}
-                          className="px-2 py-2 border border-gray-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-zinc-950/40 text-xs"
+                          className="px-2 py-2 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-white dark:bg-zinc-950/40 text-xs"
                         />
                         <input
                           type="text"
@@ -1460,7 +1474,7 @@ export default function AdminClient({
                             updated[index] = { ...updated[index], subtitle: e.target.value };
                             setPageConfig({ ...pageConfig, trustBadges: updated });
                           }}
-                          className="px-2 py-2 border border-gray-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-zinc-950/40 text-xs"
+                          className="px-2 py-2 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-white dark:bg-zinc-950/40 text-xs"
                         />
                         {pageConfig.trustBadges.length > 1 && (
                           <button
@@ -1492,7 +1506,7 @@ export default function AdminClient({
                             badgeLabels: { ...pageConfig.badgeLabels, featured: e.target.value },
                           })
                         }
-                        className="w-full px-2 py-2 border border-gray-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-zinc-950/40 text-xs"
+                        className="w-full px-2 py-2 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-white dark:bg-zinc-950/40 text-xs"
                       />
                     </div>
                     <div>
@@ -1506,7 +1520,7 @@ export default function AdminClient({
                             badgeLabels: { ...pageConfig.badgeLabels, bestSeller: e.target.value },
                           })
                         }
-                        className="w-full px-2 py-2 border border-gray-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-zinc-950/40 text-xs"
+                        className="w-full px-2 py-2 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-white dark:bg-zinc-950/40 text-xs"
                       />
                     </div>
                     <div>
@@ -1520,14 +1534,14 @@ export default function AdminClient({
                             badgeLabels: { ...pageConfig.badgeLabels, trending: e.target.value },
                           })
                         }
-                        className="w-full px-2 py-2 border border-gray-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-zinc-950/40 text-xs"
+                        className="w-full px-2 py-2 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-white dark:bg-zinc-950/40 text-xs"
                       />
                     </div>
                   </div>
                 </div>
 
                 {/* Gallery images */}
-                <div className="space-y-2 border border-gray-100 dark:border-zinc-800/80 p-4 rounded-xl">
+                <div className="space-y-2 border border-gray-100 dark:border-zinc-800/80 p-4 rounded-[12px]">
                   <div className="flex justify-between items-center">
                     <label className="block font-semibold uppercase text-gray-400">Product gallery images</label>
                     <button
@@ -1550,7 +1564,7 @@ export default function AdminClient({
                           if (index === 0) setProdImageUrl(e.target.value);
                         }}
                         placeholder="Image URL (first = primary)"
-                        className="flex-grow px-3 py-2 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
+                        className="flex-grow px-3 py-2 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
                       />
                       <input
                         type="file"
@@ -1593,7 +1607,7 @@ export default function AdminClient({
                 </div>
 
                 {/* 4. Sizes List and Price Modifiers */}
-                <div className="space-y-2 border border-gray-100 dark:border-zinc-800/80 p-4 rounded-xl">
+                <div className="space-y-2 border border-gray-100 dark:border-zinc-800/80 p-4 rounded-[12px]">
                   <div className="flex justify-between items-center mb-1">
                     <label className="block font-semibold uppercase text-gray-400">Dimension options (card label, value, tag, ₹ modifier) *</label>
                     <button
@@ -1615,7 +1629,7 @@ export default function AdminClient({
                           setSizesList(updated);
                         }}
                         placeholder="Card label (12 x 15 in)"
-                        className="px-2 py-2 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
+                        className="px-2 py-2 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
                       />
                       <input
                         type="text"
@@ -1627,7 +1641,7 @@ export default function AdminClient({
                           setSizesList(updated);
                         }}
                         placeholder="Value (12 x 15 inches)"
-                        className="px-2 py-2 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
+                        className="px-2 py-2 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
                       />
                       <input
                         type="text"
@@ -1638,7 +1652,7 @@ export default function AdminClient({
                           setSizesList(updated);
                         }}
                         placeholder="Tag (Standard)"
-                        className="px-2 py-2 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
+                        className="px-2 py-2 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
                       />
                       <input
                         type="number"
@@ -1650,7 +1664,7 @@ export default function AdminClient({
                           setSizesList(updated);
                         }}
                         placeholder="₹ mod"
-                        className="px-2 py-2 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
+                        className="px-2 py-2 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
                       />
                       {sizesList.length > 1 && (
                         <button
@@ -1666,7 +1680,7 @@ export default function AdminClient({
                 </div>
 
                 {/* 5. Frame materials (matches product detail page) */}
-                <div className="space-y-2 border border-gray-100 dark:border-zinc-800/80 p-4 rounded-xl">
+                <div className="space-y-2 border border-gray-100 dark:border-zinc-800/80 p-4 rounded-[12px]">
                   <div className="flex justify-between items-center mb-1">
                     <label className="block font-semibold uppercase text-gray-400">Frame Wood / Material Options *</label>
                     <button
@@ -1689,7 +1703,7 @@ export default function AdminClient({
                           setMaterialsList(updated);
                         }}
                         placeholder="Label (Pine Wood)"
-                        className="px-3 py-2 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
+                        className="px-3 py-2 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
                       />
                       <input
                         type="text"
@@ -1701,7 +1715,7 @@ export default function AdminClient({
                           setMaterialsList(updated);
                         }}
                         placeholder="Value (Solid Pine Wood)"
-                        className="px-3 py-2 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
+                        className="px-3 py-2 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
                       />
                       <input
                         type="text"
@@ -1712,7 +1726,7 @@ export default function AdminClient({
                           setMaterialsList(updated);
                         }}
                         placeholder="Tag (Natural / + ₹800)"
-                        className="px-3 py-2 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
+                        className="px-3 py-2 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
                       />
                       <div className="flex items-center gap-2">
                         <input
@@ -1724,7 +1738,7 @@ export default function AdminClient({
                             setMaterialsList(updated);
                           }}
                           placeholder="₹ mod"
-                          className="w-full px-3 py-2 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
+                          className="w-full px-3 py-2 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
                         />
                         {materialsList.length > 1 && (
                           <button type="button" onClick={() => setMaterialsList(materialsList.filter((_, i) => i !== index))} className="text-red-500 font-bold cursor-pointer">×</button>
@@ -1735,7 +1749,7 @@ export default function AdminClient({
                 </div>
 
                 {/* 5b. Color finish options */}
-                <div className="space-y-2 border border-gray-100 dark:border-zinc-800/80 p-4 rounded-xl">
+                <div className="space-y-2 border border-gray-100 dark:border-zinc-800/80 p-4 rounded-[12px]">
                   <div className="flex justify-between items-center mb-1">
                     <label className="block font-semibold uppercase text-gray-400">Premium Color Finish Options *</label>
                     <button
@@ -1758,7 +1772,7 @@ export default function AdminClient({
                           setColorsList(updated);
                         }}
                         placeholder="e.g. Walnut Brown"
-                        className="flex-grow px-3 py-2 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
+                        className="flex-grow px-3 py-2 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
                       />
                       <input
                         type="number"
@@ -1769,7 +1783,7 @@ export default function AdminClient({
                           setColorsList(updated);
                         }}
                         placeholder="Price mod"
-                        className="w-32 px-3 py-2 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
+                        className="w-32 px-3 py-2 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
                       />
                       {colorsList.length > 1 && (
                         <button type="button" onClick={() => setColorsList(colorsList.filter((_, i) => i !== index))} className="text-red-500 font-bold cursor-pointer">×</button>
@@ -1784,12 +1798,12 @@ export default function AdminClient({
                     type="text"
                     value={prodWeight}
                     onChange={(e) => setProdWeight(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
+                    className="w-full px-3 py-2 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
                   />
                 </div>
 
                 {/* Tags & SEO */}
-                <div className="grid grid-cols-1 gap-3 border border-gray-100 dark:border-zinc-800/80 p-4 rounded-xl">
+                <div className="grid grid-cols-1 gap-3 border border-gray-100 dark:border-zinc-800/80 p-4 rounded-[12px]">
                   <div>
                     <label className="block font-semibold uppercase text-gray-400 mb-1">Tags (comma-separated)</label>
                     <input
@@ -1797,7 +1811,7 @@ export default function AdminClient({
                       value={prodTags}
                       onChange={(e) => setProdTags(e.target.value)}
                       placeholder="walnut, frame, modern"
-                      className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
+                      className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
                     />
                   </div>
                   <div>
@@ -1806,7 +1820,7 @@ export default function AdminClient({
                       type="text"
                       value={prodSeoTitle}
                       onChange={(e) => setProdSeoTitle(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
+                      className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
                     />
                   </div>
                   <div>
@@ -1815,7 +1829,7 @@ export default function AdminClient({
                       type="text"
                       value={prodSeoDescription}
                       onChange={(e) => setProdSeoDescription(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
+                      className="w-full px-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none"
                     />
                   </div>
                 </div>
@@ -1872,14 +1886,14 @@ export default function AdminClient({
                   <button
                     type="button"
                     onClick={() => setShowProductModal(false)}
-                    className="flex-1 py-3 px-4 border border-gray-200 dark:border-zinc-800 rounded-xl text-xs font-bold text-gray-400 uppercase cursor-pointer"
+                    className="flex-1 py-3 px-4 border border-gray-200 dark:border-zinc-800 rounded-[12px] text-xs font-bold text-gray-400 uppercase cursor-pointer"
                   >
                     Discard Changes
                   </button>
                   <button
                     type="submit"
                     disabled={savingProduct || uploadingImage || !prodName || !prodSku}
-                    className="flex-1 py-3 px-4 bg-luxury-black dark:bg-luxury-gold text-white dark:text-luxury-black hover:bg-luxury-gold dark:hover:bg-luxury-beige transition-colors text-xs font-bold rounded-xl uppercase tracking-wider flex justify-center items-center cursor-pointer disabled:opacity-50"
+                    className="flex-1 py-3 px-4 bg-luxury-black dark:bg-luxury-gold text-white dark:text-luxury-black hover:bg-luxury-gold dark:hover:bg-luxury-beige transition-colors text-xs font-bold rounded-[12px] uppercase tracking-wider flex justify-center items-center cursor-pointer disabled:opacity-50"
                   >
                     {savingProduct ? 'Saving…' : editingProduct ? 'Commit specifications' : 'Launch Artwork'}
                   </button>
@@ -1906,7 +1920,7 @@ export default function AdminClient({
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-2xl shadow-2xl z-[61] p-6"
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-[18px] shadow-2xl z-[61] p-6"
             >
               <h4 className="font-serif text-xl text-luxury-black dark:text-white mb-2">Confirm deletion</h4>
               <p className="text-sm text-gray-500 mb-6">
@@ -1916,14 +1930,14 @@ export default function AdminClient({
                 <button
                   type="button"
                   onClick={() => setDeleteConfirm(null)}
-                  className="flex-1 py-3 border border-gray-200 dark:border-zinc-800 rounded-xl text-xs font-bold uppercase cursor-pointer"
+                  className="flex-1 py-3 border border-gray-200 dark:border-zinc-800 rounded-[12px] text-xs font-bold uppercase cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
                   onClick={confirmDelete}
-                  className="flex-1 py-3 bg-red-600 text-white rounded-xl text-xs font-bold uppercase cursor-pointer hover:bg-red-700"
+                  className="flex-1 py-3 bg-luxury-walnut text-white rounded-[12px] text-xs font-bold uppercase cursor-pointer hover:bg-luxury-charcoal"
                 >
                   Delete permanently
                 </button>

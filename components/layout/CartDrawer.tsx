@@ -84,13 +84,13 @@ export default function CartDrawer() {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'tween', duration: 0.3 }}
-            className="fixed top-0 right-0 h-full w-full sm:max-w-md bg-white dark:bg-zinc-900 shadow-2xl z-50 flex flex-col"
+            className="fixed top-0 right-0 h-full w-full sm:max-w-md bg-luxury-offwhite dark:bg-luxury-black shadow-2xl z-50 flex flex-col"
           >
             {/* Header */}
-            <div className="px-6 py-5 border-b border-gray-100 dark:border-zinc-800 flex justify-between items-center bg-gray-50/50 dark:bg-zinc-950/20">
+            <div className="px-6 py-5 border-b border-black/10 dark:border-white/10 flex justify-between items-center bg-white/40 dark:bg-white/[0.035] backdrop-blur">
               <div className="flex items-center space-x-2">
                 <ShoppingBag className="w-5 h-5 text-luxury-gold" />
-                <h3 className="font-serif text-lg text-luxury-black dark:text-luxury-beige">Shopping Cart</h3>
+                <h3 className="font-serif text-2xl text-luxury-black dark:text-luxury-beige">Private Cart</h3>
               </div>
               <button
                 onClick={() => setCartOpen(false)}
@@ -112,9 +112,9 @@ export default function CartDrawer() {
                 items.map((item) => (
                   <div
                     key={item.id}
-                    className="flex pb-4 border-b border-gray-50 dark:border-zinc-800/60"
+                    className="commerce-module flex p-3"
                   >
-                    <div className="w-20 h-20 bg-gray-100 dark:bg-zinc-800 rounded-lg overflow-hidden flex-shrink-0">
+                    <div className="w-24 h-24 bg-gray-100 dark:bg-zinc-800 rounded-[12px] overflow-hidden flex-shrink-0">
                       <img
                         src={item.imageUrl}
                         alt={item.name}
@@ -136,7 +136,7 @@ export default function CartDrawer() {
                         </p>
                       </div>
                       <div className="flex justify-between items-center mt-2">
-                        <div className="flex items-center border border-gray-200 dark:border-zinc-800 rounded-lg bg-gray-50/50 dark:bg-zinc-950/20">
+                        <div className="flex items-center border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20">
                           <button
                             onClick={() => updateQuantity(item.id, item.quantity - 1)}
                             className="p-1.5 hover:text-luxury-gold cursor-pointer"
@@ -181,7 +181,7 @@ export default function CartDrawer() {
                 <button
                   onClick={handleCheckout}
                   disabled={loading}
-                  className="w-full flex justify-center items-center py-3.5 px-4 border border-transparent rounded-lg text-xs font-bold text-white bg-luxury-black dark:bg-luxury-gold dark:text-luxury-black hover:bg-luxury-gold dark:hover:bg-luxury-beige transition-colors duration-300 disabled:opacity-50 tracking-wider uppercase cursor-pointer"
+                  className="lux-button lux-button-primary w-full disabled:opacity-50"
                 >
                   {loading ? (
                     'Processing Checkout...'

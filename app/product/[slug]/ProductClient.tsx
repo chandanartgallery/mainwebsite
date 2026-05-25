@@ -20,6 +20,7 @@ import {
   sizesToDisplayExtended,
   type TrustBadge,
 } from '@/lib/productConfig';
+import SmartImage from '@/components/ui/SmartImage';
 
 interface ProductClientProps {
   product: any;
@@ -38,6 +39,7 @@ export default function ProductClient({ product, initialReviews, initialComments
   );
   const primaryImg = images.find((i: any) => i.is_primary)?.image_url || 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=600';
   const [activeImage, setActiveImage] = useState(primaryImg);
+  const productFallbackImage = 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=1200';
 
   // Zoom on hover state
   const [zoomStyle, setZoomStyle] = useState<React.CSSProperties>({ display: 'none' });
@@ -354,9 +356,9 @@ export default function ProductClient({ product, initialReviews, initialComments
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-36 pb-12">
+    <div className="lux-container pt-36 pb-20">
       {/* Breadcrumbs */}
-      <nav className="flex items-center space-x-2 text-xs tracking-wider text-gray-400 uppercase mb-10 select-none">
+      <nav className="flex flex-wrap items-center gap-2 text-xs tracking-wider text-stone-600 dark:text-stone-400 uppercase mb-10 select-none">
         <Link href="/" className="hover:text-luxury-gold transition-colors duration-200">Home</Link>
         <ChevronRight className="w-3.5 h-3.5" />
         <Link href="/shop" className="hover:text-luxury-gold transition-colors duration-200">Shop</Link>
@@ -376,40 +378,43 @@ export default function ProductClient({ product, initialReviews, initialComments
       </nav>
 
       {/* Main Detail Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 mb-16">
+      <div className="grid grid-cols-1 lg:grid-cols-[0.95fr_1fr] gap-10 lg:gap-16 mb-20">
         {/* Left Column: Premium Gallery with Zoom */}
         <div className="space-y-4">
           <div 
             ref={containerRef}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
-            className="aspect-[4/5] bg-white dark:bg-zinc-950 border border-gray-100 dark:border-zinc-800/80 rounded-2xl overflow-hidden relative cursor-crosshair shadow-sm select-none"
+            className="relative aspect-[4/5] cursor-crosshair overflow-hidden rounded-[24px] border border-black/10 bg-white shadow-[0_18px_48px_rgba(36,27,18,0.12)] select-none dark:border-white/10 dark:bg-zinc-950"
           >
-            <img 
-              src={activeImage} 
-              alt={product.name} 
-              className="w-full h-full object-cover transition-opacity duration-300"
+            <SmartImage
+              src={activeImage}
+              fallbackSrc={productFallbackImage}
+              alt={product.name}
+              className="h-full w-full object-cover transition-opacity duration-300"
+              containerClassName="h-full w-full"
+              fallbackLabel="Artwork preview unavailable"
             />
             {/* Zoom Overlay */}
             <div 
               style={zoomStyle} 
-              className="absolute inset-0 pointer-events-none rounded-2xl bg-no-repeat"
+              className="absolute inset-0 pointer-events-none rounded-[24px] bg-no-repeat"
             />
 
             {/* Float Badges */}
             <div className="absolute top-4 left-4 z-10 flex flex-col space-y-2">
               {product.is_featured && (
-                <span className="bg-luxury-black text-white dark:bg-luxury-gold dark:text-luxury-black text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">
+                <span className="commerce-label dark:bg-luxury-gold dark:text-luxury-black">
                   {pageConfig.badgeLabels.featured}
                 </span>
               )}
               {product.is_trending && (
-                <span className="bg-rose-600 text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">
+                <span className="commerce-label bg-luxury-walnut text-white">
                   {pageConfig.badgeLabels.trending}
                 </span>
               )}
               {product.is_best_seller && (
-                <span className="bg-amber-500 text-zinc-950 text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">
+                <span className="commerce-label bg-luxury-gold text-zinc-950">
                   {pageConfig.badgeLabels.bestSeller}
                 </span>
               )}
@@ -419,7 +424,7 @@ export default function ProductClient({ product, initialReviews, initialComments
             <button
               onClick={toggleWishlist}
               disabled={wishlistLoading}
-              className="absolute top-4 right-4 z-10 bg-white/95 dark:bg-zinc-900/95 p-2.5 rounded-full border border-gray-100 dark:border-zinc-800 shadow-sm hover:text-red-500 text-gray-400 transition-colors duration-200 cursor-pointer disabled:opacity-50"
+              className="absolute top-4 right-4 z-10 bg-white/95 dark:bg-zinc-900/95 p-2.5 rounded-[12px] border border-gray-100 dark:border-zinc-800 shadow-sm hover:text-red-500 text-gray-400 transition-colors duration-200 cursor-pointer disabled:opacity-50"
             >
               <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
             </button>
@@ -432,13 +437,20 @@ export default function ProductClient({ product, initialReviews, initialComments
                 <button
                   key={img.id}
                   onClick={() => setActiveImage(img.image_url)}
-                  className={`w-20 h-20 bg-white dark:bg-zinc-950 border rounded-xl overflow-hidden flex-shrink-0 cursor-pointer transition-all duration-200 p-0.5 ${
+                  className={`w-20 h-20 bg-white dark:bg-zinc-950 border rounded-[12px] overflow-hidden flex-shrink-0 cursor-pointer transition-all duration-200 p-0.5 ${
                     activeImage === img.image_url 
                       ? 'border-luxury-gold ring-1 ring-luxury-gold' 
                       : 'border-gray-100 dark:border-zinc-800/80'
                   }`}
                 >
-                  <img src={img.image_url} alt="Thumbnail" className="w-full h-full object-cover rounded-lg" />
+                  <SmartImage
+                    src={img.image_url}
+                    fallbackSrc={productFallbackImage}
+                    alt={`${product.name} thumbnail`}
+                    className="h-full w-full rounded-[12px] object-cover"
+                    containerClassName="h-full w-full rounded-[12px]"
+                    fallbackLabel="Preview unavailable"
+                  />
                 </button>
               ))}
             </div>
@@ -446,7 +458,7 @@ export default function ProductClient({ product, initialReviews, initialComments
         </div>
 
         {/* Right Column: Premium Customizations */}
-        <div className="flex flex-col justify-between space-y-6">
+        <div className="commerce-surface flex flex-col justify-between space-y-7 p-5 sm:p-8">
           <div>
             {/* Tagline */}
             <div className="flex items-center space-x-1.5 text-xs text-luxury-gold font-semibold uppercase tracking-widest mb-2">
@@ -455,7 +467,7 @@ export default function ProductClient({ product, initialReviews, initialComments
             </div>
 
             {/* Product Title */}
-            <h1 className="text-3xl sm:text-4xl font-serif text-luxury-black dark:text-white mb-3">
+            <h1 className="font-serif text-4xl leading-tight text-luxury-black dark:text-white sm:text-5xl">
               {product.name}
             </h1>
 
@@ -477,7 +489,7 @@ export default function ProductClient({ product, initialReviews, initialComments
             </div>
 
             {/* Short description */}
-            <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-8 border-b border-gray-100 dark:border-zinc-800/60 pb-6">
+            <p className="text-sm text-stone-600 dark:text-stone-400 leading-8 mb-8 border-b border-black/10 dark:border-white/10 pb-6">
               {product.short_description || product.description}
             </p>
 
@@ -486,7 +498,7 @@ export default function ProductClient({ product, initialReviews, initialComments
               {/* Size Customizer */}
               {pageConfig.showDimensions && sizes.length > 0 && (
               <div>
-                <span className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
+                <span className="block text-xs font-extrabold uppercase tracking-wider text-stone-600 dark:text-stone-400 mb-2">
                   {pageConfig.sectionLabels.dimensions}
                 </span>
                 <div className="grid grid-cols-3 gap-2.5">
@@ -494,14 +506,14 @@ export default function ProductClient({ product, initialReviews, initialComments
                     <button
                       key={sz.value}
                       onClick={() => setSelectedSize(sz.value)}
-                      className={`p-3 border rounded-xl flex flex-col items-center justify-center transition-all duration-200 text-xs font-semibold cursor-pointer ${
+                      className={`p-3 border rounded-[12px] flex flex-col items-center justify-center transition-all duration-200 text-xs font-semibold cursor-pointer ${
                         selectedSize === sz.value
-                          ? 'border-luxury-gold bg-luxury-gold/5 text-luxury-gold-dark'
-                          : 'border-gray-200 dark:border-zinc-800 text-luxury-charcoal dark:text-gray-400 hover:border-gray-400'
+                          ? 'border-luxury-gold bg-luxury-gold/10 text-luxury-gold-dark shadow-sm'
+                          : 'border-black/10 dark:border-white/10 text-luxury-charcoal dark:text-stone-400 hover:border-luxury-gold/40'
                       }`}
                     >
                       <span>{sz.label}</span>
-                      <span className="text-[10px] text-gray-400 font-normal mt-0.5">{sz.tag}</span>
+                      <span className="text-[10px] text-stone-600 dark:text-stone-400 font-normal mt-0.5">{sz.tag}</span>
                     </button>
                   ))}
                 </div>
@@ -511,7 +523,7 @@ export default function ProductClient({ product, initialReviews, initialComments
               {/* Material Customizer */}
               {pageConfig.showMaterials && materials.length > 0 && (
               <div>
-                <span className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
+                <span className="block text-xs font-extrabold uppercase tracking-wider text-stone-600 dark:text-stone-400 mb-2">
                   {pageConfig.sectionLabels.materials}
                 </span>
                 <div className={`grid gap-2.5 ${materials.length <= 3 ? 'grid-cols-3' : 'grid-cols-2 sm:grid-cols-3'}`}>
@@ -519,14 +531,14 @@ export default function ProductClient({ product, initialReviews, initialComments
                     <button
                       key={mat.value}
                       onClick={() => setSelectedFrame(mat.value)}
-                      className={`p-3 border rounded-xl flex flex-col items-center justify-center transition-all duration-200 text-xs font-semibold cursor-pointer ${
+                      className={`p-3 border rounded-[12px] flex flex-col items-center justify-center transition-all duration-200 text-xs font-semibold cursor-pointer ${
                         selectedFrame === mat.value
-                          ? 'border-luxury-gold bg-luxury-gold/5 text-luxury-gold-dark'
-                          : 'border-gray-200 dark:border-zinc-800 text-luxury-charcoal dark:text-gray-400 hover:border-gray-400'
+                          ? 'border-luxury-gold bg-luxury-gold/10 text-luxury-gold-dark shadow-sm'
+                          : 'border-black/10 dark:border-white/10 text-luxury-charcoal dark:text-stone-400 hover:border-luxury-gold/40'
                       }`}
                     >
                       <span>{mat.label}</span>
-                      <span className="text-[10px] text-gray-400 font-normal mt-0.5">{mat.tag}</span>
+                      <span className="text-[10px] text-stone-600 dark:text-stone-400 font-normal mt-0.5">{mat.tag}</span>
                     </button>
                   ))}
                 </div>
@@ -536,7 +548,7 @@ export default function ProductClient({ product, initialReviews, initialComments
               {/* Finish/Color Selection */}
               {pageConfig.showColors && colorOptions.length > 0 && (
               <div>
-                <span className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
+                <span className="block text-xs font-extrabold uppercase tracking-wider text-stone-600 dark:text-stone-400 mb-2">
                   {pageConfig.sectionLabels.colors}
                 </span>
                 <div className="flex flex-wrap gap-2">
@@ -544,10 +556,10 @@ export default function ProductClient({ product, initialReviews, initialComments
                     <button
                       key={fin.label}
                       onClick={() => setSelectedFinish(fin.label)}
-                      className={`px-3 py-2 border rounded-lg text-xs font-semibold cursor-pointer transition-all duration-200 ${
+                      className={`px-3 py-2 border rounded-[12px] text-xs font-semibold cursor-pointer transition-all duration-200 ${
                         selectedFinish === fin.label
-                          ? 'border-luxury-gold bg-luxury-gold/10 text-luxury-gold-dark'
-                          : 'border-gray-200 dark:border-zinc-800 text-luxury-charcoal dark:text-gray-400 hover:border-gray-400'
+                          ? 'border-luxury-gold bg-luxury-gold/10 text-luxury-gold-dark shadow-sm'
+                          : 'border-black/10 dark:border-white/10 text-luxury-charcoal dark:text-stone-400 hover:border-luxury-gold/40'
                       }`}
                     >
                       {fin.label}
@@ -560,17 +572,17 @@ export default function ProductClient({ product, initialReviews, initialComments
           </div>
 
           {/* Pricing and CTAs */}
-          <div className="border-t border-gray-100 dark:border-zinc-800/80 pt-6 mt-6 space-y-6">
+          <div className="border-t border-black/10 dark:border-white/10 pt-6 mt-6 space-y-6">
             <div className="flex justify-between items-center">
               <div>
-                <span className="text-xs uppercase tracking-wider text-gray-400 block">Total Est. Price</span>
+                <span className="text-xs uppercase tracking-wider text-stone-600 dark:text-stone-400 block">Total Est. Price</span>
                 <span className="text-3xl font-bold text-luxury-black dark:text-luxury-beige">
                   ₹{totalPrice.toLocaleString()}
                 </span>
               </div>
 
               {/* Quantity selector */}
-              <div className="flex items-center border border-gray-200 dark:border-zinc-800 rounded-xl bg-gray-50/50 dark:bg-zinc-950/20 px-1">
+              <div className="flex items-center border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 px-1">
                 <button 
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   className="p-2 hover:text-luxury-gold cursor-pointer"
@@ -593,7 +605,7 @@ export default function ProductClient({ product, initialReviews, initialComments
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               <button
                 onClick={handleAddToCart}
-                className="w-full flex justify-center items-center py-4 px-6 border border-gray-200 dark:border-zinc-800 rounded-xl text-xs font-bold text-luxury-charcoal dark:text-white bg-transparent hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors tracking-wider uppercase cursor-pointer"
+                className="lux-button lux-button-secondary w-full"
               >
                 <ShoppingBag className="w-4 h-4 mr-2" />
                 Add to Cart
@@ -601,7 +613,7 @@ export default function ProductClient({ product, initialReviews, initialComments
 
               <button
                 onClick={handleWhatsAppBuy}
-                className="w-full flex justify-center items-center py-4 px-6 border border-transparent rounded-xl text-xs font-bold text-white bg-luxury-black dark:bg-luxury-gold dark:text-luxury-black hover:bg-luxury-gold dark:hover:bg-luxury-beige transition-colors tracking-wider uppercase cursor-pointer"
+                className="lux-button lux-button-primary w-full"
               >
                 <MessageSquare className="w-4 h-4 mr-2" />
                 Buy on WhatsApp
@@ -627,15 +639,15 @@ export default function ProductClient({ product, initialReviews, initialComments
       </div>
 
       {/* Extra Technical Specs / Details */}
-      <div className="border-b border-gray-100 dark:border-zinc-800/60 pb-12 mb-16">
-        <h3 className="font-serif text-xl text-luxury-black dark:text-white mb-4">{pageConfig.storyTitle}</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-gray-500 leading-relaxed">
+      <div className="border-b border-black/10 dark:border-white/10 pb-16 mb-16">
+        <h3 className="font-serif text-4xl text-luxury-black dark:text-white mb-6">{pageConfig.storyTitle}</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-stone-700 dark:text-stone-400 leading-relaxed">
           <p>
             {product.description || 'Every piece at Chandan Art Gallery is crafted on a custom, order-by-order basis. By sourcing natural teak and pine woods, our frames represent the absolute apex of home decor art. The anti-glare museum acrylic shields your photos from UV rays and details are finalized in real time on WhatsApp with our design team.'}
           </p>
-          <div className="bg-white dark:bg-zinc-900 border border-gray-50 dark:border-zinc-800/80 p-5 rounded-2xl space-y-2.5 text-xs">
+          <div className="commerce-surface space-y-2.5 p-5 text-xs">
             <div className="flex justify-between border-b border-gray-50 dark:border-zinc-800/40 pb-1.5">
-              <span className="font-bold text-gray-400 uppercase">Base Dimensions</span>
+              <span className="font-bold text-stone-600 dark:text-stone-400 uppercase">Base Dimensions</span>
               <span className="text-luxury-charcoal dark:text-white">{formatDimensionsForSpecs(product.dimensions)}</span>
             </div>
             <div className="flex justify-between border-b border-gray-50 dark:border-zinc-800/40 pb-1.5">
@@ -661,7 +673,7 @@ export default function ProductClient({ product, initialReviews, initialComments
       </div>
 
       {/* Reviews & Ratings Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 border-b border-gray-100 dark:border-zinc-800/60 pb-16 mb-16" id="reviews">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 border-b border-black/10 dark:border-white/10 pb-16 mb-16" id="reviews">
         {/* Rating Summaries */}
         <div>
           <h3 className="font-serif text-2xl text-luxury-black dark:text-white mb-3">Client Reviews</h3>
@@ -687,7 +699,7 @@ export default function ProductClient({ product, initialReviews, initialComments
               <div key={star} className="flex items-center text-xs text-gray-400">
                 <span className="w-3 font-semibold mr-1.5">{star}</span>
                 <Star className="w-3 h-3 text-amber-400 fill-current mr-2" />
-                <div className="flex-1 h-2 bg-gray-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                <div className="flex-1 h-2 bg-gray-100 dark:bg-zinc-800 rounded-[12px] overflow-hidden">
                   <div 
                     className="h-full bg-luxury-gold" 
                     style={{ width: `${starPercentages[idx]}%` }}
@@ -701,7 +713,7 @@ export default function ProductClient({ product, initialReviews, initialComments
           {/* Submit review CTA */}
           <button
             onClick={() => setReviewModalOpen(true)}
-            className="mt-8 w-full py-3 px-4 border border-luxury-gold text-luxury-gold-dark dark:border-luxury-gold dark:text-luxury-beige hover:bg-luxury-gold/5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer"
+            className="mt-8 w-full py-3 px-4 border border-luxury-gold text-luxury-gold-dark dark:border-luxury-gold dark:text-luxury-beige hover:bg-luxury-gold/5 rounded-[12px] text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer"
           >
             Submit an Honest Review
           </button>
@@ -710,7 +722,7 @@ export default function ProductClient({ product, initialReviews, initialComments
         {/* Reviews List */}
         <div className="lg:col-span-2 space-y-6">
           {reviews.length === 0 ? (
-            <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/80 p-8 rounded-2xl text-center">
+            <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/80 p-8 rounded-[18px] text-center">
               <HelpCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
               <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider">No reviews approved yet.</p>
               <p className="text-xs text-gray-400 mt-1">Be the first to submit your customized purchase experience!</p>
@@ -719,7 +731,7 @@ export default function ProductClient({ product, initialReviews, initialComments
             reviews.map((rev) => (
               <div 
                 key={rev.id} 
-                className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/40 p-6 rounded-2xl relative"
+                className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/40 p-6 rounded-[18px] relative"
               >
                 {/* Rating stars */}
                 <div className="flex justify-between items-start mb-2.5">
@@ -759,12 +771,12 @@ export default function ProductClient({ product, initialReviews, initialComments
                 onChange={(e) => setNewComment(e.target.value)}
                 placeholder="Ask about customization details, mounting guidance, or shipping times..."
                 rows={3}
-                className="flex-1 p-4 border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 rounded-xl text-xs text-luxury-charcoal dark:text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-luxury-gold"
+                className="flex-1 p-4 border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 rounded-[12px] text-xs text-luxury-charcoal dark:text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-luxury-gold"
               />
               <button
                 type="submit"
                 disabled={commentSubmitting || !newComment.trim()}
-                className="self-end px-5 py-4 bg-luxury-black dark:bg-luxury-gold text-white dark:text-luxury-black text-xs font-bold rounded-xl uppercase tracking-wider flex items-center hover:bg-luxury-gold transition-colors disabled:opacity-40 cursor-pointer"
+                className="self-end px-5 py-4 bg-luxury-black dark:bg-luxury-gold text-white dark:text-luxury-black text-xs font-bold rounded-[12px] uppercase tracking-wider flex items-center hover:bg-luxury-gold transition-colors disabled:opacity-40 cursor-pointer"
               >
                 <Send className="w-3.5 h-3.5 mr-2" />
                 Submit
@@ -772,7 +784,7 @@ export default function ProductClient({ product, initialReviews, initialComments
             </div>
           </form>
         ) : (
-          <div className="bg-gray-50 dark:bg-zinc-950/20 p-5 rounded-2xl border border-gray-100 dark:border-zinc-800/60 text-center mb-10">
+          <div className="bg-gray-50 dark:bg-zinc-950/20 p-5 rounded-[18px] border border-gray-100 dark:border-zinc-800/60 text-center mb-10">
             <p className="text-xs text-gray-500">
               Please{' '}
               <Link href="/login" className="font-bold text-luxury-gold hover:underline">Sign In</Link>
@@ -792,7 +804,7 @@ export default function ProductClient({ product, initialReviews, initialComments
               return (
                 <div key={cmt.id} className="border-l-2 border-luxury-gold/30 pl-5 space-y-4">
                   {/* Primary Comment */}
-                  <div className="bg-white dark:bg-zinc-900/40 p-5 rounded-xl border border-gray-50 dark:border-zinc-800/40 relative">
+                  <div className="bg-white dark:bg-zinc-900/40 p-5 rounded-[12px] border border-gray-50 dark:border-zinc-800/40 relative">
                     <div className="flex justify-between items-baseline mb-2">
                       <span className="text-xs font-bold text-luxury-charcoal dark:text-white">{cmt.user_name}</span>
                       <span className="text-[10px] text-gray-400">{new Date(cmt.created_at).toLocaleDateString()}</span>
@@ -817,7 +829,7 @@ export default function ProductClient({ product, initialReviews, initialComments
                           onChange={(e) => setReplyText(e.target.value)}
                           placeholder="Write your response..."
                           rows={2}
-                          className="w-full p-3 border border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-950/20 rounded-lg text-xs text-luxury-charcoal dark:text-white"
+                          className="w-full p-3 border border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-950/20 rounded-[12px] text-xs text-luxury-charcoal dark:text-white"
                         />
                         <div className="flex space-x-2 justify-end">
                           <button
@@ -830,7 +842,7 @@ export default function ProductClient({ product, initialReviews, initialComments
                           <button
                             type="submit"
                             disabled={!replyText.trim()}
-                            className="px-4 py-1.5 bg-luxury-black dark:bg-luxury-gold text-white dark:text-luxury-black text-[10px] font-bold rounded-lg uppercase tracking-wider disabled:opacity-40 cursor-pointer"
+                            className="px-4 py-1.5 bg-luxury-black dark:bg-luxury-gold text-white dark:text-luxury-black text-[10px] font-bold rounded-[12px] uppercase tracking-wider disabled:opacity-40 cursor-pointer"
                           >
                             Post Reply
                           </button>
@@ -853,7 +865,7 @@ export default function ProductClient({ product, initialReviews, initialComments
                         return (
                           <div 
                             key={reply.id} 
-                            className={`p-4.5 rounded-xl border relative ${
+                            className={`p-4.5 rounded-[12px] border relative ${
                               isAdminReply
                                 ? 'bg-luxury-gold/5 border-luxury-gold/40'
                                 : 'bg-gray-50/40 border-gray-50/60 dark:bg-zinc-950/20 dark:border-zinc-800/40'
@@ -865,7 +877,7 @@ export default function ProductClient({ product, initialReviews, initialComments
                                   {reply.user_name}
                                 </span>
                                 {isAdminReply && (
-                                  <span className="bg-luxury-gold/25 text-luxury-gold-dark text-[8px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wider border border-luxury-gold/20">
+                                  <span className="bg-luxury-gold/25 text-luxury-gold-dark text-[8px] font-bold px-1.5 py-0.5 rounded-[8px] uppercase tracking-wider border border-luxury-gold/20">
                                     Curator
                                   </span>
                                 )}
@@ -900,7 +912,7 @@ export default function ProductClient({ product, initialReviews, initialComments
               initial={{ opacity: 0, scale: 0.95, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 15 }}
-              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/80 rounded-2xl shadow-2xl z-50 p-6 sm:p-8 overflow-y-auto max-h-[90vh]"
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/80 rounded-[18px] shadow-2xl z-50 p-6 sm:p-8 overflow-y-auto max-h-[90vh]"
             >
               <h3 className="font-serif text-2xl text-luxury-black dark:text-white mb-1">Write your Review</h3>
               <p className="text-xs text-gray-400 uppercase tracking-widest mb-6">
@@ -908,7 +920,7 @@ export default function ProductClient({ product, initialReviews, initialComments
               </p>
 
               {reviewSuccess ? (
-                <div className="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900 text-emerald-700 dark:text-emerald-300 p-5 rounded-xl text-center">
+                <div className="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900 text-emerald-700 dark:text-emerald-300 p-5 rounded-[12px] text-center">
                   <Sparkles className="w-10 h-10 text-emerald-500 mx-auto mb-3" />
                   <h4 className="font-bold text-sm">Review Submitted Successfully!</h4>
                   <p className="text-xs mt-1">Thank you. Your review is currently undergoing curation check and will display shortly.</p>
@@ -916,7 +928,7 @@ export default function ProductClient({ product, initialReviews, initialComments
               ) : (
                 <form onSubmit={handleReviewSubmit} className="space-y-4">
                   {reviewError && (
-                    <div className="p-3.5 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-300 text-xs rounded-xl">
+                    <div className="p-3.5 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-300 text-xs rounded-[12px]">
                       {reviewError}
                     </div>
                   )}
@@ -930,7 +942,7 @@ export default function ProductClient({ product, initialReviews, initialComments
                         value={reviewName}
                         onChange={(e) => setReviewName(e.target.value)}
                         placeholder="John Doe"
-                        className="w-full px-4.5 py-3 border border-gray-200 dark:border-zinc-800 rounded-xl text-xs bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none focus:ring-1 focus:ring-luxury-gold"
+                        className="w-full px-4.5 py-3 border border-gray-200 dark:border-zinc-800 rounded-[12px] text-xs bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none focus:ring-1 focus:ring-luxury-gold"
                       />
                     </div>
                     <div>
@@ -957,7 +969,7 @@ export default function ProductClient({ product, initialReviews, initialComments
                       value={reviewTitle}
                       onChange={(e) => setReviewTitle(e.target.value)}
                       placeholder="e.g. Stunning craftsmanship!"
-                      className="w-full px-4.5 py-3 border border-gray-200 dark:border-zinc-800 rounded-xl text-xs bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none focus:ring-1 focus:ring-luxury-gold"
+                      className="w-full px-4.5 py-3 border border-gray-200 dark:border-zinc-800 rounded-[12px] text-xs bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none focus:ring-1 focus:ring-luxury-gold"
                     />
                   </div>
 
@@ -969,7 +981,7 @@ export default function ProductClient({ product, initialReviews, initialComments
                       onChange={(e) => setReviewComment(e.target.value)}
                       placeholder="Describe your wood finish, frame alignment, standoff quality, or general feedback..."
                       rows={4}
-                      className="w-full p-4 border border-gray-200 dark:border-zinc-800 rounded-xl text-xs bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none focus:ring-1 focus:ring-luxury-gold"
+                      className="w-full p-4 border border-gray-200 dark:border-zinc-800 rounded-[12px] text-xs bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none focus:ring-1 focus:ring-luxury-gold"
                     />
                   </div>
 
@@ -982,14 +994,14 @@ export default function ProductClient({ product, initialReviews, initialComments
                     <button
                       type="button"
                       onClick={() => setReviewModalOpen(false)}
-                      className="flex-1 py-3 px-4 border border-gray-200 dark:border-zinc-800 rounded-xl text-xs font-bold text-gray-400 uppercase cursor-pointer"
+                      className="flex-1 py-3 px-4 border border-gray-200 dark:border-zinc-800 rounded-[12px] text-xs font-bold text-gray-400 uppercase cursor-pointer"
                     >
                       Discard
                     </button>
                     <button
                       type="submit"
                       disabled={reviewSubmitting}
-                      className="flex-1 py-3 px-4 bg-luxury-black dark:bg-luxury-gold text-white dark:text-luxury-black hover:bg-luxury-gold dark:hover:bg-luxury-beige transition-colors text-xs font-bold rounded-xl uppercase tracking-wider flex justify-center items-center cursor-pointer"
+                      className="flex-1 py-3 px-4 bg-luxury-black dark:bg-luxury-gold text-white dark:text-luxury-black hover:bg-luxury-gold dark:hover:bg-luxury-beige transition-colors text-xs font-bold rounded-[12px] uppercase tracking-wider flex justify-center items-center cursor-pointer"
                     >
                       {reviewSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" />}
                       Publish Review

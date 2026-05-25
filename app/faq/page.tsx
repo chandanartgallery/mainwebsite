@@ -1,5 +1,6 @@
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import { HelpCircle, MessageSquare } from 'lucide-react';
 
 export const metadata = {
   title: 'FAQ | Chandan Art Gallery',
@@ -9,42 +10,61 @@ export const metadata = {
 const faqs = [
   {
     question: 'How do I place a custom order?',
-    answer: 'Use the product pages to select your preferred frame style, then click Buy on WhatsApp to finalize dimensions, materials, and payment details with our design team.'
+    answer: 'Use the product pages to select your preferred frame style, then click Buy on WhatsApp to finalize dimensions, materials, price, and payment details with our design team.',
   },
   {
     question: 'Can I request a size not shown on the product page?',
-    answer: 'Yes. We accept custom sizes for most frames and canvas prints. Share your requirements on WhatsApp and we will craft a tailored quote.'
+    answer: 'Yes. Most frames and canvas prints can be made in custom sizes. Share your requirements on WhatsApp and our team will prepare a tailored quote.',
   },
   {
     question: 'What is your return policy?',
-    answer: 'Since many items are made-to-order, we review returns on a case-by-case basis. If there is damage or a manufacturing defect, we will repair or replace the item.'
+    answer: 'Made-to-order products are reviewed case by case. If there is damage or a manufacturing defect, we work with you to repair or replace the item.',
   },
   {
     question: 'Do you ship nationwide?',
-    answer: 'Yes, we ship across India using secure packaging and trusted logistics partners. Delivery times vary based on the product and destination.'
-  }
+    answer: 'Yes, we ship across India using protective packaging and trusted logistics partners. Delivery timelines vary based on destination and customization.',
+  },
+  {
+    question: 'Is online payment available?',
+    answer: 'The website supports product discovery and cart preparation. Final payment instructions are shared after your order is confirmed with our curator.',
+  },
 ];
 
 export default function FAQPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-luxury-offwhite dark:bg-luxury-black">
+    <div className="commerce-page min-h-screen flex flex-col bg-luxury-offwhite dark:bg-luxury-black">
       <Navbar />
-      <main className="flex-grow max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-36 pb-16">
-        <div className="space-y-8 text-gray-700 dark:text-zinc-300">
+      <main className="lux-container flex-grow pt-36 pb-20">
+        <div className="page-hero">
           <div>
-            <h1 className="text-4xl font-serif text-luxury-black dark:text-white">Frequently Asked Questions</h1>
-            <p className="text-sm leading-relaxed">
-              Find answers to common questions about our ordering process, custom framing, shipping, and returns.
-            </p>
+            <p className="commerce-kicker">Support center</p>
+            <h1 className="lux-section-title mt-3">Frequently Asked Questions</h1>
           </div>
+          <p className="lux-copy">
+            Clear answers for a premium ecommerce journey: browse, configure, send to WhatsApp, confirm, craft, and ship.
+          </p>
+        </div>
 
-          <div className="space-y-4">
+        <div className="mt-10 grid gap-5 lg:grid-cols-[0.65fr_1fr]">
+          <aside className="lux-card rounded-[22px] p-7 lg:sticky lg:top-28 lg:self-start">
+            <HelpCircle className="h-7 w-7 text-luxury-gold" />
+            <h2 className="mt-5 font-serif text-3xl text-luxury-charcoal dark:text-luxury-beige">Need a precise answer?</h2>
+            <p className="mt-3 text-sm leading-7 text-stone-700 dark:text-stone-400">
+              Custom framing is personal. For exact dimensions, finishes, and delivery timelines, message our studio directly.
+            </p>
+            <a href="https://wa.me/918468845759" className="lux-button lux-button-primary mt-7">
+              <MessageSquare className="h-4 w-4" />
+              WhatsApp studio
+            </a>
+          </aside>
+
+          <div className="space-y-3">
             {faqs.map((item) => (
-              <details key={item.question} className="rounded-3xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6">
-                <summary className="cursor-pointer text-lg font-semibold text-luxury-black dark:text-white list-none">
+              <details key={item.question} className="lux-card group rounded-[18px] p-6">
+                <summary className="cursor-pointer list-none font-serif text-2xl text-luxury-charcoal dark:text-luxury-beige">
                   {item.question}
                 </summary>
-                <p className="mt-4 text-sm leading-relaxed text-gray-600 dark:text-zinc-300">
+                <p className="mt-4 border-t border-black/10 pt-4 text-sm leading-8 text-stone-700 dark:border-white/10 dark:text-stone-400">
                   {item.answer}
                 </p>
               </details>

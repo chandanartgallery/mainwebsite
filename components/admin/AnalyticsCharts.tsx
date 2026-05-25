@@ -13,7 +13,7 @@ interface AnalyticsChartsProps {
 
 export default function AnalyticsCharts({ trafficData, deviceData, topSearches }: AnalyticsChartsProps) {
   // Brand colors
-  const COLORS = ['#c5a880', '#4b3621', '#1e1e1e', '#8884d8', '#82ca9d'];
+  const COLORS = ['#b99a64', '#513723', '#211d19', '#8d7046', '#d8ccb8'];
 
   return (
     <div className="space-y-8 select-none">
@@ -21,7 +21,7 @@ export default function AnalyticsCharts({ trafficData, deviceData, topSearches }
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Daily Views Area Chart */}
-        <div className="lg:col-span-2 bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/80 p-6 rounded-2xl shadow-sm">
+        <div className="commerce-surface p-6 lg:col-span-2">
           <h4 className="font-serif text-base text-luxury-black dark:text-white mb-6 uppercase tracking-wider">
             Daily Traffic Overview
           </h4>
@@ -53,7 +53,7 @@ export default function AnalyticsCharts({ trafficData, deviceData, topSearches }
         </div>
 
         {/* Device Breakdown Pie Chart */}
-        <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/80 p-6 rounded-2xl shadow-sm">
+        <div className="commerce-surface p-6">
           <h4 className="font-serif text-base text-luxury-black dark:text-white mb-6 uppercase tracking-wider">
             Device Distribution
           </h4>
@@ -98,7 +98,7 @@ export default function AnalyticsCharts({ trafficData, deviceData, topSearches }
       </div>
 
       {/* Lower Row: Search Queries */}
-      <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/80 p-6 rounded-2xl shadow-sm max-w-xl">
+      <div className="commerce-surface max-w-xl p-6">
         <h4 className="font-serif text-base text-luxury-black dark:text-white mb-4 uppercase tracking-wider">
           Top Customer Search Queries
         </h4>
@@ -112,7 +112,7 @@ export default function AnalyticsCharts({ trafficData, deviceData, topSearches }
                   <span className="text-luxury-gold mr-2 font-serif font-bold">#{idx + 1}</span>
                   {item.query}
                 </span>
-                <span className="bg-luxury-gold/15 text-luxury-gold-dark text-[10px] font-bold px-2 py-0.5 rounded-full">
+                <span className="bg-luxury-gold/15 text-luxury-gold-dark text-[10px] font-bold px-2 py-0.5 rounded-[12px]">
                   {item.count} searches
                 </span>
               </div>

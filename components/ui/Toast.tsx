@@ -42,7 +42,7 @@ export default function ToastContainer() {
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
-            className={`pointer-events-auto w-full p-4 rounded-xl border backdrop-blur-md shadow-lg flex items-start gap-3.5 transition-all duration-200 ${getBgStyle(
+            className={`pointer-events-auto w-full p-4 rounded-[12px] border backdrop-blur-md shadow-lg flex items-start gap-3.5 transition-all duration-200 ${getBgStyle(
               toast.type
             )}`}
           >

@@ -13,6 +13,7 @@ import {
 import Link from 'next/link';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import SmartImage from '@/components/ui/SmartImage';
 
 function ProfileContent() {
   const router = useRouter();
@@ -197,13 +198,13 @@ function ProfileContent() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-luxury-offwhite dark:bg-luxury-black">
+    <div className="commerce-page min-h-screen flex flex-col bg-luxury-offwhite dark:bg-luxury-black">
       <Navbar />
 
-      <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-36 pb-12 w-full">
+      <main className="lux-container flex-grow pt-36 pb-20 w-full">
         <Link 
         href="/" 
-        className="inline-flex items-center text-xs tracking-wider text-gray-500 hover:text-luxury-gold transition-colors duration-200 mb-8 uppercase"
+        className="inline-flex items-center text-xs tracking-wider text-stone-600 hover:text-luxury-gold transition-colors duration-200 mb-8 uppercase"
       >
         <ArrowRight className="w-3.5 h-3.5 mr-1 rotate-180" /> Back to Home
       </Link>
@@ -211,10 +212,10 @@ function ProfileContent() {
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Sidebar */}
         <div className="w-full lg:w-1/4">
-          <div className="bg-white dark:bg-zinc-900/60 border border-gray-100 dark:border-zinc-800 rounded-2xl p-6 shadow-sm">
+          <div className="lux-card rounded-[22px] p-6">
             <div className="flex flex-col items-center text-center">
               {(avatarUrl || user.user_metadata?.avatar_url) ? (
-                <div className="w-20 h-20 rounded-full overflow-hidden mb-4 border border-luxury-gold/30 hover:border-luxury-gold transition-colors duration-300">
+                <div className="w-20 h-20 rounded-[12px] overflow-hidden mb-4 border border-luxury-gold/30 hover:border-luxury-gold transition-colors duration-300">
                   <img 
                     src={avatarUrl || user.user_metadata.avatar_url} 
                     alt="Profile" 
@@ -223,14 +224,14 @@ function ProfileContent() {
                   />
                 </div>
               ) : (
-                <div className="w-20 h-20 rounded-full bg-luxury-beige dark:bg-zinc-800 flex items-center justify-center text-luxury-charcoal dark:text-luxury-beige text-2xl font-semibold mb-4 border border-luxury-gold/30">
+                <div className="w-20 h-20 rounded-[12px] bg-luxury-beige dark:bg-zinc-800 flex items-center justify-center text-luxury-charcoal dark:text-luxury-beige text-2xl font-semibold mb-4 border border-luxury-gold/30">
                   {fullName ? fullName.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase()}
                 </div>
               )}
               <h3 className="font-serif text-lg text-luxury-black dark:text-luxury-beige">{fullName || 'User'}</h3>
               <p className="text-xs text-gray-400 mt-1 mb-2">{user.email}</p>
               {role === 'admin' && (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-luxury-gold/20 text-luxury-gold-dark border border-luxury-gold/30 uppercase tracking-widest">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-[12px] text-xs font-semibold bg-luxury-gold/20 text-luxury-gold-dark border border-luxury-gold/30 uppercase tracking-widest">
                   Admin
                 </span>
               )}
@@ -239,7 +240,7 @@ function ProfileContent() {
             <div className="mt-8 space-y-2">
               <button
                 onClick={() => setActiveTab('profile')}
-                className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 cursor-pointer ${
+                className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-[12px] transition-all duration-200 cursor-pointer ${
                   activeTab === 'profile'
                     ? 'bg-luxury-black text-white dark:bg-luxury-gold dark:text-luxury-black'
                     : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-zinc-800/40'
@@ -250,7 +251,7 @@ function ProfileContent() {
               </button>
               <button
                 onClick={() => setActiveTab('wishlist')}
-                className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 cursor-pointer ${
+                className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-[12px] transition-all duration-200 cursor-pointer ${
                   activeTab === 'wishlist'
                     ? 'bg-luxury-black text-white dark:bg-luxury-gold dark:text-luxury-black'
                     : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-zinc-800/40'
@@ -261,7 +262,7 @@ function ProfileContent() {
               </button>
               <button
                 onClick={() => setActiveTab('inquiries')}
-                className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 cursor-pointer ${
+                className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-[12px] transition-all duration-200 cursor-pointer ${
                   activeTab === 'inquiries'
                     ? 'bg-luxury-black text-white dark:bg-luxury-gold dark:text-luxury-black'
                     : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-zinc-800/40'
@@ -274,7 +275,7 @@ function ProfileContent() {
               {role === 'admin' && (
                 <Link
                   href="/admin"
-                  className="w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl text-luxury-gold hover:bg-luxury-gold/10 transition-all duration-200 mt-4 border border-dashed border-luxury-gold/50"
+                  className="w-full flex items-center px-4 py-3 text-sm font-medium rounded-[12px] text-luxury-gold hover:bg-luxury-gold/10 transition-all duration-200 mt-4 border border-dashed border-luxury-gold/50"
                 >
                   <Sparkles className="w-4 h-4 mr-3" />
                   Admin Dashboard
@@ -283,7 +284,7 @@ function ProfileContent() {
 
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center px-4 py-3 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-xl transition-all duration-200 mt-8 cursor-pointer"
+                className="w-full flex items-center px-4 py-3 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-[12px] transition-all duration-200 mt-8 cursor-pointer"
               >
                 <LogOut className="w-4 h-4 mr-3" />
                 Sign Out
@@ -294,7 +295,7 @@ function ProfileContent() {
 
         {/* Content Area */}
         <div className="w-full lg:w-3/4">
-          <div className="bg-white dark:bg-zinc-900/60 border border-gray-100 dark:border-zinc-800 rounded-2xl p-6 sm:p-8 shadow-sm min-h-[50vh]">
+          <div className="lux-card rounded-[22px] p-5 sm:p-8 min-h-[50vh]">
             
             {activeTab === 'profile' && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
@@ -315,7 +316,7 @@ function ProfileContent() {
                     <div className="pb-2">
                       <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Profile Photo</label>
                       <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 rounded-full overflow-hidden border border-luxury-gold/30 bg-zinc-100 dark:bg-zinc-800 flex-shrink-0 relative">
+                        <div className="w-12 h-12 rounded-[12px] overflow-hidden border border-luxury-gold/30 bg-zinc-100 dark:bg-zinc-800 flex-shrink-0 relative">
                           {avatarUrl ? (
                             <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                           ) : (
@@ -330,7 +331,7 @@ function ProfileContent() {
                             accept="image/*"
                             onChange={handleAvatarUpload}
                             disabled={uploadingAvatar}
-                            className="text-xs text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-luxury-gold/15 file:text-luxury-gold hover:file:bg-luxury-gold/20 file:cursor-pointer"
+                            className="text-xs text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-[8px] file:border-0 file:text-xs file:font-semibold file:bg-luxury-gold/15 file:text-luxury-gold hover:file:bg-luxury-gold/20 file:cursor-pointer"
                           />
                           {uploadingAvatar && <Loader className="w-4 h-4 animate-spin text-luxury-gold" />}
                         </div>
@@ -343,7 +344,7 @@ function ProfileContent() {
                         required
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        className="mt-1 block w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-950/50 text-sm focus:outline-none focus:ring-1 focus:ring-luxury-gold"
+                        className="lux-input mt-1 block w-full px-4 py-3 rounded-[12px] text-sm"
                       />
                     </div>
                     <div>
@@ -352,7 +353,7 @@ function ProfileContent() {
                         type="text"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
-                        className="mt-1 block w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-950/50 text-sm focus:outline-none focus:ring-1 focus:ring-luxury-gold"
+                        className="lux-input mt-1 block w-full px-4 py-3 rounded-[12px] text-sm"
                         placeholder="+91 XXXXX XXXXX"
                       />
                     </div>
@@ -360,14 +361,14 @@ function ProfileContent() {
                       <button
                         type="submit"
                         disabled={saving}
-                        className="px-4 py-2 border border-transparent rounded-lg text-xs font-semibold text-white bg-luxury-black dark:bg-luxury-gold dark:text-luxury-black hover:bg-luxury-gold disabled:opacity-50 uppercase tracking-wider cursor-pointer"
+                        className="lux-button lux-button-primary disabled:opacity-50"
                       >
                         {saving ? 'Saving...' : 'Save Changes'}
                       </button>
                       <button
                         type="button"
                         onClick={() => setEditingProfile(false)}
-                        className="px-4 py-2 border border-gray-200 dark:border-zinc-800 rounded-lg text-xs font-semibold text-gray-500 hover:bg-gray-50 dark:hover:bg-zinc-800 uppercase tracking-wider cursor-pointer"
+                        className="lux-button lux-button-secondary"
                       >
                         Cancel
                       </button>
@@ -428,9 +429,16 @@ function ProfileContent() {
                       const product = item.products;
                       const image = product?.product_images?.[0]?.image_url || 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=300';
                       return (
-                        <div key={item.id} className="flex border border-gray-100 dark:border-zinc-800 rounded-xl overflow-hidden group hover:shadow-md transition-all duration-300">
+                        <div key={item.id} className="lux-panel flex overflow-hidden rounded-[18px] group transition-all duration-300">
                           <div className="w-24 h-24 flex-shrink-0 bg-gray-50 relative overflow-hidden">
-                            <img src={image} alt={product?.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                            <SmartImage
+                              src={image}
+                              fallbackSrc="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=300"
+                              alt={product?.name || 'Wishlist item'}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              containerClassName="w-full h-full"
+                              fallbackLabel="No image available"
+                            />
                           </div>
                           <div className="flex-1 p-3 flex flex-col justify-between">
                             <div>
@@ -473,10 +481,10 @@ function ProfileContent() {
                 ) : (
                   <div className="space-y-4">
                     {inquiries.map((inquiry) => (
-                      <div key={inquiry.id} className="border border-gray-100 dark:border-zinc-800 rounded-xl p-4 space-y-2">
+                      <div key={inquiry.id} className="lux-panel rounded-[18px] p-4 space-y-2">
                         <div className="flex justify-between items-start">
                           <div>
-                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider ${
+                            <span className={`inline-flex items-center px-2 py-0.5 rounded-[12px] text-[10px] font-semibold uppercase tracking-wider ${
                               inquiry.type === 'whatsapp' 
                                 ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400' 
                                 : 'bg-blue-50 text-blue-700 dark:bg-blue-950/20 dark:text-blue-400'
@@ -484,7 +492,7 @@ function ProfileContent() {
                               {inquiry.type}
                             </span>
                           </div>
-                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase ${
+                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-[12px] uppercase ${
                             inquiry.status === 'pending'
                               ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/20 dark:text-amber-400'
                               : inquiry.status === 'replied'
