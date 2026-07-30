@@ -668,3 +668,269 @@ h1, h2, h3, h4, h5, h6 {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════
+   ADMIN PANEL — theme-aware CSS variables
+   These respond correctly to the .dark class toggle
+═══════════════════════════════════════════════════ */
+:root {
+  --adm-bg:        #f4f0eb;
+  --adm-bg2:       #ede8e1;
+  --adm-sidebar:   #1c1814;
+  --adm-sidebar2:  #231f1a;
+  --adm-card:      rgba(255, 252, 247, 0.9);
+  --adm-card2:     rgba(247, 243, 236, 0.85);
+  --adm-border:    rgba(185, 154, 100, 0.18);
+  --adm-border2:   rgba(45, 35, 25, 0.12);
+  --adm-text:      #1a1612;
+  --adm-text2:     #4a3f35;
+  --adm-text3:     #7a6a56;
+  --adm-gold:      #b99a64;
+  --adm-gold2:     #8d7046;
+  --adm-header:    rgba(255, 252, 247, 0.92);
+  --adm-row-hover: rgba(185, 154, 100, 0.05);
+  --adm-th-bg:     rgba(247, 243, 236, 0.8);
+  --adm-input-bg:  rgba(255, 252, 247, 0.8);
+  --adm-shadow:    0 1px 3px rgba(45,35,25,0.08), 0 4px 16px rgba(45,35,25,0.06);
+  --adm-modal-bg:  #faf7f2;
+}
+
+.dark {
+  --adm-bg:        #0d0b09;
+  --adm-bg2:       #110e0b;
+  --adm-sidebar:   #0c0a08;
+  --adm-sidebar2:  #131008;
+  --adm-card:      rgba(22, 18, 13, 0.95);
+  --adm-card2:     rgba(26, 22, 16, 0.9);
+  --adm-border:    rgba(185, 154, 100, 0.13);
+  --adm-border2:   rgba(185, 154, 100, 0.07);
+  --adm-text:      #e8ddd0;
+  --adm-text2:     #c8b48c;
+  --adm-text3:     #7a6a56;
+  --adm-gold:      #b99a64;
+  --adm-gold2:     #d4b87a;
+  --adm-header:    rgba(12, 10, 8, 0.95);
+  --adm-row-hover: rgba(185, 154, 100, 0.04);
+  --adm-th-bg:     rgba(18, 14, 10, 0.9);
+  --adm-input-bg:  rgba(20, 16, 11, 0.8);
+  --adm-shadow:    0 1px 3px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.2);
+  --adm-modal-bg:  #161210;
+}
+
+/* Sidebar always dark regardless of theme */
+.adm-sidebar {
+  background: var(--adm-sidebar);
+  border-right: 1px solid var(--adm-border);
+}
+
+.adm-sidebar-item {
+  color: var(--adm-text3);
+  transition: color 0.15s, background 0.15s;
+}
+
+.adm-sidebar-item:hover {
+  color: var(--adm-gold2);
+  background: rgba(185, 154, 100, 0.06);
+}
+
+.adm-sidebar-item.active {
+  color: var(--adm-gold);
+  background: rgba(185, 154, 100, 0.12);
+}
+
+.adm-shell {
+  background: var(--adm-bg);
+  color: var(--adm-text);
+}
+
+.adm-header {
+  background: var(--adm-header);
+  border-bottom: 1px solid var(--adm-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.adm-card {
+  background: var(--adm-card);
+  border: 1px solid var(--adm-border);
+  border-radius: 12px;
+  box-shadow: var(--adm-shadow);
+}
+
+.adm-card2 {
+  background: var(--adm-card2);
+  border: 1px solid var(--adm-border2);
+  border-radius: 12px;
+}
+
+.adm-table thead tr {
+  background: var(--adm-th-bg);
+}
+
+.adm-table thead th {
+  color: var(--adm-text3);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 0.75rem 1rem;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--adm-border);
+}
+
+.adm-table tbody td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--adm-border2);
+  font-size: 0.78rem;
+}
+
+.adm-table tbody tr:hover {
+  background: var(--adm-row-hover);
+}
+
+.adm-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.adm-input {
+  background: var(--adm-input-bg);
+  border: 1px solid var(--adm-border);
+  color: var(--adm-text);
+  border-radius: 8px;
+  font-size: 0.78rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  padding: 0.55rem 0.75rem;
+  width: 100%;
+}
+
+.adm-input:focus {
+  border-color: var(--adm-gold);
+  box-shadow: 0 0 0 3px rgba(185, 154, 100, 0.14);
+}
+
+.adm-input::placeholder {
+  color: var(--adm-text3);
+  opacity: 0.7;
+}
+
+.adm-btn-primary {
+  background: var(--adm-gold);
+  color: #0d0b09;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.55rem 1.1rem;
+  transition: background 0.2s, transform 0.15s;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.adm-btn-primary:hover {
+  background: var(--adm-gold2);
+  transform: translateY(-1px);
+}
+
+.adm-btn-ghost {
+  background: transparent;
+  border: 1px solid var(--adm-border);
+  color: var(--adm-text3);
+  border-radius: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.55rem 1.1rem;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.adm-btn-ghost:hover {
+  border-color: var(--adm-gold);
+  color: var(--adm-gold);
+  background: rgba(185, 154, 100, 0.06);
+}
+
+.adm-badge-gold {
+  background: rgba(185, 154, 100, 0.15);
+  color: var(--adm-gold);
+  border-radius: 6px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.55rem;
+}
+
+.adm-badge-green {
+  background: rgba(52, 168, 120, 0.14);
+  color: #3da87a;
+  border-radius: 6px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.55rem;
+}
+
+.adm-badge-amber {
+  background: rgba(217, 160, 56, 0.14);
+  color: #c98a20;
+  border-radius: 6px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.55rem;
+}
+
+.adm-badge-muted {
+  background: rgba(100, 92, 82, 0.12);
+  color: var(--adm-text3);
+  border-radius: 6px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.55rem;
+}
+
+.adm-icon-btn {
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  color: var(--adm-text3);
+  transition: color 0.15s, background 0.15s;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.adm-icon-btn:hover {
+  color: var(--adm-gold);
+  background: rgba(185, 154, 100, 0.08);
+}
+
+.adm-icon-btn.danger:hover {
+  color: #e05252;
+  background: rgba(220, 80, 80, 0.1);
+}
+
+/* Admin charts override — always dark regardless of theme */
+.adm-chart-container {
+  background: #13100d;
+  border-radius: 12px;
+  border: 1px solid rgba(185, 154, 100, 0.12);
+  padding: 1.25rem;
+}
