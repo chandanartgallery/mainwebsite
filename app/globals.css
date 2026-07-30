@@ -422,9 +422,7 @@ h1, h2, h3, h4, h5, h6 {
   color: #fff;
 }
 
-.dark .lux-card * {
-  color: #fff !important;
-}
+/* Do not force-override button text colors inside cards */
 
 .site-shell {
   width: min(100% - 2rem, 1360px);

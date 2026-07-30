@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { useUIStore } from '@/store/uiStore';
 import SmartImage from '@/components/ui/SmartImage';
+import BlurText from '@/components/ui/BlurText';
 
 interface HomeClientProps {
   banners: any[];
@@ -135,27 +136,15 @@ export default function HomeClient({ banners, categories, featuredProducts, test
                 <Sparkles className="h-4 w-4" />
                 Chandan Art Gallery
               </div>
-              <h1 key={slides[currentSlide].id} className="lux-title hero-title-readable text-luxury-beige" aria-label={slides[currentSlide].title}>
-                {slides[currentSlide].title.split(' ').map((word: string, wordIndex: number, words: string[]) => (
-                  <span key={`${word}-${wordIndex}`} className="typewriter-word" aria-hidden="true">
-                    {word.split('').map((char: string, charIndex: number) => {
-                      const previousLength = words.slice(0, wordIndex).reduce((acc, item) => acc + item.length, 0);
-                      const globalIndex = previousLength + wordIndex + charIndex;
-                      return (
-                        <span
-                          key={`${char}-${wordIndex}-${charIndex}`}
-                          className="typewriter-char"
-                          style={{ animationDelay: `${Math.min(globalIndex * 0.026, 1.7)}s` }}
-                        >
-                          {char}
-                        </span>
-                      );
-                    })}
-                    {wordIndex < words.length - 1 && <span>&nbsp;</span>}
-                  </span>
-                ))}
-                <span className="typewriter-cursor" aria-hidden="true" />
-              </h1>
+              <BlurText
+                key={slides[currentSlide].id}
+                text={slides[currentSlide].title}
+                animateBy="words"
+                direction="top"
+                delay={110}
+                stepDuration={0.42}
+                className="lux-title hero-title-readable text-luxury-beige"
+              />
               <p className="mt-7 max-w-xl text-base leading-8 text-luxury-beige/76 sm:text-lg">
                 {slides[currentSlide].subtitle}
               </p>
