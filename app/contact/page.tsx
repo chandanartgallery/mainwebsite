@@ -5,10 +5,13 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Recaptcha from '@/components/ui/Recaptcha';
 import { useAuthStore } from '@/store/authStore';
-import { 
-  Sparkles, Mail, Phone, MapPin, Send, 
-  MessageSquare, Loader2, CheckCircle2 
+import {
+  Mail, Phone, MapPin, Send,
+  MessageSquare, Loader2, CheckCircle2
 } from 'lucide-react';
+import SplitText from '@/components/SplitText';
+import FadeContent from '@/components/FadeContent';
+import SpotlightCard from '@/components/SpotlightCard';
 
 export default function ContactPage() {
   const { user } = useAuthStore();
@@ -42,24 +45,20 @@ export default function ContactPage() {
     try {
       const res = await fetch('/api/inquiries', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: user?.id,
           name,
           email,
-          phone,
+          phone: phone || undefined,
           message,
           type: 'contact_form',
-          recaptchaToken, // optional if proxy handles it or we verify it
+          recaptchaToken,
         }),
       });
 
-      const result = await res.json();
-      if (!res.ok) {
-        throw new Error(result.error || 'Failed to submit contact request');
-      }
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to send inquiry');
 
       setSuccess(true);
       setName('');
@@ -75,199 +74,158 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-luxury-offwhite dark:bg-luxury-black">
+    <div className="min-h-screen flex flex-col bg-neutral-50 dark:bg-neutral-950">
       <Navbar />
 
-      <main className="lux-container flex-grow pt-36 pb-20">
-        
-        {/* Page Header */}
-        <div className="mb-16 grid gap-5 select-none lg:grid-cols-[0.85fr_1fr] lg:items-end">
-          <div>
-          <span className="lux-eyebrow">Dialogue with curators</span>
-          <h1 className="lux-section-title mt-3">
-            Establish Contact
-          </h1>
-          </div>
-          <p className="lux-copy max-w-xl lg:justify-self-end">
-            Discuss mockups, custom sizing projects, or order logistics
+      <main className="lux-container flex-grow pt-24 pb-16">
+        <div className="mb-10 border-b border-neutral-200 pb-6 dark:border-neutral-800">
+          <SplitText
+            text="Contact"
+            tag="h1"
+            splitType="chars"
+            delay={40}
+            duration={0.7}
+            ease="power3.out"
+            from={{ opacity: 0, y: 24 }}
+            to={{ opacity: 1, y: 0 }}
+            threshold={0}
+            textAlign="left"
+            className="lux-section-title !block text-neutral-900 dark:text-neutral-50"
+          />
+          <p className="mt-2 max-w-xl text-sm text-neutral-500">
+            Questions about custom sizing, finishes, or orders — we&apos;ll get back to you.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-start">
-          
-          {/* Left Column: Premium Contact Details */}
-          <div className="lux-card lg:col-span-2 p-8 rounded-[22px] space-y-8">
-            <div className="space-y-4">
-              <h3 className="font-serif text-xl text-luxury-black dark:text-white uppercase tracking-wide">
-                Studio Headquarters
-              </h3>
-              <p className="text-sm text-stone-700 dark:text-stone-400 leading-relaxed font-sans">
-                Feel free to contact our Rajasthani design consultants for direct mock renders of your sizing layouts.
-              </p>
-            </div>
-
-            <div className="space-y-5 text-xs font-sans text-stone-700 dark:text-stone-400">
-              
-              {/* Phone detail */}
-              <div className="flex items-start space-x-3.5">
-                <div className="p-2 bg-luxury-gold/10 text-luxury-gold rounded-[12px] mt-0.5">
-                  <Phone className="w-4 h-4" />
-                </div>
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
+          <FadeContent className="lg:col-span-2">
+            <SpotlightCard
+              className="!rounded-none border border-neutral-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900"
+              spotlightColor="rgba(0, 0, 0, 0.06)"
+            >
+            <div className="space-y-4 text-sm text-neutral-600 dark:text-neutral-400">
+              <div className="flex items-start gap-3">
+                <Phone className="w-4 h-4 mt-0.5 text-neutral-400" />
                 <div>
-                  <span className="block font-bold text-luxury-charcoal dark:text-white uppercase text-[10px] tracking-wider">Curator Hotline</span>
-                  <a href="tel:+918468845759" className="hover:text-luxury-gold transition-colors block mt-0.5">+91 8468845759</a>
+                  <span className="block text-xs font-medium text-neutral-900 dark:text-white">Phone</span>
+                  <a href="tel:+918468845759" className="hover:underline">+91 8468845759</a>
                 </div>
               </div>
-
-              {/* Email detail */}
-              <div className="flex items-start space-x-3.5">
-                <div className="p-2 bg-luxury-gold/10 text-luxury-gold rounded-[12px] mt-0.5">
-                  <Mail className="w-4 h-4" />
-                </div>
+              <div className="flex items-start gap-3">
+                <Mail className="w-4 h-4 mt-0.5 text-neutral-400" />
                 <div>
-                  <span className="block font-bold text-luxury-charcoal dark:text-white uppercase text-[10px] tracking-wider">Electronic Inquiries</span>
-                  <a href="mailto:support@chandanartgallery.com" className="hover:text-luxury-gold transition-colors block mt-0.5">support@chandanartgallery.com</a>
+                  <span className="block text-xs font-medium text-neutral-900 dark:text-white">Email</span>
+                  <a href="mailto:support@chandanartgallery.com" className="hover:underline">support@chandanartgallery.com</a>
                 </div>
               </div>
-
-              {/* Address detail */}
-              <div className="flex items-start space-x-3.5">
-                <div className="p-2 bg-luxury-gold/10 text-luxury-gold rounded-[12px] mt-0.5">
-                  <MapPin className="w-4 h-4" />
-                </div>
+              <div className="flex items-start gap-3">
+                <MapPin className="w-4 h-4 mt-0.5 text-neutral-400" />
                 <div>
-                  <span className="block font-bold text-luxury-charcoal dark:text-white uppercase text-[10px] tracking-wider">Bespoke Studio</span>
-                  <span className="block mt-0.5 leading-relaxed">
+                  <span className="block text-xs font-medium text-neutral-900 dark:text-white">Studio</span>
+                  <span className="block leading-relaxed">
                     Chandan Art Gallery, Jaipur-Delhi National Highway,<br />
                     Jaipur, Rajasthan, 302001, India
                   </span>
                 </div>
               </div>
-
             </div>
 
-            {/* Quick WhatsApp Redirection */}
-            <div className="border-t border-gray-100 dark:border-zinc-800/80 pt-6">
-              <span className="block text-[10px] font-bold text-stone-600 dark:text-stone-400 uppercase tracking-widest mb-3">Direct curator dialogue</span>
-              <a 
-                href="https://wa.me/918468845759" 
+            <div className="mt-6 border-t border-neutral-100 pt-5 dark:border-neutral-800">
+              <a
+                href="https://wa.me/918468845759"
                 target="_blank"
-                className="w-full flex items-center justify-center py-3.5 bg-luxury-gold/10 text-luxury-gold-dark border border-luxury-gold/25 hover:bg-luxury-gold hover:text-luxury-black rounded-[12px] text-xs font-bold uppercase tracking-wider transition-all duration-300"
+                className="w-full flex items-center justify-center py-2.5 bg-neutral-900 text-white text-sm font-medium rounded-md hover:bg-neutral-800 dark:bg-white dark:text-neutral-900"
               >
                 <MessageSquare className="w-4 h-4 mr-2" />
-                Open Curator Chat on WhatsApp
+                Chat on WhatsApp
               </a>
             </div>
+            </SpotlightCard>
+          </FadeContent>
 
-          </div>
-
-          {/* Right Column: Contact Inquiry Form */}
-          <div className="lux-card lg:col-span-3 p-8 sm:p-10 rounded-[22px]">
-            
+          <FadeContent delay={100} className="lg:col-span-3 border border-neutral-200 bg-white p-6 sm:p-8 dark:border-neutral-800 dark:bg-neutral-900">
             {success ? (
-              <div className="p-6 text-center space-y-4">
-                <div className="inline-flex p-3 bg-emerald-100 text-emerald-600 rounded-[12px]">
-                  <CheckCircle2 className="w-8 h-8" />
-                </div>
-                <h3 className="font-serif text-2xl text-luxury-black dark:text-white uppercase">Inquiry Received</h3>
-                <p className="text-sm text-stone-700 dark:text-stone-400 leading-relaxed font-sans max-w-sm mx-auto">
-                  Thank you for establish contact. Our local framing curator will review your design requirements and email or call back shortly.
+              <div className="py-8 text-center space-y-3">
+                <CheckCircle2 className="w-8 h-8 mx-auto text-emerald-600" />
+                <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">Message sent</h3>
+                <p className="text-sm text-neutral-500 max-w-sm mx-auto">
+                  Thanks — we&apos;ll review your note and reply soon.
                 </p>
                 <button
                   onClick={() => setSuccess(false)}
-                  className="px-6 py-2.5 bg-luxury-black dark:bg-luxury-gold text-white dark:text-luxury-black text-xs font-bold uppercase tracking-wider rounded-[12px]"
+                  className="mt-2 text-sm font-medium underline text-neutral-700 dark:text-neutral-300"
                 >
-                  Send another inquiry
+                  Send another
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-5 text-xs">
-                
+              <form onSubmit={handleSubmit} className="space-y-4 text-sm">
                 {error && (
-                  <div className="p-3.5 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-300 rounded-[12px] leading-relaxed">
+                  <div className="p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-300 rounded-md text-sm">
                     {error}
                   </div>
                 )}
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block font-extrabold uppercase text-stone-600 dark:text-stone-400 mb-1.5">Your Name *</label>
+                    <label className="block text-xs font-medium text-neutral-500 mb-1.5">Name *</label>
                     <input
-                      type="text"
                       required
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      placeholder="Enter your full name"
-                      className="lux-input w-full px-4 py-3 rounded-[12px] text-luxury-charcoal dark:text-white"
+                      className="lux-input w-full px-3 py-2.5"
+                      placeholder="Your name"
                     />
                   </div>
-
                   <div>
-                    <label className="block font-extrabold uppercase text-stone-600 dark:text-stone-400 mb-1.5">Email Address *</label>
+                    <label className="block text-xs font-medium text-neutral-500 mb-1.5">Email *</label>
                     <input
-                      type="email"
                       required
+                      type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="name@example.com"
-                      className="lux-input w-full px-4 py-3 rounded-[12px] text-luxury-charcoal dark:text-white"
+                      className="lux-input w-full px-3 py-2.5"
+                      placeholder="you@email.com"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block font-extrabold uppercase text-stone-600 dark:text-stone-400 mb-1.5">Phone Number (Optional)</label>
+                  <label className="block text-xs font-medium text-neutral-500 mb-1.5">Phone</label>
                   <input
-                    type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="Enter 10-digit mobile number"
-                    className="lux-input w-full px-4 py-3 rounded-[12px] text-luxury-charcoal dark:text-white"
+                    className="lux-input w-full px-3 py-2.5"
+                    placeholder="+91 …"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-extrabold uppercase text-stone-600 dark:text-stone-400 mb-1.5">Design Inquiry message *</label>
+                  <label className="block text-xs font-medium text-neutral-500 mb-1.5">Message *</label>
                   <textarea
                     required
+                    rows={5}
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Provide details about your frame choices, photo sizes, color styles..."
-                    rows={5}
-                    className="lux-input w-full p-4 rounded-[12px] text-luxury-charcoal dark:text-white"
+                    className="lux-input w-full px-3 py-2.5 resize-none"
+                    placeholder="Tell us what you need…"
                   />
                 </div>
 
-                {/* reCAPTCHA component */}
-                {process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && (
-                  <Recaptcha onChange={setRecaptchaToken} />
-                )}
+                <Recaptcha onChange={setRecaptchaToken} />
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="lux-button lux-button-primary w-full disabled:opacity-40"
+                  className="lux-button lux-button-primary disabled:opacity-60"
                 >
-                  {loading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                      Filing Request...
-                    </>
-                  ) : (
-                    <>
-                      <Send className="w-4 h-4 mr-2" />
-                      Launch Design Inquiry
-                    </>
-                  )}
+                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                  {loading ? 'Sending…' : 'Send message'}
                 </button>
-
               </form>
             )}
-
-          </div>
-
+          </FadeContent>
         </div>
-
       </main>
 
       <Footer />

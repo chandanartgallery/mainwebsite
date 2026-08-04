@@ -190,21 +190,21 @@ function ProfileContent() {
 
   if (loading || !user) {
     return (
-      <div className="flex-1 flex flex-col justify-center items-center min-h-[60vh] bg-luxury-offwhite dark:bg-luxury-black text-gray-500">
-        <Loader className="w-8 h-8 animate-spin text-luxury-gold mb-2" />
+      <div className="flex-1 flex flex-col justify-center items-center min-h-[60vh] bg-neutral-50 dark:bg-neutral-950 text-gray-500">
+        <Loader className="w-8 h-8 animate-spin text-neutral-600 mb-2" />
         <span className="text-sm tracking-widest uppercase">Loading Profile...</span>
       </div>
     );
   }
 
   return (
-    <div className="commerce-page min-h-screen flex flex-col bg-luxury-offwhite dark:bg-luxury-black">
+    <div className="min-h-screen flex flex-col bg-neutral-50 dark:bg-neutral-950">
       <Navbar />
 
-      <main className="lux-container flex-grow pt-36 pb-20 w-full">
+      <main className="lux-container flex-grow pt-24 pb-20 w-full">
         <Link 
         href="/" 
-        className="inline-flex items-center text-xs tracking-wider text-stone-600 hover:text-luxury-gold transition-colors duration-200 mb-8 uppercase"
+        className="inline-flex items-center text-xs tracking-wider text-stone-600 hover:text-neutral-600 transition-colors duration-200 mb-8 uppercase"
       >
         <ArrowRight className="w-3.5 h-3.5 mr-1 rotate-180" /> Back to Home
       </Link>
@@ -215,7 +215,7 @@ function ProfileContent() {
           <div className="lux-card rounded-[22px] p-6">
             <div className="flex flex-col items-center text-center">
               {(avatarUrl || user.user_metadata?.avatar_url) ? (
-                <div className="w-20 h-20 rounded-[12px] overflow-hidden mb-4 border border-luxury-gold/30 hover:border-luxury-gold transition-colors duration-300">
+                <div className="w-20 h-20 rounded-[12px] overflow-hidden mb-4 border border-neutral-300/30 hover:border-neutral-300 transition-colors duration-300">
                   <img 
                     src={avatarUrl || user.user_metadata.avatar_url} 
                     alt="Profile" 
@@ -224,14 +224,14 @@ function ProfileContent() {
                   />
                 </div>
               ) : (
-                <div className="w-20 h-20 rounded-[12px] bg-luxury-beige dark:bg-zinc-800 flex items-center justify-center text-luxury-charcoal dark:text-luxury-beige text-2xl font-semibold mb-4 border border-luxury-gold/30">
+                <div className="w-20 h-20 rounded-[12px] bg-neutral-100 dark:bg-zinc-800 flex items-center justify-center text-neutral-800 dark:text-neutral-100 text-2xl font-semibold mb-4 border border-neutral-300/30">
                   {fullName ? fullName.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase()}
                 </div>
               )}
-              <h3 className="font-serif text-lg text-luxury-black dark:text-luxury-beige">{fullName || 'User'}</h3>
+              <h3 className="font-serif text-lg text-neutral-900 dark:text-neutral-100">{fullName || 'User'}</h3>
               <p className="text-xs text-gray-400 mt-1 mb-2">{user.email}</p>
               {role === 'admin' && (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-[12px] text-xs font-semibold bg-luxury-gold/20 text-luxury-gold-dark border border-luxury-gold/30 uppercase tracking-widest">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-[12px] text-xs font-semibold bg-neutral-900/20 text-neutral-700 border border-neutral-300/30 uppercase tracking-widest">
                   Admin
                 </span>
               )}
@@ -242,7 +242,7 @@ function ProfileContent() {
                 onClick={() => setActiveTab('profile')}
                 className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-[12px] transition-all duration-200 cursor-pointer ${
                   activeTab === 'profile'
-                    ? 'bg-luxury-black text-white dark:bg-luxury-gold dark:text-luxury-black'
+                    ? 'bg-luxury-black text-white dark:bg-neutral-900 dark:text-neutral-900'
                     : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-zinc-800/40'
                 }`}
               >
@@ -253,7 +253,7 @@ function ProfileContent() {
                 onClick={() => setActiveTab('wishlist')}
                 className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-[12px] transition-all duration-200 cursor-pointer ${
                   activeTab === 'wishlist'
-                    ? 'bg-luxury-black text-white dark:bg-luxury-gold dark:text-luxury-black'
+                    ? 'bg-luxury-black text-white dark:bg-neutral-900 dark:text-neutral-900'
                     : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-zinc-800/40'
                 }`}
               >
@@ -264,7 +264,7 @@ function ProfileContent() {
                 onClick={() => setActiveTab('inquiries')}
                 className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-[12px] transition-all duration-200 cursor-pointer ${
                   activeTab === 'inquiries'
-                    ? 'bg-luxury-black text-white dark:bg-luxury-gold dark:text-luxury-black'
+                    ? 'bg-luxury-black text-white dark:bg-neutral-900 dark:text-neutral-900'
                     : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-zinc-800/40'
                 }`}
               >
@@ -275,7 +275,7 @@ function ProfileContent() {
               {role === 'admin' && (
                 <Link
                   href="/admin"
-                  className="w-full flex items-center px-4 py-3 text-sm font-medium rounded-[12px] text-luxury-gold hover:bg-luxury-gold/10 transition-all duration-200 mt-4 border border-dashed border-luxury-gold/50"
+                  className="w-full flex items-center px-4 py-3 text-sm font-medium rounded-[12px] text-neutral-600 hover:bg-neutral-900/10 transition-all duration-200 mt-4 border border-dashed border-neutral-300/50"
                 >
                   <Sparkles className="w-4 h-4 mr-3" />
                   Admin Dashboard
@@ -300,11 +300,11 @@ function ProfileContent() {
             {activeTab === 'profile' && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
                 <div className="flex justify-between items-center pb-4 border-b border-gray-100 dark:border-zinc-800">
-                  <h2 className="text-2xl font-serif text-luxury-black dark:text-luxury-beige">Profile Details</h2>
+                  <h2 className="text-2xl font-serif text-neutral-900 dark:text-neutral-100">Profile Details</h2>
                   {!editingProfile && (
                     <button 
                       onClick={() => setEditingProfile(true)}
-                      className="text-xs font-semibold text-luxury-gold hover:text-luxury-gold-dark transition-colors duration-200 cursor-pointer uppercase tracking-wider"
+                      className="text-xs font-semibold text-neutral-600 hover:text-neutral-700 transition-colors duration-200 cursor-pointer uppercase tracking-wider"
                     >
                       Edit Profile
                     </button>
@@ -316,11 +316,11 @@ function ProfileContent() {
                     <div className="pb-2">
                       <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Profile Photo</label>
                       <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 rounded-[12px] overflow-hidden border border-luxury-gold/30 bg-zinc-100 dark:bg-zinc-800 flex-shrink-0 relative">
+                        <div className="w-12 h-12 rounded-[12px] overflow-hidden border border-neutral-300/30 bg-zinc-100 dark:bg-zinc-800 flex-shrink-0 relative">
                           {avatarUrl ? (
                             <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-luxury-gold/20 text-luxury-gold font-bold uppercase text-xs">
+                            <div className="w-full h-full flex items-center justify-center bg-neutral-900/20 text-neutral-600 font-bold uppercase text-xs">
                               {fullName ? fullName.charAt(0).toUpperCase() : 'U'}
                             </div>
                           )}
@@ -331,9 +331,9 @@ function ProfileContent() {
                             accept="image/*"
                             onChange={handleAvatarUpload}
                             disabled={uploadingAvatar}
-                            className="text-xs text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-[8px] file:border-0 file:text-xs file:font-semibold file:bg-luxury-gold/15 file:text-luxury-gold hover:file:bg-luxury-gold/20 file:cursor-pointer"
+                            className="text-xs text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-[8px] file:border-0 file:text-xs file:font-semibold file:bg-neutral-900/15 file:text-neutral-600 hover:file:bg-neutral-900/20 file:cursor-pointer"
                           />
-                          {uploadingAvatar && <Loader className="w-4 h-4 animate-spin text-luxury-gold" />}
+                          {uploadingAvatar && <Loader className="w-4 h-4 animate-spin text-neutral-600" />}
                         </div>
                       </div>
                     </div>
@@ -377,31 +377,31 @@ function ProfileContent() {
                 ) : (
                   <div className="space-y-4 max-w-md">
                     <div className="flex items-center space-x-4">
-                      <User className="w-5 h-5 text-luxury-gold flex-shrink-0" />
+                      <User className="w-5 h-5 text-neutral-600 flex-shrink-0" />
                       <div>
                         <p className="text-[10px] text-gray-400 uppercase tracking-wider">Full Name</p>
-                        <p className="text-sm font-medium text-luxury-black dark:text-white">{fullName || 'Not specified'}</p>
+                        <p className="text-sm font-medium text-neutral-900 dark:text-white">{fullName || 'Not specified'}</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-4">
-                      <Mail className="w-5 h-5 text-luxury-gold flex-shrink-0" />
+                      <Mail className="w-5 h-5 text-neutral-600 flex-shrink-0" />
                       <div>
                         <p className="text-[10px] text-gray-400 uppercase tracking-wider">Email Address</p>
-                        <p className="text-sm font-medium text-luxury-black dark:text-white">{user.email}</p>
+                        <p className="text-sm font-medium text-neutral-900 dark:text-white">{user.email}</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-4">
-                      <Phone className="w-5 h-5 text-luxury-gold flex-shrink-0" />
+                      <Phone className="w-5 h-5 text-neutral-600 flex-shrink-0" />
                       <div>
                         <p className="text-[10px] text-gray-400 uppercase tracking-wider">Phone Number</p>
-                        <p className="text-sm font-medium text-luxury-black dark:text-white">{phone || 'Not specified'}</p>
+                        <p className="text-sm font-medium text-neutral-900 dark:text-white">{phone || 'Not specified'}</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-4">
-                      <Calendar className="w-5 h-5 text-luxury-gold flex-shrink-0" />
+                      <Calendar className="w-5 h-5 text-neutral-600 flex-shrink-0" />
                       <div>
                         <p className="text-[10px] text-gray-400 uppercase tracking-wider">Member Since</p>
-                        <p className="text-sm font-medium text-luxury-black dark:text-white">
+                        <p className="text-sm font-medium text-neutral-900 dark:text-white">
                           {new Date(user.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
                         </p>
                       </div>
@@ -413,13 +413,13 @@ function ProfileContent() {
 
             {activeTab === 'wishlist' && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-                <h2 className="text-2xl font-serif text-luxury-black dark:text-luxury-beige pb-4 border-b border-gray-100 dark:border-zinc-800">Your Wishlist</h2>
+                <h2 className="text-2xl font-serif text-neutral-900 dark:text-neutral-100 pb-4 border-b border-gray-100 dark:border-zinc-800">Your Wishlist</h2>
                 
                 {wishlist.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-12 text-center">
                     <Heart className="w-10 h-10 text-gray-300 mb-3" />
                     <p className="text-sm text-gray-500 font-medium">Your wishlist is empty</p>
-                    <Link href="/shop" className="mt-4 text-xs font-semibold text-luxury-gold hover:text-luxury-gold-dark uppercase tracking-wider">
+                    <Link href="/shop" className="mt-4 text-xs font-semibold text-neutral-600 hover:text-neutral-700 uppercase tracking-wider">
                       Explore Products
                     </Link>
                   </div>
@@ -442,13 +442,13 @@ function ProfileContent() {
                           </div>
                           <div className="flex-1 p-3 flex flex-col justify-between">
                             <div>
-                              <h4 className="font-serif text-sm text-luxury-black dark:text-white line-clamp-1">{product?.name}</h4>
-                              <p className="text-xs font-semibold text-luxury-gold mt-1">₹{product?.price ? product.price.toLocaleString() : 'Price on request'}</p>
+                              <h4 className="font-serif text-sm text-neutral-900 dark:text-white line-clamp-1">{product?.name}</h4>
+                              <p className="text-xs font-semibold text-neutral-600 mt-1">₹{product?.price ? product.price.toLocaleString() : 'Price on request'}</p>
                             </div>
                             <div className="flex justify-between items-center mt-2">
                               <Link 
                                 href={`/product/${product?.slug}`}
-                                className="text-[10px] font-semibold text-luxury-black dark:text-luxury-beige uppercase tracking-wider hover:underline"
+                                className="text-[10px] font-semibold text-neutral-900 dark:text-neutral-100 uppercase tracking-wider hover:underline"
                               >
                                 View Details
                               </Link>
@@ -470,7 +470,7 @@ function ProfileContent() {
 
             {activeTab === 'inquiries' && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-                <h2 className="text-2xl font-serif text-luxury-black dark:text-luxury-beige pb-4 border-b border-gray-100 dark:border-zinc-800">Inquiry History</h2>
+                <h2 className="text-2xl font-serif text-neutral-900 dark:text-neutral-100 pb-4 border-b border-gray-100 dark:border-zinc-800">Inquiry History</h2>
                 
                 {inquiries.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -505,7 +505,7 @@ function ProfileContent() {
                         
                         {inquiry.products && (
                           <div className="text-xs font-semibold text-gray-400">
-                            Product: <Link href={`/product/${inquiry.products.slug}`} className="text-luxury-gold hover:underline">{inquiry.products.name}</Link>
+                            Product: <Link href={`/product/${inquiry.products.slug}`} className="text-neutral-600 hover:underline">{inquiry.products.name}</Link>
                           </div>
                         )}
                         
@@ -535,8 +535,8 @@ function ProfileContent() {
 export default function ProfilePage() {
   return (
     <Suspense fallback={
-      <div className="flex-1 flex flex-col justify-center items-center min-h-[60vh] bg-luxury-offwhite dark:bg-luxury-black text-gray-500">
-        <Loader className="w-8 h-8 animate-spin text-luxury-gold mb-2" />
+      <div className="flex-1 flex flex-col justify-center items-center min-h-[60vh] bg-neutral-50 dark:bg-neutral-950 text-gray-500">
+        <Loader className="w-8 h-8 animate-spin text-neutral-600 mb-2" />
         <span className="text-sm tracking-widest uppercase">Loading Profile...</span>
       </div>
     }>

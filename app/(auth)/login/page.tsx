@@ -2,14 +2,20 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { AlertCircle, ArrowLeft, Lock, Mail, ShieldCheck, Sparkles } from 'lucide-react';
 import { supabase, setGlobalRecaptchaToken } from '@/lib/supabase/client';
 import Recaptcha from '@/components/ui/Recaptcha';
+import { Suspense } from 'react';
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const nextPath = searchParams.get('next');
+  const safeNext =
+    nextPath && nextPath.startsWith('/') && !nextPath.startsWith('//') ? nextPath : '/';
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
@@ -23,7 +29,9 @@ export default function LoginPage() {
       setError(null);
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: { redirectTo: `${window.location.origin}/api/supabase/auth/callback` },
+        options: {
+          redirectTo: `${window.location.origin}/api/supabase/auth/callback?next=${encodeURIComponent(safeNext)}`,
+        },
       });
       if (error) throw error;
     } catch (err: any) {
@@ -50,7 +58,7 @@ export default function LoginPage() {
       setGlobalRecaptchaToken(captchaToken);
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      router.push('/');
+      router.push(safeNext);
       router.refresh();
     } catch (err: any) {
       setError(err.message || 'Invalid email or password');
@@ -60,15 +68,15 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="commerce-page flex-1 flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-8 bg-luxury-offwhite dark:bg-luxury-black">
+    <div className="flex-1 flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-8 bg-neutral-50 dark:bg-neutral-950">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <Link href="/" className="inline-flex items-center text-xs tracking-wider text-stone-600 hover:text-luxury-gold transition-colors duration-200 mb-6 uppercase">
+        <Link href="/" className="inline-flex items-center text-xs tracking-wider text-stone-600 hover:text-neutral-600 transition-colors duration-200 mb-6 uppercase">
           <ArrowLeft className="w-3.5 h-3.5 mr-1" /> Back to Store
         </Link>
-        <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-[12px] bg-luxury-charcoal text-luxury-beige dark:bg-luxury-beige dark:text-luxury-black">
+        <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-[12px] bg-neutral-900 text-neutral-100 dark:bg-neutral-100 dark:text-neutral-900">
           <ShieldCheck className="h-5 w-5" />
         </div>
-        <h1 className="text-center text-4xl font-serif tracking-tight text-luxury-black dark:text-luxury-beige">
+        <h1 className="text-center text-4xl font-serif tracking-tight text-neutral-900 dark:text-neutral-100">
           Chandan Art Gallery
         </h1>
         <p className="mt-2 text-center text-xs tracking-widest text-stone-600 dark:text-stone-400 uppercase">
@@ -104,7 +112,7 @@ export default function LoginPage() {
             <div>
               <div className="flex items-center justify-between">
                 <label className="block text-xs font-extrabold tracking-wider text-stone-600 dark:text-stone-400 uppercase">Password</label>
-                <Link href="/forgot-password" className="text-xs text-stone-600 hover:text-luxury-gold dark:text-stone-400">Forgot password?</Link>
+                <Link href="/forgot-password" className="text-xs text-stone-600 hover:text-neutral-600 dark:text-stone-400">Forgot password?</Link>
               </div>
               <div className="mt-1 relative">
                 <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className="lux-input block w-full rounded-[12px] px-4 py-3 text-sm" placeholder="••••••••" />
@@ -134,12 +142,26 @@ export default function LoginPage() {
 
           <p className="mt-8 text-center text-xs text-stone-600 dark:text-stone-400">
             Don&apos;t have an account?{' '}
-            <Link href="/signup" className="font-bold text-luxury-gold hover:underline">
+            <Link href="/signup" className="font-bold text-neutral-600 hover:underline">
               Sign Up
             </Link>
           </p>
         </div>
       </motion.div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex flex-1 items-center justify-center bg-neutral-50 py-20 dark:bg-neutral-950">
+          <p className="text-sm text-neutral-500">Loading…</p>
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }

@@ -8,13 +8,15 @@ import { useAuthStore } from '@/store/authStore';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { 
-  Heart, SlidersHorizontal, Grid, List, Search, Loader, 
-  ArrowUpDown, Check, RefreshCcw, Sparkles, X 
+  Heart, SlidersHorizontal, Search, Loader, 
+  ArrowUpDown, ArrowUpRight, Check, RefreshCcw, X 
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import LuxSelect from '@/components/ui/LuxSelect';
 import { parseMaterials, parseColors, DEFAULT_MATERIALS, DEFAULT_COLORS } from '@/lib/productOptions';
 import SmartImage from '@/components/ui/SmartImage';
+import SplitText from '@/components/SplitText';
 
 function ShopContent() {
   const router = useRouter();
@@ -192,29 +194,34 @@ function ShopContent() {
   const availableColors = colorOptions.length > 0 ? colorOptions : DEFAULT_COLORS.map((c) => c.label);
 
   return (
-    <div className="commerce-page min-h-screen flex flex-col bg-luxury-offwhite dark:bg-luxury-black">
+    <div className="min-h-screen flex flex-col bg-neutral-50 dark:bg-neutral-950">
       <Navbar />
 
-      <main className="lux-container flex-grow pt-36 pb-20">
-        {/* Header Title */}
-        <div className="mb-12 grid gap-5 lg:grid-cols-[0.9fr_1fr] lg:items-end">
-          <div>
-          <span className="lux-eyebrow">The gallery index</span>
-          <h1 className="lux-section-title mt-3">
-            The Bespoke Collections
-          </h1>
-          </div>
-          <p className="lux-copy max-w-xl lg:justify-self-end">
-            Curated custom framing, religious shadow boxes, acrylic depth work, and quiet home decor pieces selected for warm interiors.
+      <main className="lux-container flex-grow pt-24 pb-16">
+        <div className="mb-8 border-b border-neutral-200 pb-6 dark:border-neutral-800">
+          <SplitText
+            text="Shop"
+            tag="h1"
+            splitType="chars"
+            delay={40}
+            duration={0.7}
+            ease="power3.out"
+            from={{ opacity: 0, y: 28 }}
+            to={{ opacity: 1, y: 0 }}
+            threshold={0}
+            textAlign="left"
+            className="lux-section-title !block text-neutral-900 dark:text-neutral-50"
+          />
+          <p className="mt-2 max-w-xl text-sm text-neutral-500">
+            Custom frames, acrylic pieces, canvas prints, and religious art.
           </p>
         </div>
 
-        {/* Search and Filters Toggle Bar */}
-        <div className="commerce-surface mb-8 flex flex-col items-center justify-between gap-4 p-4 sm:flex-row">
-          <div className="flex items-center space-x-2 w-full sm:w-auto">
+        <div className="mb-6 flex flex-col items-stretch justify-between gap-3 border border-neutral-200 bg-white p-3 sm:flex-row sm:items-center dark:border-neutral-800 dark:bg-neutral-900">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <button
               onClick={() => setShowMobileFilters(!showMobileFilters)}
-              className="lg:hidden flex items-center px-4 py-3 border border-black/10 dark:border-white/10 rounded-[12px] text-xs font-bold text-stone-700 dark:text-stone-300 hover:bg-white/70 cursor-pointer"
+              className="lg:hidden flex items-center px-3 py-2 border border-neutral-200 dark:border-neutral-700 rounded-md text-xs font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 cursor-pointer"
             >
               <SlidersHorizontal className="w-3.5 h-3.5 mr-2" />
               Filters
@@ -224,31 +231,33 @@ function ShopContent() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search collection..."
-                className="lux-input w-full sm:w-72 px-4 py-3 pl-10 rounded-[12px] text-xs font-semibold"
+                placeholder="Search products…"
+                className="lux-input w-full sm:w-72 px-3 py-2 pl-9 rounded-md text-xs"
               />
-              <Search className="w-3.5 h-3.5 absolute left-3.5 top-3.5 text-stone-500" />
+              <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-neutral-400" />
             </div>
           </div>
 
-          <div className="flex items-center space-x-4 w-full sm:w-auto justify-end">
-            <div className="flex items-center space-x-1.5 text-xs text-stone-500">
-              <ArrowUpDown className="w-3.5 h-3.5 text-luxury-gold" />
-              <span>Sort By:</span>
-              <select
+          <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+            <div className="flex items-center gap-1.5 text-xs text-neutral-500">
+              <ArrowUpDown className="w-3.5 h-3.5" />
+              <LuxSelect
+                label="Sort:"
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="bg-transparent border-none text-luxury-black dark:text-white font-semibold focus:outline-none focus:ring-0 text-xs cursor-pointer"
-              >
-                <option value="featured">Featured</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
-                <option value="latest">Newest Arrivals</option>
-              </select>
+                onChange={setSortBy}
+                placement="bottom-right"
+                panelClassName="min-w-[190px]"
+                options={[
+                  { value: 'featured',   label: 'Featured' },
+                  { value: 'price-low',  label: 'Price: Low to High' },
+                  { value: 'price-high', label: 'Price: High to Low' },
+                  { value: 'latest',     label: 'Newest' },
+                ]}
+              />
             </div>
             <button
               onClick={resetFilters}
-              className="p-3 border border-black/10 dark:border-white/10 rounded-[12px] text-stone-500 hover:text-luxury-gold duration-200 cursor-pointer"
+              className="p-2 border border-neutral-200 dark:border-neutral-700 rounded-md text-neutral-500 hover:text-neutral-900 dark:hover:text-white duration-200 cursor-pointer"
               title="Reset Filters"
             >
               <RefreshCcw className="w-3.5 h-3.5" />
@@ -258,34 +267,32 @@ function ShopContent() {
 
         <div className="flex gap-8">
           {/* Filters Sidebar - Desktop */}
-          <div className="hidden lg:block w-1/4 flex-shrink-0 space-y-6">
-            <div className="commerce-surface sticky top-28 space-y-7 p-6">
-              
-              {/* Category Filter */}
+          <div className="hidden lg:block w-56 flex-shrink-0">
+            <div className="sticky top-24 space-y-6 border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
               <div>
-                  <h4 className="font-serif text-xl text-luxury-black dark:text-white border-b border-black/10 dark:border-white/10 pb-3 mb-4">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 border-b border-neutral-100 dark:border-neutral-800 pb-2 mb-3">
                   Category
                 </h4>
-                <div className="space-y-2">
+                <div className="space-y-0.5">
                   <button
                     onClick={() => setSelectedCategory('all')}
-                    className={`w-full text-left text-xs font-medium py-1.5 px-2 rounded-[8px] transition-colors duration-200 flex justify-between items-center ${
+                    className={`w-full text-left text-xs font-medium py-1.5 px-2 rounded-md transition-colors flex justify-between items-center ${
                       selectedCategory === 'all'
-                        ? 'bg-luxury-gold/15 text-luxury-gold-dark font-semibold'
-                        : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800/30'
+                        ? 'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900'
+                        : 'text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800'
                     }`}
                   >
-                    <span>All Collections</span>
+                    <span>All</span>
                     {selectedCategory === 'all' && <Check className="w-3 h-3" />}
                   </button>
                   {categories.map((cat) => (
                     <button
                       key={cat.id}
                       onClick={() => setSelectedCategory(cat.slug)}
-                      className={`w-full text-left text-xs font-medium py-1.5 px-2 rounded-[8px] transition-colors duration-200 flex justify-between items-center ${
+                      className={`w-full text-left text-xs font-medium py-1.5 px-2 rounded-md transition-colors flex justify-between items-center ${
                         selectedCategory === cat.slug
-                          ? 'bg-luxury-gold/15 text-luxury-gold-dark font-semibold'
-                          : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800/30'
+                          ? 'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900'
+                          : 'text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800'
                       }`}
                     >
                       <span>{cat.name}</span>
@@ -295,10 +302,9 @@ function ShopContent() {
                 </div>
               </div>
 
-              {/* Price Filter */}
               <div>
-                  <h4 className="font-serif text-xl text-luxury-black dark:text-white border-b border-black/10 dark:border-white/10 pb-3 mb-4">
-                  Price Limit (Up to)
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 border-b border-neutral-100 dark:border-neutral-800 pb-2 mb-3">
+                  Price up to
                 </h4>
                 <input
                   type="range"
@@ -307,40 +313,39 @@ function ShopContent() {
                   step="500"
                   value={priceRange}
                   onChange={(e) => setPriceRange(Number(e.target.value))}
-                  className="w-full h-1 bg-gray-200 dark:bg-zinc-800 rounded-[12px] appearance-none cursor-pointer accent-luxury-gold"
+                  className="w-full h-1 bg-neutral-200 dark:bg-neutral-700 rounded appearance-none cursor-pointer accent-neutral-900"
                 />
-                <div className="flex justify-between text-[11px] text-stone-600 dark:text-stone-400 font-semibold mt-2">
+                <div className="flex justify-between text-[11px] text-neutral-500 font-medium mt-2">
                   <span>₹500</span>
-                  <span className="text-luxury-gold-dark text-xs">₹{priceRange.toLocaleString()}</span>
+                  <span className="text-neutral-900 dark:text-neutral-100">₹{priceRange.toLocaleString()}</span>
                   <span>₹10,000</span>
                 </div>
               </div>
 
-              {/* Material Filter */}
               <div>
-                  <h4 className="font-serif text-xl text-luxury-black dark:text-white border-b border-black/10 dark:border-white/10 pb-3 mb-4">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 border-b border-neutral-100 dark:border-neutral-800 pb-2 mb-3">
                   Material
                 </h4>
-                <div className="space-y-1">
+                <div className="space-y-0.5">
                   <button
                     onClick={() => setSelectedMaterial('all')}
-                    className={`w-full text-left text-xs py-1.5 px-2 rounded-[8px] transition-colors duration-200 flex justify-between items-center ${
+                    className={`w-full text-left text-xs py-1.5 px-2 rounded-md transition-colors flex justify-between items-center ${
                       selectedMaterial === 'all'
-                        ? 'bg-gray-100 text-luxury-black dark:bg-zinc-800 dark:text-white font-semibold'
-                        : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800/30'
+                        ? 'bg-neutral-100 text-neutral-900 dark:bg-neutral-800 dark:text-white font-semibold'
+                        : 'text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800'
                     }`}
                   >
-                    <span>All Materials</span>
+                    <span>All</span>
                     {selectedMaterial === 'all' && <Check className="w-3 h-3" />}
                   </button>
                   {availableMaterials.map((mat) => (
                     <button
                       key={mat}
                       onClick={() => setSelectedMaterial(mat)}
-                      className={`w-full text-left text-xs py-1.5 px-2 rounded-[8px] transition-colors duration-200 flex justify-between items-center ${
+                      className={`w-full text-left text-xs py-1.5 px-2 rounded-md transition-colors flex justify-between items-center ${
                         selectedMaterial === mat
-                          ? 'bg-gray-100 text-luxury-black dark:bg-zinc-800 dark:text-white font-semibold'
-                          : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800/30'
+                          ? 'bg-neutral-100 text-neutral-900 dark:bg-neutral-800 dark:text-white font-semibold'
+                          : 'text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800'
                       }`}
                     >
                       <span>{mat}</span>
@@ -350,31 +355,30 @@ function ShopContent() {
                 </div>
               </div>
 
-              {/* Color Filter */}
               <div>
-                  <h4 className="font-serif text-xl text-luxury-black dark:text-white border-b border-black/10 dark:border-white/10 pb-3 mb-4">
-                  Finish / Color
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 border-b border-neutral-100 dark:border-neutral-800 pb-2 mb-3">
+                  Finish
                 </h4>
-                <div className="space-y-1">
+                <div className="space-y-0.5">
                   <button
                     onClick={() => setSelectedColor('all')}
-                    className={`w-full text-left text-xs py-1.5 px-2 rounded-[8px] transition-colors duration-200 flex justify-between items-center ${
+                    className={`w-full text-left text-xs py-1.5 px-2 rounded-md transition-colors flex justify-between items-center ${
                       selectedColor === 'all'
-                        ? 'bg-gray-100 text-luxury-black dark:bg-zinc-800 dark:text-white font-semibold'
-                        : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800/30'
+                        ? 'bg-neutral-100 text-neutral-900 dark:bg-neutral-800 dark:text-white font-semibold'
+                        : 'text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800'
                     }`}
                   >
-                    <span>All Finishes</span>
+                    <span>All</span>
                     {selectedColor === 'all' && <Check className="w-3 h-3" />}
                   </button>
                   {availableColors.map((color) => (
                     <button
                       key={color}
                       onClick={() => setSelectedColor(color)}
-                      className={`w-full text-left text-xs py-1.5 px-2 rounded-[8px] transition-colors duration-200 flex justify-between items-center ${
+                      className={`w-full text-left text-xs py-1.5 px-2 rounded-md transition-colors flex justify-between items-center ${
                         selectedColor === color
-                          ? 'bg-gray-100 text-luxury-black dark:bg-zinc-800 dark:text-white font-semibold'
-                          : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800/30'
+                          ? 'bg-neutral-100 text-neutral-900 dark:bg-neutral-800 dark:text-white font-semibold'
+                          : 'text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800'
                       }`}
                     >
                       <span>{color}</span>
@@ -383,120 +387,82 @@ function ShopContent() {
                   ))}
                 </div>
               </div>
-
             </div>
           </div>
 
           {/* Product Grid Area */}
           <div className="w-full lg:w-3/4">
             {loading ? (
-              <div className="flex flex-col justify-center items-center py-20 text-stone-600">
-                <Loader className="w-8 h-8 animate-spin text-luxury-gold mb-2" />
-                <span className="text-xs uppercase tracking-widest">Loading frames...</span>
+              <div className="flex flex-col justify-center items-center py-20 text-neutral-500">
+                <Loader className="w-6 h-6 animate-spin mb-2" />
+                <span className="text-xs">Loading…</span>
               </div>
             ) : products.length === 0 ? (
-              <div className="commerce-surface p-10 text-center sm:p-16">
-                <Search className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                  <h3 className="font-serif text-2xl text-luxury-black dark:text-white mb-2">No Frames Found</h3>
-                <p className="text-sm text-stone-600 dark:text-stone-400 max-w-sm mx-auto leading-relaxed">
-                  We couldn't find any products matching your current search criteria. Try adjusting your filters or resetting them.
+              <div className="border border-neutral-200 bg-white p-10 text-center dark:border-neutral-800 dark:bg-neutral-900 sm:p-14">
+                <h3 className="text-lg font-medium text-neutral-900 dark:text-white mb-2">No products found</h3>
+                <p className="text-sm text-neutral-500 max-w-sm mx-auto">
+                  Try adjusting your filters or search.
                 </p>
-                <button
-                  onClick={resetFilters}
-                  className="lux-button lux-button-primary mt-6"
-                >
-                  Reset All Filters
+                <button onClick={resetFilters} className="lux-button lux-button-primary mt-6">
+                  Reset filters
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 xl:grid-cols-3">
                 {products.map((prod) => {
                   const image = prod.product_images?.[0]?.image_url || 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=400';
                   const isWishlisted = wishlistIds.includes(prod.id);
                   
                   return (
-                    <div 
-                      key={prod.id} 
-                      className="commerce-module group relative flex h-full flex-col overflow-hidden p-3"
-                    >
-                      {/* Product Badges */}
-                      <div className="absolute top-3 left-3 z-10 flex flex-col space-y-1.5 select-none">
-                        {prod.is_featured && (
-                          <span className="commerce-label dark:bg-luxury-gold dark:text-luxury-black">
-                            Featured
-                          </span>
-                        )}
-                        {prod.is_best_seller && (
-                          <span className="commerce-label bg-luxury-gold text-zinc-950">
-                            Bestseller
-                          </span>
-                        )}
+                    <div key={prod.id} className="group relative flex h-full flex-col">
+                      <div className="absolute left-3 top-3 z-20 flex flex-col gap-1">
+                        {prod.is_featured && <span className="commerce-label">Featured</span>}
+                        {prod.is_best_seller && <span className="commerce-label">Bestseller</span>}
                       </div>
 
-                      {/* Wishlist Heart Toggle */}
                       <button
                         onClick={() => toggleWishlist(prod.id)}
-                        className="absolute top-4 right-4 z-10 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md p-2 rounded-[12px] border border-black/10 dark:border-white/10 hover:text-luxury-gold text-stone-400 transition-colors duration-200 cursor-pointer"
+                        className="absolute right-3 top-3 z-20 bg-white/95 p-2 text-neutral-400 opacity-100 transition-colors hover:text-neutral-900 sm:opacity-0 sm:group-hover:opacity-100 dark:bg-neutral-900/90 dark:hover:text-white cursor-pointer"
                         title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
                       >
-                        <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
+                        <Heart className={`h-4 w-4 ${isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
                       </button>
 
-                      {/* Card Image */}
-                      <Link href={`/product/${prod.slug}`} className="relative block h-72 overflow-hidden rounded-[18px] bg-stone-100 dark:bg-stone-900">
-                        <SmartImage
-                          src={image}
-                          fallbackSrc="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=900"
-                          alt={prod.name}
-                          className="image-lift h-full w-full object-cover"
-                          containerClassName="h-full w-full"
-                          fallbackLabel="Artwork preview unavailable"
-                        />
+                      <Link
+                        href={`/product/${prod.slug}`}
+                        className="relative block aspect-[3/4] overflow-hidden bg-neutral-100 dark:bg-neutral-900"
+                      >
+                        <div className="absolute inset-0 origin-center will-change-transform transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.07]">
+                          <SmartImage
+                            src={image}
+                            fallbackSrc="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=900"
+                            alt={prod.name}
+                            className="object-cover"
+                            containerClassName="h-full w-full"
+                            fallbackLabel="Artwork preview unavailable"
+                          />
+                        </div>
+                        <div className="pointer-events-none absolute inset-0 bg-neutral-950/0 transition-colors duration-500 ease-out group-hover:bg-neutral-950/35" />
+                        <span className="pointer-events-none absolute inset-x-0 bottom-0 flex translate-y-3 items-center justify-between px-4 pb-4 text-xs font-semibold uppercase tracking-[0.14em] text-white opacity-0 transition-all duration-500 ease-out group-hover:translate-y-0 group-hover:opacity-100">
+                          View piece
+                          <ArrowUpRight className="h-4 w-4" />
+                        </span>
                       </Link>
 
-                      {/* Card Details */}
-                      <div className="px-3 py-5 flex-grow flex flex-col justify-between">
-                        <div>
-                          <div className="text-[10px] text-stone-600 dark:text-stone-400 uppercase tracking-widest font-bold flex items-center space-x-1.5">
-                            <span>{prod.dimensions}</span>
-                            {prod.is_customizable && (
-                              <>
-                                <span>•</span>
-                                <span className="text-luxury-gold-dark flex items-center">
-                                  <Sparkles className="w-3 h-3 mr-0.5" /> Custom
-                                </span>
-                              </>
-                            )}
-                          </div>
-                          
-                          <Link href={`/product/${prod.slug}`} className="block mt-1">
-                            <h3 className="font-serif text-xl text-luxury-black dark:text-white hover:text-luxury-gold transition-colors duration-200 line-clamp-1">
-                              {prod.name}
-                            </h3>
-                          </Link>
-
-                          <p className="text-xs text-stone-600 dark:text-stone-400 mt-2 line-clamp-2 leading-relaxed">
-                            {prod.short_description}
-                          </p>
-                        </div>
-
-                        <div className="mt-5 pt-4 border-t border-black/10 dark:border-white/10 flex justify-between items-center">
-                          <div>
-                            <span className="text-[10px] text-stone-600 dark:text-stone-400 block uppercase tracking-wider">Starting Price</span>
-                            <span className="text-lg font-extrabold text-luxury-black dark:text-luxury-beige">
-                              ₹{prod.price ? prod.price.toLocaleString() : 'Price on request'}
-                            </span>
-                          </div>
-                          
-                          <Link
-                            href={`/product/${prod.slug}`}
-                            className="inline-flex items-center text-xs font-bold text-luxury-gold hover:text-luxury-gold-dark tracking-wider"
-                          >
-                            Details
-                          </Link>
-                        </div>
+                      <div className="mt-4 flex min-h-[5rem] flex-col">
+                        <p className="text-[0.65rem] font-medium uppercase tracking-[0.14em] text-neutral-400">
+                          {prod.dimensions}
+                          {prod.is_customizable && ' · Custom'}
+                        </p>
+                        <Link href={`/product/${prod.slug}`} className="mt-1 block">
+                          <h3 className="line-clamp-2 font-serif text-lg leading-snug text-neutral-900 transition group-hover:opacity-70 dark:text-white">
+                            {prod.name}
+                          </h3>
+                        </Link>
+                        <p className="mt-auto pt-2 text-sm font-medium tabular-nums text-neutral-700 dark:text-neutral-300">
+                          ₹{prod.price ? prod.price.toLocaleString('en-IN') : 'Price on request'}
+                        </p>
                       </div>
-
                     </div>
                   );
                 })}
@@ -522,10 +488,10 @@ function ShopContent() {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'tween', duration: 0.3 }}
-              className="fixed top-0 left-0 h-full w-full sm:max-w-xs bg-luxury-offwhite dark:bg-luxury-black shadow-2xl z-50 p-6 overflow-y-auto lg:hidden"
+              className="fixed top-0 left-0 h-full w-full sm:max-w-xs bg-neutral-50 dark:bg-neutral-950 shadow-2xl z-50 p-6 overflow-y-auto lg:hidden"
             >
               <div className="flex justify-between items-center pb-4 border-b border-gray-100 dark:border-zinc-800 mb-6">
-                <h3 className="font-serif text-lg text-luxury-black dark:text-white uppercase tracking-wider">Filters</h3>
+                <h3 className="font-serif text-lg text-neutral-900 dark:text-white uppercase tracking-wider">Filters</h3>
                 <button onClick={() => setShowMobileFilters(false)} className="text-gray-400">
                   <X className="w-5 h-5" />
                 </button>
@@ -535,14 +501,14 @@ function ShopContent() {
               <div className="space-y-6">
                 {/* Category Filter */}
                 <div>
-                  <h4 className="font-serif text-sm text-luxury-black dark:text-white pb-2 mb-3 uppercase tracking-wider border-b border-gray-50 dark:border-zinc-800">
+                  <h4 className="font-serif text-sm text-neutral-900 dark:text-white pb-2 mb-3 uppercase tracking-wider border-b border-gray-50 dark:border-zinc-800">
                     Category
                   </h4>
                   <div className="space-y-1.5">
                     <button
                       onClick={() => { setSelectedCategory('all'); setShowMobileFilters(false); }}
                       className={`w-full text-left text-xs py-2 px-2.5 rounded-[8px] ${
-                        selectedCategory === 'all' ? 'bg-luxury-gold/15 text-luxury-gold-dark font-semibold' : 'text-gray-600 dark:text-gray-300'
+                        selectedCategory === 'all' ? 'bg-neutral-900/15 text-neutral-700 font-semibold' : 'text-gray-600 dark:text-gray-300'
                       }`}
                     >
                       All Collections
@@ -552,7 +518,7 @@ function ShopContent() {
                         key={cat.id}
                         onClick={() => { setSelectedCategory(cat.slug); setShowMobileFilters(false); }}
                         className={`w-full text-left text-xs py-2 px-2.5 rounded-[8px] ${
-                          selectedCategory === cat.slug ? 'bg-luxury-gold/15 text-luxury-gold-dark font-semibold' : 'text-gray-600 dark:text-gray-300'
+                          selectedCategory === cat.slug ? 'bg-neutral-900/15 text-neutral-700 font-semibold' : 'text-gray-600 dark:text-gray-300'
                         }`}
                       >
                         {cat.name}
@@ -563,7 +529,7 @@ function ShopContent() {
 
                 {/* Price Filter */}
                 <div>
-                  <h4 className="font-serif text-sm text-luxury-black dark:text-white pb-2 mb-3 uppercase tracking-wider border-b border-gray-50 dark:border-zinc-800">
+                  <h4 className="font-serif text-sm text-neutral-900 dark:text-white pb-2 mb-3 uppercase tracking-wider border-b border-gray-50 dark:border-zinc-800">
                     Price Limit (Up to)
                   </h4>
                   <input
@@ -573,18 +539,18 @@ function ShopContent() {
                     step="500"
                     value={priceRange}
                     onChange={(e) => setPriceRange(Number(e.target.value))}
-                    className="w-full h-1 bg-gray-200 dark:bg-zinc-800 rounded-[12px] appearance-none cursor-pointer accent-luxury-gold"
+                    className="w-full h-1 bg-gray-200 dark:bg-zinc-800 rounded-[12px] appearance-none cursor-pointer accent-neutral-900"
                   />
                   <div className="flex justify-between text-[11px] text-gray-400 font-semibold mt-1">
                     <span>₹500</span>
-                    <span className="text-luxury-gold-dark text-xs">₹{priceRange.toLocaleString()}</span>
+                    <span className="text-neutral-700 text-xs">₹{priceRange.toLocaleString()}</span>
                     <span>₹10,000</span>
                   </div>
                 </div>
 
                 {/* Material Filter */}
                 <div>
-                  <h4 className="font-serif text-sm text-luxury-black dark:text-white pb-2 mb-3 uppercase tracking-wider border-b border-gray-50 dark:border-zinc-800">
+                  <h4 className="font-serif text-sm text-neutral-900 dark:text-white pb-2 mb-3 uppercase tracking-wider border-b border-gray-50 dark:border-zinc-800">
                     Material
                   </h4>
                   <div className="space-y-1">
@@ -593,7 +559,7 @@ function ShopContent() {
                         key={mat}
                         onClick={() => { setSelectedMaterial(mat === selectedMaterial ? 'all' : mat); setShowMobileFilters(false); }}
                         className={`w-full text-left text-xs py-2 px-2.5 rounded-[8px] ${
-                          selectedMaterial === mat ? 'bg-gray-100 text-luxury-black dark:bg-zinc-800 dark:text-white font-semibold' : 'text-gray-600 dark:text-gray-300'
+                          selectedMaterial === mat ? 'bg-gray-100 text-neutral-900 dark:bg-zinc-800 dark:text-white font-semibold' : 'text-gray-600 dark:text-gray-300'
                         }`}
                       >
                         {mat}
@@ -604,7 +570,7 @@ function ShopContent() {
 
                 {/* Color Filter */}
                 <div>
-                  <h4 className="font-serif text-sm text-luxury-black dark:text-white pb-2 mb-3 uppercase tracking-wider border-b border-gray-50 dark:border-zinc-800">
+                  <h4 className="font-serif text-sm text-neutral-900 dark:text-white pb-2 mb-3 uppercase tracking-wider border-b border-gray-50 dark:border-zinc-800">
                     Finish / Color
                   </h4>
                   <div className="space-y-1">
@@ -613,7 +579,7 @@ function ShopContent() {
                         key={color}
                         onClick={() => { setSelectedColor(color === selectedColor ? 'all' : color); setShowMobileFilters(false); }}
                         className={`w-full text-left text-xs py-2 px-2.5 rounded-[8px] ${
-                          selectedColor === color ? 'bg-gray-100 text-luxury-black dark:bg-zinc-800 dark:text-white font-semibold' : 'text-gray-600 dark:text-gray-300'
+                          selectedColor === color ? 'bg-gray-100 text-neutral-900 dark:bg-zinc-800 dark:text-white font-semibold' : 'text-gray-600 dark:text-gray-300'
                         }`}
                       >
                         {color}
@@ -624,7 +590,7 @@ function ShopContent() {
 
                 <button
                   onClick={() => { resetFilters(); setShowMobileFilters(false); }}
-                  className="w-full py-3 bg-luxury-charcoal hover:bg-luxury-gold text-white hover:text-luxury-black font-bold rounded-[12px] text-xs uppercase tracking-wider duration-200 cursor-pointer"
+                  className="w-full py-3 bg-neutral-900 hover:bg-neutral-900 text-white hover:text-neutral-900 font-bold rounded-[12px] text-xs uppercase tracking-wider duration-200 cursor-pointer"
                 >
                   Reset All Filters
                 </button>
@@ -642,8 +608,8 @@ function ShopContent() {
 export default function ShopPage() {
   return (
     <Suspense fallback={
-      <div className="flex-1 flex justify-center items-center min-h-[60vh] bg-luxury-offwhite text-gray-500">
-        <Loader className="w-8 h-8 animate-spin text-luxury-gold" />
+      <div className="flex-1 flex justify-center items-center min-h-[60vh] bg-neutral-50 text-gray-500">
+        <Loader className="w-8 h-8 animate-spin text-neutral-600" />
       </div>
     }>
       <ShopContent />

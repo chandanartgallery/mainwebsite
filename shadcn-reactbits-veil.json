@@ -1,0 +1,710 @@
+﻿{
+  "pagination": {
+    "total": 164,
+    "offset": 0,
+    "limit": 100,
+    "hasMore": true
+  },
+  "items": [
+    {
+      "name": "DarkVeil-TS-TW",
+      "type": "registry:component",
+      "description": "Subtle dark background with a smooth animation and postprocessing.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/DarkVeil-TS-TW"
+    },
+    {
+      "name": "DarkVeil-JS-TW",
+      "type": "registry:component",
+      "description": "Subtle dark background with a smooth animation and postprocessing.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/DarkVeil-JS-TW"
+    },
+    {
+      "name": "DarkVeil-TS-CSS",
+      "type": "registry:component",
+      "description": "Subtle dark background with a smooth animation and postprocessing.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/DarkVeil-TS-CSS"
+    },
+    {
+      "name": "DarkVeil-JS-CSS",
+      "type": "registry:component",
+      "description": "Subtle dark background with a smooth animation and postprocessing.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/DarkVeil-JS-CSS"
+    },
+    {
+      "name": "LightPillar-JS-CSS",
+      "type": "registry:component",
+      "description": "Vertical pillar of light with glow effects.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/LightPillar-JS-CSS"
+    },
+    {
+      "name": "LightPillar-TS-CSS",
+      "type": "registry:component",
+      "description": "Vertical pillar of light with glow effects.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/LightPillar-TS-CSS"
+    },
+    {
+      "name": "LightPillar-JS-TW",
+      "type": "registry:component",
+      "description": "Vertical pillar of light with glow effects.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/LightPillar-JS-TW"
+    },
+    {
+      "name": "LightPillar-TS-TW",
+      "type": "registry:component",
+      "description": "Vertical pillar of light with glow effects.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/LightPillar-TS-TW"
+    },
+    {
+      "name": "TiltedCard-TS-CSS",
+      "type": "registry:component",
+      "description": "3D perspective tilt card reacting to pointer.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/TiltedCard-TS-CSS"
+    },
+    {
+      "name": "TiltedCard-JS-TW",
+      "type": "registry:component",
+      "description": "3D perspective tilt card reacting to pointer.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/TiltedCard-JS-TW"
+    },
+    {
+      "name": "TiltedCard-JS-CSS",
+      "type": "registry:component",
+      "description": "3D perspective tilt card reacting to pointer.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/TiltedCard-JS-CSS"
+    },
+    {
+      "name": "TiltedCard-TS-TW",
+      "type": "registry:component",
+      "description": "3D perspective tilt card reacting to pointer.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/TiltedCard-TS-TW"
+    },
+    {
+      "name": "LightRays-TS-TW",
+      "type": "registry:component",
+      "description": "Volumetric light rays/beams with customizable direction.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/LightRays-TS-TW"
+    },
+    {
+      "name": "LightRays-JS-CSS",
+      "type": "registry:component",
+      "description": "Volumetric light rays/beams with customizable direction.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/LightRays-JS-CSS"
+    },
+    {
+      "name": "LightRays-JS-TW",
+      "type": "registry:component",
+      "description": "Volumetric light rays/beams with customizable direction.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/LightRays-JS-TW"
+    },
+    {
+      "name": "LightRays-TS-CSS",
+      "type": "registry:component",
+      "description": "Volumetric light rays/beams with customizable direction.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/LightRays-TS-CSS"
+    },
+    {
+      "name": "GridMotion-TS-TW",
+      "type": "registry:component",
+      "description": "Perspective moving grid lines based on cusror position.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/GridMotion-TS-TW"
+    },
+    {
+      "name": "GridMotion-JS-CSS",
+      "type": "registry:component",
+      "description": "Perspective moving grid lines based on cusror position.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/GridMotion-JS-CSS"
+    },
+    {
+      "name": "GridMotion-JS-TW",
+      "type": "registry:component",
+      "description": "Perspective moving grid lines based on cusror position.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/GridMotion-JS-TW"
+    },
+    {
+      "name": "GridMotion-TS-CSS",
+      "type": "registry:component",
+      "description": "Perspective moving grid lines based on cusror position.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/GridMotion-TS-CSS"
+    },
+    {
+      "name": "ScrollStack-TS-CSS",
+      "type": "registry:component",
+      "description": "Overlapping card stack reveals on scroll with depth layering.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/ScrollStack-TS-CSS"
+    },
+    {
+      "name": "ScrollStack-JS-CSS",
+      "type": "registry:component",
+      "description": "Overlapping card stack reveals on scroll with depth layering.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/ScrollStack-JS-CSS"
+    },
+    {
+      "name": "ScrollStack-JS-TW",
+      "type": "registry:component",
+      "description": "Overlapping card stack reveals on scroll with depth layering.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/ScrollStack-JS-TW"
+    },
+    {
+      "name": "ScrollStack-TS-TW",
+      "type": "registry:component",
+      "description": "Overlapping card stack reveals on scroll with depth layering.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/ScrollStack-TS-TW"
+    },
+    {
+      "name": "MagicBento-TS-CSS",
+      "type": "registry:component",
+      "description": "Interactive bento grid tiles expand + animate with various options.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/MagicBento-TS-CSS"
+    },
+    {
+      "name": "MagicBento-JS-CSS",
+      "type": "registry:component",
+      "description": "Interactive bento grid tiles expand + animate with various options.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/MagicBento-JS-CSS"
+    },
+    {
+      "name": "MagicBento-JS-TW",
+      "type": "registry:component",
+      "description": "Interactive bento grid tiles expand + animate with various options.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/MagicBento-JS-TW"
+    },
+    {
+      "name": "MagicBento-TS-TW",
+      "type": "registry:component",
+      "description": "Interactive bento grid tiles expand + animate with various options.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/MagicBento-TS-TW"
+    },
+    {
+      "name": "ChromaGrid-TS-CSS",
+      "type": "registry:component",
+      "description": "A responsive grid of grayscale tiles. Hovering the grid reaveals their colors.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/ChromaGrid-TS-CSS"
+    },
+    {
+      "name": "ChromaGrid-JS-TW",
+      "type": "registry:component",
+      "description": "A responsive grid of grayscale tiles. Hovering the grid reaveals their colors.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/ChromaGrid-JS-TW"
+    },
+    {
+      "name": "ChromaGrid-JS-CSS",
+      "type": "registry:component",
+      "description": "A responsive grid of grayscale tiles. Hovering the grid reaveals their colors.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/ChromaGrid-JS-CSS"
+    },
+    {
+      "name": "ChromaGrid-TS-TW",
+      "type": "registry:component",
+      "description": "A responsive grid of grayscale tiles. Hovering the grid reaveals their colors.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/ChromaGrid-TS-TW"
+    },
+    {
+      "name": "LiquidEther-TS-TW",
+      "type": "registry:component",
+      "description": "Interactive liquid shader with flowing distortion and customizable colors.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/LiquidEther-TS-TW"
+    },
+    {
+      "name": "LiquidEther-JS-TW",
+      "type": "registry:component",
+      "description": "Interactive liquid shader with flowing distortion and customizable colors.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/LiquidEther-JS-TW"
+    },
+    {
+      "name": "LiquidEther-JS-CSS",
+      "type": "registry:component",
+      "description": "Interactive liquid shader with flowing distortion and customizable colors.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/LiquidEther-JS-CSS"
+    },
+    {
+      "name": "LiquidEther-TS-CSS",
+      "type": "registry:component",
+      "description": "Interactive liquid shader with flowing distortion and customizable colors.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/LiquidEther-TS-CSS"
+    },
+    {
+      "name": "DotField-JS-TW",
+      "type": "registry:component",
+      "description": "Interactive dot grid with cursor bulge, glow, sparkle, and wave effects.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/DotField-JS-TW"
+    },
+    {
+      "name": "DotField-JS-CSS",
+      "type": "registry:component",
+      "description": "Interactive dot grid with cursor bulge, glow, sparkle, and wave effects.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/DotField-JS-CSS"
+    },
+    {
+      "name": "DotField-TS-CSS",
+      "type": "registry:component",
+      "description": "Interactive dot grid with cursor bulge, glow, sparkle, and wave effects.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/DotField-TS-CSS"
+    },
+    {
+      "name": "DotField-TS-TW",
+      "type": "registry:component",
+      "description": "Interactive dot grid with cursor bulge, glow, sparkle, and wave effects.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/DotField-TS-TW"
+    },
+    {
+      "name": "Silk-JS-CSS",
+      "type": "registry:component",
+      "description": "Smooth waves background with soft lighting.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/Silk-JS-CSS"
+    },
+    {
+      "name": "Silk-JS-TW",
+      "type": "registry:component",
+      "description": "Smooth waves background with soft lighting.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/Silk-JS-TW"
+    },
+    {
+      "name": "Silk-TS-TW",
+      "type": "registry:component",
+      "description": "Smooth waves background with soft lighting.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/Silk-TS-TW"
+    },
+    {
+      "name": "Silk-TS-CSS",
+      "type": "registry:component",
+      "description": "Smooth waves background with soft lighting.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/Silk-TS-CSS"
+    },
+    {
+      "name": "OptionWheel-TS-TW",
+      "type": "registry:component",
+      "description": "Curved option picker that spins via scroll, drag, or arrow keys, fading and tilting items away from the selection.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/OptionWheel-TS-TW"
+    },
+    {
+      "name": "OptionWheel-JS-TW",
+      "type": "registry:component",
+      "description": "Curved option picker that spins via scroll, drag, or arrow keys, fading and tilting items away from the selection.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/OptionWheel-JS-TW"
+    },
+    {
+      "name": "OptionWheel-JS-CSS",
+      "type": "registry:component",
+      "description": "Curved option picker that spins via scroll, drag, or arrow keys, fading and tilting items away from the selection.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/OptionWheel-JS-CSS"
+    },
+    {
+      "name": "OptionWheel-TS-CSS",
+      "type": "registry:component",
+      "description": "Curved option picker that spins via scroll, drag, or arrow keys, fading and tilting items away from the selection.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/OptionWheel-TS-CSS"
+    },
+    {
+      "name": "Carousel-TS-CSS",
+      "type": "registry:component",
+      "description": "Responsive carousel with touch gestures, looping and transitions.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/Carousel-TS-CSS"
+    },
+    {
+      "name": "Carousel-JS-CSS",
+      "type": "registry:component",
+      "description": "Responsive carousel with touch gestures, looping and transitions.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/Carousel-JS-CSS"
+    },
+    {
+      "name": "Carousel-JS-TW",
+      "type": "registry:component",
+      "description": "Responsive carousel with touch gestures, looping and transitions.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/Carousel-JS-TW"
+    },
+    {
+      "name": "Carousel-TS-TW",
+      "type": "registry:component",
+      "description": "Responsive carousel with touch gestures, looping and transitions.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/Carousel-TS-TW"
+    },
+    {
+      "name": "PixelCard-TS-TW",
+      "type": "registry:component",
+      "description": "Card content revealed through pixel expansion transition.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/PixelCard-TS-TW"
+    },
+    {
+      "name": "PixelCard-JS-TW",
+      "type": "registry:component",
+      "description": "Card content revealed through pixel expansion transition.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/PixelCard-JS-TW"
+    },
+    {
+      "name": "PixelCard-TS-CSS",
+      "type": "registry:component",
+      "description": "Card content revealed through pixel expansion transition.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/PixelCard-TS-CSS"
+    },
+    {
+      "name": "PixelCard-JS-CSS",
+      "type": "registry:component",
+      "description": "Card content revealed through pixel expansion transition.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/PixelCard-JS-CSS"
+    },
+    {
+      "name": "LineWaves-JS-CSS",
+      "type": "registry:component",
+      "description": "Animated line wave pattern with colorful warped distortion.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/LineWaves-JS-CSS"
+    },
+    {
+      "name": "LineWaves-TS-CSS",
+      "type": "registry:component",
+      "description": "Animated line wave pattern with colorful warped distortion.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/LineWaves-TS-CSS"
+    },
+    {
+      "name": "LineWaves-TS-TW",
+      "type": "registry:component",
+      "description": "Animated line wave pattern with colorful warped distortion.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/LineWaves-TS-TW"
+    },
+    {
+      "name": "LineWaves-JS-TW",
+      "type": "registry:component",
+      "description": "Animated line wave pattern with colorful warped distortion.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/LineWaves-JS-TW"
+    },
+    {
+      "name": "MagicRings-TS-CSS",
+      "type": "registry:component",
+      "description": "Interactive magic rings effect with customizable parameters.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/MagicRings-TS-CSS"
+    },
+    {
+      "name": "MagicRings-JS-TW",
+      "type": "registry:component",
+      "description": "Interactive magic rings effect with customizable parameters.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/MagicRings-JS-TW"
+    },
+    {
+      "name": "MagicRings-JS-CSS",
+      "type": "registry:component",
+      "description": "Interactive magic rings effect with customizable parameters.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/MagicRings-JS-CSS"
+    },
+    {
+      "name": "MagicRings-TS-TW",
+      "type": "registry:component",
+      "description": "Interactive magic rings effect with customizable parameters.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/MagicRings-TS-TW"
+    },
+    {
+      "name": "Masonry-JS-CSS",
+      "type": "registry:component",
+      "description": "Responsive masonry layout with animated reflow + gaps optimization.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/Masonry-JS-CSS"
+    },
+    {
+      "name": "Masonry-JS-TW",
+      "type": "registry:component",
+      "description": "Responsive masonry layout with animated reflow + gaps optimization.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/Masonry-JS-TW"
+    },
+    {
+      "name": "Masonry-TS-TW",
+      "type": "registry:component",
+      "description": "Responsive masonry layout with animated reflow + gaps optimization.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/Masonry-TS-TW"
+    },
+    {
+      "name": "Masonry-TS-CSS",
+      "type": "registry:component",
+      "description": "Responsive masonry layout with animated reflow + gaps optimization.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/Masonry-TS-CSS"
+    },
+    {
+      "name": "Ribbons-TS-TW",
+      "type": "registry:component",
+      "description": "Flowing responsive ribbons/cursor trail driven by physics and pointer motion.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/Ribbons-TS-TW"
+    },
+    {
+      "name": "Ribbons-TS-CSS",
+      "type": "registry:component",
+      "description": "Flowing responsive ribbons/cursor trail driven by physics and pointer motion.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/Ribbons-TS-CSS"
+    },
+    {
+      "name": "Ribbons-JS-TW",
+      "type": "registry:component",
+      "description": "Flowing responsive ribbons/cursor trail driven by physics and pointer motion.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/Ribbons-JS-TW"
+    },
+    {
+      "name": "Ribbons-JS-CSS",
+      "type": "registry:component",
+      "description": "Flowing responsive ribbons/cursor trail driven by physics and pointer motion.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/Ribbons-JS-CSS"
+    },
+    {
+      "name": "PixelTransition-TS-CSS",
+      "type": "registry:component",
+      "description": "Pixel dissolve transition for content reveal on hover.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/PixelTransition-TS-CSS"
+    },
+    {
+      "name": "PixelTransition-TS-TW",
+      "type": "registry:component",
+      "description": "Pixel dissolve transition for content reveal on hover.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/PixelTransition-TS-TW"
+    },
+    {
+      "name": "PixelTransition-JS-TW",
+      "type": "registry:component",
+      "description": "Pixel dissolve transition for content reveal on hover.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/PixelTransition-JS-TW"
+    },
+    {
+      "name": "PixelTransition-JS-CSS",
+      "type": "registry:component",
+      "description": "Pixel dissolve transition for content reveal on hover.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/PixelTransition-JS-CSS"
+    },
+    {
+      "name": "Antigravity-TS-TW",
+      "type": "registry:component",
+      "description": "3D antigravity particle field that repels from the cursor with smooth motion.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/Antigravity-TS-TW"
+    },
+    {
+      "name": "Antigravity-TS-CSS",
+      "type": "registry:component",
+      "description": "3D antigravity particle field that repels from the cursor with smooth motion.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/Antigravity-TS-CSS"
+    },
+    {
+      "name": "Antigravity-JS-TW",
+      "type": "registry:component",
+      "description": "3D antigravity particle field that repels from the cursor with smooth motion.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/Antigravity-JS-TW"
+    },
+    {
+      "name": "Antigravity-JS-CSS",
+      "type": "registry:component",
+      "description": "3D antigravity particle field that repels from the cursor with smooth motion.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/Antigravity-JS-CSS"
+    },
+    {
+      "name": "FlowingMenu-TS-CSS",
+      "type": "registry:component",
+      "description": "Liquid flowing active indicator glides between menu items.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/FlowingMenu-TS-CSS"
+    },
+    {
+      "name": "FlowingMenu-JS-TW",
+      "type": "registry:component",
+      "description": "Liquid flowing active indicator glides between menu items.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/FlowingMenu-JS-TW"
+    },
+    {
+      "name": "FlowingMenu-JS-CSS",
+      "type": "registry:component",
+      "description": "Liquid flowing active indicator glides between menu items.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/FlowingMenu-JS-CSS"
+    },
+    {
+      "name": "FlowingMenu-TS-TW",
+      "type": "registry:component",
+      "description": "Liquid flowing active indicator glides between menu items.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/FlowingMenu-TS-TW"
+    },
+    {
+      "name": "PlasmaWave-TS-CSS",
+      "type": "registry:component",
+      "description": "Raymarched plasma waves with dual-wave interference and OGL.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/PlasmaWave-TS-CSS"
+    },
+    {
+      "name": "PlasmaWave-TS-TW",
+      "type": "registry:component",
+      "description": "Raymarched plasma waves with dual-wave interference and OGL.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/PlasmaWave-TS-TW"
+    },
+    {
+      "name": "PlasmaWave-JS-TW",
+      "type": "registry:component",
+      "description": "Raymarched plasma waves with dual-wave interference and OGL.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/PlasmaWave-JS-TW"
+    },
+    {
+      "name": "PlasmaWave-JS-CSS",
+      "type": "registry:component",
+      "description": "Raymarched plasma waves with dual-wave interference and OGL.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/PlasmaWave-JS-CSS"
+    },
+    {
+      "name": "FuzzyText-TS-CSS",
+      "type": "registry:component",
+      "description": "Vibrating fuzzy text with controllable hover intensity.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/FuzzyText-TS-CSS"
+    },
+    {
+      "name": "FuzzyText-TS-TW",
+      "type": "registry:component",
+      "description": "Vibrating fuzzy text with controllable hover intensity.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/FuzzyText-TS-TW"
+    },
+    {
+      "name": "FuzzyText-JS-TW",
+      "type": "registry:component",
+      "description": "Vibrating fuzzy text with controllable hover intensity.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/FuzzyText-JS-TW"
+    },
+    {
+      "name": "FuzzyText-JS-CSS",
+      "type": "registry:component",
+      "description": "Vibrating fuzzy text with controllable hover intensity.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/FuzzyText-JS-CSS"
+    },
+    {
+      "name": "ColorBends-TS-TW",
+      "type": "registry:component",
+      "description": "Vibrant color bends with smooth flowing animation.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/ColorBends-TS-TW"
+    },
+    {
+      "name": "ColorBends-TS-CSS",
+      "type": "registry:component",
+      "description": "Vibrant color bends with smooth flowing animation.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/ColorBends-TS-CSS"
+    },
+    {
+      "name": "ColorBends-JS-TW",
+      "type": "registry:component",
+      "description": "Vibrant color bends with smooth flowing animation.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/ColorBends-JS-TW"
+    },
+    {
+      "name": "ColorBends-JS-CSS",
+      "type": "registry:component",
+      "description": "Vibrant color bends with smooth flowing animation.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/ColorBends-JS-CSS"
+    },
+    {
+      "name": "ModelViewer-TS-TW",
+      "type": "registry:component",
+      "description": "Three.js model viewer with orbit controls and lighting presets.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/ModelViewer-TS-TW"
+    },
+    {
+      "name": "ModelViewer-TS-CSS",
+      "type": "registry:component",
+      "description": "Three.js model viewer with orbit controls and lighting presets.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/ModelViewer-TS-CSS"
+    },
+    {
+      "name": "ModelViewer-JS-TW",
+      "type": "registry:component",
+      "description": "Three.js model viewer with orbit controls and lighting presets.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/ModelViewer-JS-TW"
+    },
+    {
+      "name": "ModelViewer-JS-CSS",
+      "type": "registry:component",
+      "description": "Three.js model viewer with orbit controls and lighting presets.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/ModelViewer-JS-CSS"
+    }
+  ]
+}

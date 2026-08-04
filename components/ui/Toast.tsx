@@ -16,7 +16,7 @@ export default function ToastContainer() {
       case 'warning':
         return <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0" />;
       default:
-        return <Info className="w-5 h-5 text-luxury-gold flex-shrink-0" />;
+        return <Info className="w-5 h-5 text-neutral-600 flex-shrink-0" />;
     }
   };
 
@@ -29,7 +29,7 @@ export default function ToastContainer() {
       case 'warning':
         return 'bg-zinc-950/95 border-amber-500/40 shadow-amber-500/10';
       default:
-        return 'bg-zinc-950/95 border-luxury-gold/40 shadow-luxury-gold/10';
+        return 'bg-zinc-950/95 border-neutral-300/40 shadow-luxury-gold/10';
     }
   };
 
@@ -47,12 +47,12 @@ export default function ToastContainer() {
             )}`}
           >
             {getIcon(toast.type)}
-            <div className="flex-1 text-sm font-medium text-luxury-beige leading-relaxed">
+            <div className="flex-1 text-sm font-medium text-neutral-100 leading-relaxed">
               {toast.message}
             </div>
             <button
               onClick={() => removeToast(toast.id)}
-              className="text-gray-400 hover:text-luxury-gold dark:hover:text-white transition-colors cursor-pointer"
+              className="text-gray-400 hover:text-neutral-600 dark:hover:text-white transition-colors cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>

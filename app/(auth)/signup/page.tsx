@@ -81,15 +81,15 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="commerce-page flex-1 flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-8 bg-luxury-offwhite dark:bg-luxury-black">
+    <div className="flex-1 flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-8 bg-neutral-50 dark:bg-neutral-950">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <Link href="/" className="inline-flex items-center text-xs tracking-wider text-stone-600 hover:text-luxury-gold transition-colors duration-200 mb-6 uppercase">
+        <Link href="/" className="inline-flex items-center text-xs tracking-wider text-stone-600 hover:text-neutral-600 transition-colors duration-200 mb-6 uppercase">
           <ArrowLeft className="w-3.5 h-3.5 mr-1" /> Back to Store
         </Link>
-        <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-[12px] bg-luxury-charcoal text-luxury-beige dark:bg-luxury-beige dark:text-luxury-black">
+        <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-[12px] bg-neutral-900 text-neutral-100 dark:bg-neutral-100 dark:text-neutral-900">
           <UserPlus className="h-5 w-5" />
         </div>
-        <h1 className="text-center text-4xl font-serif tracking-tight text-luxury-black dark:text-luxury-beige">Create your account</h1>
+        <h1 className="text-center text-4xl font-serif tracking-tight text-neutral-900 dark:text-neutral-100">Create your account</h1>
         <p className="mt-2 text-center text-xs tracking-widest text-stone-600 dark:text-stone-400 uppercase">
           Save wishlist, inquiries, and order context
         </p>
@@ -152,7 +152,7 @@ export default function SignupPage() {
           </button>
           <p className="mt-8 text-center text-xs text-stone-600 dark:text-stone-400">
             Already have an account?{' '}
-            <Link href="/login" className="font-bold text-luxury-gold hover:underline">Sign In</Link>
+            <Link href="/login" className="font-bold text-neutral-600 hover:underline">Sign In</Link>
           </p>
         </div>
       </motion.div>

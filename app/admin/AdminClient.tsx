@@ -6,8 +6,9 @@ import { useUIStore } from '@/store/uiStore';
 import AnalyticsCharts from '@/components/admin/AnalyticsCharts';
 import { parseMaterials, parseColors, serializeMaterials, serializeColors, DEFAULT_MATERIALS, DEFAULT_COLORS, type MaterialOption, type ColorOption } from '@/lib/productOptions';
 import { DEFAULT_PRODUCT_CONFIG, parseProductConfig, parseSizesExtended, serializeSizesExtended, type ProductPageConfig, type ExtendedSizeOption } from '@/lib/productConfig';
-import { BarChart3, MessageSquare, Star, MessageCircle, Edit, PlusCircle, Trash2, Check, CheckSquare, Menu, X, ExternalLink, Users, Settings, BookOpen, ListOrdered, ChevronRight, Package, Home, Bell, Moon, Sun, Globe } from 'lucide-react';
+import { BarChart3, MessageSquare, Star, MessageCircle, Edit, PlusCircle, Trash2, Check, CheckSquare, Menu, X, ExternalLink, Users, Settings, BookOpen, ListOrdered, ChevronRight, Package, Home, Bell, Moon, Sun, Globe, Tag, Shield, ShieldOff, Phone, Mail, Clock, Filter, ArrowUpDown, ChevronDown, Copy } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import LuxSelect from '@/components/ui/LuxSelect';
 
 // ── Variants ──────────────────────────────────────────────────────────────────
 const EASE = [0.22,1,0.36,1] as const;
@@ -19,28 +20,29 @@ const ROW   = { hidden:{ opacity:0, x:-8 }, visible:{ opacity:1, x:0, transition
 const MODAL = { hidden:{ opacity:0, scale:0.96, y:12 }, visible:{ opacity:1, scale:1, y:0, transition:{ duration:0.26, ease:EASE } }, exit:{ opacity:0, scale:0.97, y:8, transition:{ duration:0.18 } } };
 
 // ── Types ─────────────────────────────────────────────────────────────────────
-type S = 'dashboard'|'analytics'|'inventory'|'inquiries'|'moderation'|'blog'|'users'|'settings';
+type S = 'dashboard'|'analytics'|'inventory'|'inquiries'|'moderation'|'blog'|'users'|'vouchers'|'settings';
 
 interface Props {
   adminEmail:string; adminName:string; adminAvatar:string|null;
   categories:any[]; initialProducts:any[]; initialInquiries:any[];
   initialReviews:any[]; initialApprovedReviews:any[]; initialComments:any[];
   events:any[]; initialBlogPosts:any[]; blogCategories:any[]; allProfiles:any[];
+  initialVouchers:any[];
 }
 
 const NAV = [
-  { group:'Overview',    items:[{ id:'dashboard',  label:'Dashboard',    icon:Home },     { id:'analytics', label:'Analytics',    icon:BarChart3 }] },
-  { group:'Commerce',    items:[{ id:'inventory',  label:'Art Inventory', icon:Package },  { id:'inquiries', label:'Inquiries',    icon:MessageSquare }] },
-  { group:'Content',     items:[{ id:'blog',       label:'Blog CMS',      icon:BookOpen }, { id:'moderation',label:'Moderation',   icon:ListOrdered }] },
-  { group:'Management',  items:[{ id:'users',      label:'Users',         icon:Users },    { id:'settings',  label:'Settings',     icon:Settings }] },
+  { group:'Overview',    items:[{ id:'dashboard',  label:'Dashboard',  icon:Home },     { id:'analytics', label:'Analytics',  icon:BarChart3 }] },
+  { group:'Store',       items:[{ id:'inventory',  label:'Products',   icon:Package },  { id:'inquiries', label:'Inquiries',  icon:MessageSquare }] },
+  { group:'Content',     items:[{ id:'blog',       label:'Blog',       icon:BookOpen }, { id:'moderation',label:'Moderation', icon:ListOrdered }] },
+  { group:'Manage',      items:[{ id:'users',      label:'Users',      icon:Users },    { id:'vouchers',  label:'Vouchers',   icon:Tag },           { id:'settings',  label:'Settings',   icon:Settings }] },
 ];
-const TITLES:Record<S,string> = { dashboard:'Dashboard', analytics:'Analytics', inventory:'Art Inventory', inquiries:'Inquiries', moderation:'Moderation', blog:'Blog CMS', users:'Users', settings:'Settings' };
+const TITLES:Record<S,string> = { dashboard:'Dashboard', analytics:'Analytics', inventory:'Products', inquiries:'Inquiries', moderation:'Moderation', blog:'Blog', users:'Users', vouchers:'Vouchers', settings:'Settings' };
 
 // ── Shared input/label CSS helper ────────────────────────────────────────────
 const INP = "adm-input";
 const LBL = "block text-[0.6rem] font-bold uppercase tracking-widest mb-1.5";
 
-export default function AdminClient({ adminEmail, adminName, adminAvatar, categories, initialProducts, initialInquiries, initialReviews, initialApprovedReviews, initialComments, events, initialBlogPosts, blogCategories, allProfiles }: Props) {
+export default function AdminClient({ adminEmail, adminName, adminAvatar, categories, initialProducts, initialInquiries, initialReviews, initialApprovedReviews, initialComments, events, initialBlogPosts, blogCategories, allProfiles, initialVouchers }: Props) {
   const { addToast } = useUIStore();
 
   // ── Layout ────────────────────────────────────────
@@ -57,6 +59,23 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
   const [comments,        setComments]        = useState<any[]>(initialComments);
   const [blogPosts,       setBlogPosts]       = useState<any[]>(initialBlogPosts);
   const [profiles,        setProfiles]        = useState<any[]>(allProfiles);
+
+  // ── Voucher state ─────────────────────────────────
+  const [vouchers,        setVouchers]        = useState<any[]>(initialVouchers);
+  const [showVoucher,     setShowVoucher]     = useState(false);
+  const [editVoucher,     setEditVoucher]     = useState<any|null>(null);
+  const [vCode,setVCode]=useState(''); const [vDesc,setVDesc]=useState('');
+  const [vType,setVType]=useState<'percentage'|'fixed_amount'>('percentage');
+  const [vValue,setVValue]=useState(10); const [vMin,setVMin]=useState(0);
+  const [vMax,setVMax]=useState(0); const [vMaxUses,setVMaxUses]=useState(0);
+  const [vExpiry,setVExpiry]=useState(''); const [vActive,setVActive]=useState(true);
+  const [voucherSearch, setVoucherSearch] = useState('');
+
+  // ── Users panel state ─────────────────────────────
+  const [selectedUser,    setSelectedUser]    = useState<any|null>(null);
+  const [userInquiries,   setUserInquiries]   = useState<any[]>([]);
+  const [userPanelLoading,setUserPanelLoading]= useState(false);
+  const [userSearch,      setUserSearch]      = useState('');
 
   // ── Product form ──────────────────────────────────
   const [showProd, setShowProd] = useState(false);
@@ -235,16 +254,13 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
     const exp = mobile || sidebarOpen;
     return (
       <div className="flex flex-col h-full" style={{background:'var(--adm-sidebar)',borderRight:'1px solid var(--adm-border)'}}>
-        {/* Logo */}
-        <div className="flex items-center gap-3 px-4 py-4" style={{borderBottom:'1px solid rgba(185,154,100,0.12)'}}>
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{background:'var(--adm-gold)'}}>
-            <span className="font-serif font-bold text-sm text-[#0d0b09]">C</span>
-          </div>
+        {/* Brand */}
+        <div className="flex items-center px-4 py-3.5" style={{borderBottom:'1px solid rgba(255,255,255,0.08)', minHeight: '3.25rem'}}>
           <AnimatePresence>
           {exp && (
             <motion.div initial={{opacity:0,width:0}} animate={{opacity:1,width:'auto'}} exit={{opacity:0,width:0}} transition={{duration:0.2}} className="overflow-hidden min-w-0">
-              <p className="text-[0.72rem] font-bold truncate leading-tight whitespace-nowrap" style={{color:'#e8ddd0'}}>Chandan Art Gallery</p>
-              <p className="text-[0.55rem] uppercase tracking-widest whitespace-nowrap" style={{color:'var(--adm-text3)'}}>Admin Panel</p>
+              <p className="text-[0.75rem] font-semibold truncate leading-tight whitespace-nowrap text-white">Admin</p>
+              <p className="text-[0.6rem] whitespace-nowrap" style={{color:'var(--adm-text3)'}}>Chandan Art Gallery</p>
             </motion.div>
           )}
           </AnimatePresence>
@@ -256,8 +272,8 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
               <AnimatePresence>
               {exp && (
                 <motion.p initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} transition={{duration:0.15}}
-                  className="text-[0.52rem] font-bold uppercase tracking-[0.2em] px-2 mb-1.5 whitespace-nowrap overflow-hidden"
-                  style={{color:'rgba(185,154,100,0.35)'}}>
+                  className="text-[0.6rem] font-medium uppercase tracking-wider px-2 mb-1.5 whitespace-nowrap overflow-hidden"
+                  style={{color:'#52525b'}}>
                   {g.group}
                 </motion.p>
               )}
@@ -267,25 +283,25 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
                   const Icon=item.icon; const active=section===item.id;
                   const badge=item.id==='moderation'?pendingMod:item.id==='inquiries'?pendingIq:0;
                   return (
-                    <motion.button key={item.id} onClick={()=>go(item.id as S)}
-                      whileHover={{x:2}} whileTap={{scale:0.97}} title={!exp?item.label:undefined}
-                      className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left transition-colors duration-150 ${active?'adm-sidebar-item active':'adm-sidebar-item'}`}>
-                      <Icon className="w-4 h-4 flex-shrink-0" style={{color:active?'var(--adm-gold)':'rgba(185,154,100,0.45)'}} />
+                    <button key={item.id} onClick={()=>go(item.id as S)}
+                      title={!exp?item.label:undefined}
+                      className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-md text-left ${active?'adm-sidebar-item active':'adm-sidebar-item'}`}>
+                      <Icon className="w-4 h-4 flex-shrink-0" style={{color:active?'#fafafa':'#71717a'}} />
                       <AnimatePresence>
                       {exp && (
                         <motion.span initial={{opacity:0,width:0}} animate={{opacity:1,width:'auto'}} exit={{opacity:0,width:0}} transition={{duration:0.18}}
                           className="flex items-center gap-1.5 flex-1 overflow-hidden whitespace-nowrap">
-                          <span className="text-[0.76rem] font-semibold flex-1">{item.label}</span>
+                          <span className="text-[0.8rem] font-medium flex-1">{item.label}</span>
                           {badge>0 && (
-                            <motion.span initial={{scale:0}} animate={{scale:1}} className="w-5 h-5 rounded-full text-[0.55rem] font-black flex items-center justify-center flex-shrink-0"
-                              style={{background:'var(--adm-gold)',color:'#0d0b09'}}>
+                            <span className="min-w-5 h-5 px-1 rounded text-[0.6rem] font-semibold flex items-center justify-center flex-shrink-0"
+                              style={{background:'#3f3f46',color:'#fafafa'}}>
                               {badge>9?'9+':badge}
-                            </motion.span>
+                            </span>
                           )}
                         </motion.span>
                       )}
                       </AnimatePresence>
-                    </motion.button>
+                    </button>
                   );
                 })}
               </div>
@@ -293,13 +309,13 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
           ))}
         </nav>
         {/* Bottom */}
-        <div className="px-2.5 py-3 space-y-0.5" style={{borderTop:'1px solid rgba(185,154,100,0.1)'}}>
-          <Link href="/" target="_blank" className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg adm-sidebar-item" title={!exp?'View Storefront':undefined}>
-            <Globe className="w-4 h-4 flex-shrink-0" style={{color:'rgba(185,154,100,0.45)'}} />
+        <div className="px-2.5 py-3 space-y-0.5" style={{borderTop:'1px solid rgba(255,255,255,0.08)'}}>
+          <Link href="/" target="_blank" className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-md adm-sidebar-item" title={!exp?'View store':undefined}>
+            <Globe className="w-4 h-4 flex-shrink-0" style={{color:'#71717a'}} />
             <AnimatePresence>
             {exp && (
               <motion.span initial={{opacity:0,width:0}} animate={{opacity:1,width:'auto'}} exit={{opacity:0,width:0}} transition={{duration:0.18}} className="flex items-center gap-1 flex-1 overflow-hidden whitespace-nowrap">
-                <span className="text-[0.76rem] font-semibold flex-1">View Storefront</span>
+                <span className="text-[0.78rem] font-medium flex-1">View store</span>
                 <ExternalLink className="w-3 h-3 opacity-50" />
               </motion.span>
             )}
@@ -309,13 +325,13 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
           {exp && (
             <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} transition={{duration:0.2}} className="flex items-center gap-2.5 px-2.5 py-2">
               {adminAvatar
-                ? <img src={adminAvatar} alt="" className="w-7 h-7 rounded-full object-cover flex-shrink-0" style={{border:'1.5px solid rgba(185,154,100,0.3)'}} />
-                : <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0" style={{background:'rgba(185,154,100,0.15)',border:'1.5px solid rgba(185,154,100,0.2)'}}>
-                    <span className="text-[0.62rem] font-bold" style={{color:'var(--adm-gold)'}}>{adminName[0]?.toUpperCase()}</span>
+                ? <img src={adminAvatar} alt="" className="w-7 h-7 rounded-full object-cover flex-shrink-0" />
+                : <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0" style={{background:'#27272a'}}>
+                    <span className="text-[0.62rem] font-semibold text-neutral-300">{adminName[0]?.toUpperCase()}</span>
                   </div>
               }
               <div className="min-w-0 flex-1">
-                <p className="text-[0.72rem] font-semibold truncate" style={{color:'#c8b48c'}}>{adminName}</p>
+                <p className="text-[0.72rem] font-medium truncate text-neutral-300">{adminName}</p>
                 <p className="text-[0.58rem] truncate" style={{color:'var(--adm-text3)'}}>{adminEmail}</p>
               </div>
             </motion.div>
@@ -328,10 +344,10 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
 
   // ── Reusable section header ───────────────────────
   const SectionHead = ({title,sub}:{title:string,sub:string}) => (
-    <motion.div variants={FADE} initial="hidden" animate="visible">
-      <h2 className="font-serif text-2xl mb-0.5" style={{color:'var(--adm-text)'}}>{title}</h2>
-      <p className="text-[0.78rem]" style={{color:'var(--adm-text3)'}}>{sub}</p>
-    </motion.div>
+    <div className="mb-1">
+      <h2 className="text-lg font-semibold tracking-tight mb-0.5" style={{color:'var(--adm-text)'}}>{title}</h2>
+      <p className="text-[0.8rem]" style={{color:'var(--adm-text3)'}}>{sub}</p>
+    </div>
   );
 
   // ── Animated table body ───────────────────────────
@@ -374,8 +390,19 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
         {/* Header */}
         <header className="adm-header flex-shrink-0 flex items-center justify-between px-4 gap-3" style={{height:'3.25rem'}}>
           <div className="flex items-center gap-3">
-            <button onClick={()=>setMobileOpen(v=>!v)} className="adm-icon-btn md:hidden" aria-label="Menu"><Menu className="w-4 h-4"/></button>
-            <button onClick={()=>setSidebarOpen(v=>!v)} className="adm-icon-btn hidden md:flex" aria-label="Collapse sidebar"><Menu className="w-4 h-4"/></button>
+            <button
+              onClick={() => {
+                if (typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches) {
+                  setSidebarOpen((v) => !v);
+                } else {
+                  setMobileOpen((v) => !v);
+                }
+              }}
+              className="adm-icon-btn"
+              aria-label="Toggle sidebar"
+            >
+              <Menu className="w-4 h-4" />
+            </button>
             <div className="flex items-center gap-1.5 text-[0.7rem]">
               <span style={{color:'var(--adm-text3)'}}>Admin</span>
               <ChevronRight className="w-3 h-3" style={{color:'var(--adm-text3)'}}/>
@@ -388,27 +415,18 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <AnimatePresence>
             {(pendingMod>0||pendingIq>0) && (
-              <motion.button initial={{opacity:0,scale:0.8}} animate={{opacity:1,scale:1}} exit={{opacity:0,scale:0.8}}
+              <button
                 onClick={()=>go('moderation')}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[0.65rem] font-bold uppercase transition-colors"
-                style={{background:'rgba(185,154,100,0.1)',color:'var(--adm-gold)',border:'1px solid rgba(185,154,100,0.2)'}}>
-                <motion.span animate={{rotate:[0,10,-10,0]}} transition={{duration:0.5,delay:0.5,repeat:2,repeatDelay:4}}>
-                  <Bell className="w-3.5 h-3.5"/>
-                </motion.span>
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[0.7rem] font-medium"
+                style={{background:'var(--adm-card2)',color:'var(--adm-text2)',border:'1px solid var(--adm-border)'}}>
+                <Bell className="w-3.5 h-3.5"/>
                 {pendingMod+pendingIq} pending
-              </motion.button>
+              </button>
             )}
-            </AnimatePresence>
-            <motion.button whileTap={{scale:0.88,rotate:20}} onClick={toggleTheme} className="adm-icon-btn" aria-label="Toggle theme">
-              <AnimatePresence mode="wait">
-                {theme==='light'
-                  ? <motion.span key="moon" initial={{rotate:-90,opacity:0}} animate={{rotate:0,opacity:1}} exit={{rotate:90,opacity:0}} transition={{duration:0.2}}><Moon className="w-4 h-4"/></motion.span>
-                  : <motion.span key="sun"  initial={{rotate:90,opacity:0}}  animate={{rotate:0,opacity:1}} exit={{rotate:-90,opacity:0}} transition={{duration:0.2}}><Sun  className="w-4 h-4"/></motion.span>
-                }
-              </AnimatePresence>
-            </motion.button>
+            <button onClick={toggleTheme} className="adm-icon-btn" aria-label="Toggle theme">
+              {theme==='light' ? <Moon className="w-4 h-4"/> : <Sun className="w-4 h-4"/>}
+            </button>
           </div>
         </header>
 
@@ -420,49 +438,48 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
           {/* ── DASHBOARD ── */}
           {section==='dashboard' && (
             <motion.div key="dashboard" variants={PAGE} initial="hidden" animate="visible" exit="exit" className="space-y-5">
-              <SectionHead title={`Good ${new Date().getHours()<12?'morning':new Date().getHours()<17?'afternoon':'evening'}, ${adminName.split(' ')[0]}`}
+              <SectionHead title="Dashboard"
                 sub={new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'})} />
-              {/* KPI */}
-              <motion.div className="grid grid-cols-2 lg:grid-cols-4 gap-3" variants={GRID} initial="hidden" animate="visible">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                 {[
-                  {label:'Total Products',   value:products.length,              sub:`${products.filter(p=>p.is_featured).length} featured`,     color:'var(--adm-gold)'},
-                  {label:'Page Views',        value:totalViews,                   sub:'last 14 days',                                             color:'#6ea8cc'},
-                  {label:'WhatsApp Clicks',   value:totalClicks,                  sub:`${cvr}% conversion`,                                       color:'#5cad8a'},
-                  {label:'Pending Actions',   value:pendingMod+pendingIq,         sub:`${reviews.length} reviews · ${comments.length} comments`,  color:pendingMod+pendingIq>0?'#d07050':'var(--adm-text3)'},
+                  {label:'Products',          value:products.length,              sub:`${products.filter(p=>p.is_featured).length} featured`},
+                  {label:'Page views',        value:totalViews,                   sub:'Recent events'},
+                  {label:'WhatsApp clicks',   value:totalClicks,                  sub:`${cvr}% conversion`},
+                  {label:'Pending',           value:pendingMod+pendingIq,         sub:`${reviews.length} reviews · ${comments.length} comments`},
                 ].map(k=>(
-                  <motion.div key={k.label} variants={CARD} whileHover={{y:-2,transition:{duration:0.2}}} className="adm-card p-4 cursor-default">
-                    <p className="text-[0.6rem] font-bold uppercase tracking-widest mb-2" style={{color:'var(--adm-text3)'}}>{k.label}</p>
-                    <p className="text-2xl font-bold mb-1" style={{color:k.color}}>{k.value}</p>
-                    <p className="text-[0.65rem]" style={{color:'var(--adm-text3)'}}>{k.sub}</p>
-                  </motion.div>
+                  <div key={k.label} className="adm-card p-4">
+                    <p className="text-[0.68rem] font-medium uppercase tracking-wide mb-2" style={{color:'var(--adm-text3)'}}>{k.label}</p>
+                    <p className="text-2xl font-semibold mb-1" style={{color:'var(--adm-text)'}}>{k.value}</p>
+                    <p className="text-[0.7rem]" style={{color:'var(--adm-text3)'}}>{k.sub}</p>
+                  </div>
                 ))}
-              </motion.div>
+              </div>
               {/* Quick actions */}
-              <motion.div variants={FADE} initial="hidden" animate="visible" className="adm-card p-4">
-                <p className="text-[0.6rem] font-bold uppercase tracking-widest mb-3" style={{color:'var(--adm-text3)'}}>Quick Actions</p>
-                <motion.div className="grid grid-cols-2 sm:grid-cols-4 gap-2" variants={GRID} initial="hidden" animate="visible">
+              <div className="adm-card p-4">
+                <p className="text-[0.68rem] font-medium uppercase tracking-wide mb-3" style={{color:'var(--adm-text3)'}}>Quick actions</p>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {[
-                    {label:'Add Product',   icon:Package,       action:()=>{go('inventory');setTimeout(()=>openProd(null),60);}},
-                    {label:'Write Article', icon:BookOpen,       action:()=>{go('blog');setTimeout(()=>openBlog(null),60);}},
+                    {label:'Add product',   icon:Package,       action:()=>{go('inventory');setTimeout(()=>openProd(null),60);}},
+                    {label:'New post',      icon:BookOpen,       action:()=>{go('blog');setTimeout(()=>openBlog(null),60);}},
                     {label:'Inquiries',     icon:MessageSquare, action:()=>go('inquiries')},
-                    {label:'Moderation',   icon:ListOrdered,    action:()=>go('moderation')},
+                    {label:'Moderation',    icon:ListOrdered,   action:()=>go('moderation')},
                   ].map(q=>{const Icon=q.icon; return (
-                    <motion.button key={q.label} variants={CARD} whileHover={{y:-2,scale:1.01}} whileTap={{scale:0.97}} onClick={q.action}
-                      className="flex items-center gap-2.5 p-3 rounded-lg text-left transition-colors"
+                    <button key={q.label} onClick={q.action}
+                      className="flex items-center gap-2.5 p-3 rounded-md text-left transition-colors hover:opacity-90"
                       style={{background:'var(--adm-card2)',border:'1px solid var(--adm-border2)'}}>
-                      <Icon className="w-4 h-4 flex-shrink-0" style={{color:'var(--adm-gold)'}}/>
-                      <span className="text-[0.75rem] font-semibold" style={{color:'var(--adm-text)'}}>{q.label}</span>
-                    </motion.button>
+                      <Icon className="w-4 h-4 flex-shrink-0" style={{color:'var(--adm-text3)'}}/>
+                      <span className="text-[0.78rem] font-medium" style={{color:'var(--adm-text)'}}>{q.label}</span>
+                    </button>
                   );})}
-                </motion.div>
-              </motion.div>
+                </div>
+              </div>
               {/* Recent split */}
               <motion.div className="grid grid-cols-1 lg:grid-cols-2 gap-4" variants={GRID} initial="hidden" animate="visible">
                 {/* Recent products */}
                 <motion.div variants={CARD} className="adm-card overflow-hidden">
                   <div className="flex items-center justify-between px-4 py-3" style={{borderBottom:'1px solid var(--adm-border2)'}}>
                     <p className="text-[0.72rem] font-bold" style={{color:'var(--adm-text)'}}>Recent Products</p>
-                    <button onClick={()=>go('inventory')} className="text-[0.65rem] font-semibold hover:underline" style={{color:'var(--adm-gold)'}}>View all →</button>
+                    <button onClick={()=>go('inventory')} className="text-[0.65rem] font-semibold hover:underline" style={{color:'var(--adm-text2)'}}>View all →</button>
                   </div>
                   {products.length===0
                     ? <p className="px-4 py-6 text-center text-[0.75rem] italic" style={{color:'var(--adm-text3)'}}>No products yet.</p>
@@ -486,14 +503,14 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
                 <motion.div variants={CARD} className="adm-card overflow-hidden">
                   <div className="flex items-center justify-between px-4 py-3" style={{borderBottom:'1px solid var(--adm-border2)'}}>
                     <p className="text-[0.72rem] font-bold" style={{color:'var(--adm-text)'}}>Recent Inquiries</p>
-                    <button onClick={()=>go('inquiries')} className="text-[0.65rem] font-semibold hover:underline" style={{color:'var(--adm-gold)'}}>View all →</button>
+                    <button onClick={()=>go('inquiries')} className="text-[0.65rem] font-semibold hover:underline" style={{color:'var(--adm-text2)'}}>View all →</button>
                   </div>
                   {inquiries.length===0
                     ? <p className="px-4 py-6 text-center text-[0.75rem] italic" style={{color:'var(--adm-text3)'}}>No inquiries yet.</p>
                     : inquiries.slice(0,5).map((inq,i)=>(
                         <motion.div key={inq.id} initial={{opacity:0,x:-8}} animate={{opacity:1,x:0}} transition={{delay:i*0.05,duration:0.22}}
                           className="flex items-center gap-3 px-4 py-2.5" style={{borderBottom:'1px solid var(--adm-border2)'}}>
-                          <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-[0.65rem] font-bold" style={{background:'rgba(185,154,100,0.12)',color:'var(--adm-gold)'}}>
+                          <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-[0.65rem] font-bold" style={{background:'rgba(63,63,70,0.12)',color:'var(--adm-text2)'}}>
                             {inq.name?.[0]?.toUpperCase()||'?'}
                           </div>
                           <div className="min-w-0 flex-1">
@@ -517,7 +534,7 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
                 {[
                   {label:'Page Views',      value:totalViews,     sub:'page_view + product_click',  color:'#6ea8cc'},
                   {label:'WhatsApp Clicks', value:totalClicks,    sub:'checkout intent events',      color:'#5cad8a'},
-                  {label:'Conversion Rate', value:`${cvr}%`,      sub:'visitors → WA click',         color:'var(--adm-gold)'},
+                  {label:'Conversion Rate', value:`${cvr}%`,      sub:'visitors → WA click',         color:'var(--adm-text2)'},
                 ].map(m=>(
                   <motion.div key={m.label} variants={CARD} whileHover={{y:-2}} className="adm-card p-4">
                     <p className="text-[0.6rem] font-bold uppercase tracking-widest mb-2" style={{color:'var(--adm-text3)'}}>{m.label}</p>
@@ -536,10 +553,10 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
           {section==='inventory' && (
             <motion.div key="inventory" variants={PAGE} initial="hidden" animate="visible" exit="exit" className="space-y-4">
               <div className="flex items-start justify-between gap-3 flex-wrap">
-                <SectionHead title="Art Inventory" sub={`${products.length} products · ${products.filter(p=>p.is_featured).length} featured`} />
-                <motion.button whileHover={{y:-1}} whileTap={{scale:0.97}} onClick={()=>openProd(null)} className="adm-btn-primary">
-                  <PlusCircle className="w-3.5 h-3.5"/> Add Product
-                </motion.button>
+                <SectionHead title="Products" sub={`${products.length} products · ${products.filter(p=>p.is_featured).length} featured`} />
+                <button onClick={()=>openProd(null)} className="adm-btn-primary">
+                  <PlusCircle className="w-3.5 h-3.5"/> Add product
+                </button>
               </div>
               <motion.div variants={FADE} initial="hidden" animate="visible" className="adm-card overflow-hidden">
                 <div className="overflow-x-auto">
@@ -558,7 +575,7 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
                               </div></td>
                               <td className="font-mono text-[0.7rem]" style={{color:'var(--adm-text3)'}}>{prod.sku||'—'}</td>
                               <td className="font-semibold" style={{color:'var(--adm-text2)'}}>{prod.category?.name||'—'}</td>
-                              <td className="font-bold" style={{color:'var(--adm-gold)'}}>₹{prod.price?.toLocaleString()}</td>
+                              <td className="font-bold" style={{color:'var(--adm-text2)'}}>₹{prod.price?.toLocaleString()}</td>
                               <td><div className="flex flex-wrap gap-1">
                                 {prod.is_featured&&<span className="adm-badge-gold">Featured</span>}
                                 {prod.is_best_seller&&<span className="adm-badge-gold">Bestseller</span>}
@@ -567,7 +584,7 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
                               </div></td>
                               <td><div className="flex items-center gap-1">
                                 <button onClick={()=>featToggle(prod.id,prod.is_featured)} className="adm-icon-btn" title={prod.is_featured?'Unfeature':'Feature'}>
-                                  <Star className={`w-3.5 h-3.5 ${prod.is_featured?'fill-current':''}`} style={{color:prod.is_featured?'var(--adm-gold)':undefined}}/>
+                                  <Star className={`w-3.5 h-3.5 ${prod.is_featured?'fill-current':''}`} style={{color:prod.is_featured?'var(--adm-text)':undefined}}/>
                                 </button>
                                 <button onClick={()=>openProd(prod)} className="adm-icon-btn" title="Edit"><Edit className="w-3.5 h-3.5"/></button>
                                 <button onClick={()=>setDelConf({type:'product',id:prod.id})} className="adm-icon-btn danger" title="Delete"><Trash2 className="w-3.5 h-3.5"/></button>
@@ -594,7 +611,7 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
                     {(['all','pending','replied','closed'] as const).map(f=>(
                       <motion.button key={f} onClick={()=>setIqFilter(f)} whileTap={{scale:0.95}}
                         className="px-3 py-1.5 rounded-lg text-[0.65rem] font-bold uppercase tracking-wide transition-all capitalize"
-                        style={{background:iqFilter===f?'var(--adm-gold)':'transparent',color:iqFilter===f?'#0d0b09':'var(--adm-text3)'}}>
+                        style={{background:iqFilter===f?'#18181b':'transparent',color:iqFilter===f?'#fafafa':'var(--adm-text3)'}}>
                         {f}
                       </motion.button>
                     ))}
@@ -610,7 +627,7 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
                           : filtered.map((inq,i)=>(
                             <motion.tr key={inq.id} initial={{opacity:0,x:-10}} animate={{opacity:1,x:0}} transition={{delay:i*0.04,duration:0.22,ease:EASE}}>
                               <td><p className="font-semibold" style={{color:'var(--adm-text)'}}>{inq.name}</p><p className="text-[0.62rem]" style={{color:'var(--adm-text3)'}}>{inq.email||inq.phone||'—'}</p></td>
-                              <td>{inq.product?<Link href={`/product/${inq.product.slug}`} target="_blank" className="truncate max-w-[110px] block hover:underline" style={{color:'var(--adm-gold)'}}>{inq.product.name}</Link>:<span className="italic" style={{color:'var(--adm-text3)'}}>General</span>}</td>
+                              <td>{inq.product?<Link href={`/product/${inq.product.slug}`} target="_blank" className="truncate max-w-[110px] block hover:underline" style={{color:'var(--adm-text2)'}}>{inq.product.name}</Link>:<span className="italic" style={{color:'var(--adm-text3)'}}>General</span>}</td>
                               <td className="max-w-[180px]"><p className="line-clamp-2 leading-relaxed" style={{color:'var(--adm-text3)'}}>{inq.message}</p></td>
                               <td><span className="adm-badge-muted">{inq.type||'form'}</span></td>
                               <td className="whitespace-nowrap" style={{color:'var(--adm-text3)'}}>{new Date(inq.created_at).toLocaleDateString('en-IN')}</td>
@@ -638,7 +655,7 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
                 {/* Reviews */}
                 <div className="space-y-3">
                   <p className="text-[0.68rem] font-bold uppercase tracking-widest flex items-center gap-2" style={{color:'var(--adm-text3)'}}>
-                    <Star className="w-3.5 h-3.5" style={{color:'var(--adm-gold)'}}/>Pending Reviews ({reviews.length})
+                    <Star className="w-3.5 h-3.5" style={{color:'var(--adm-text2)'}}/>Pending Reviews ({reviews.length})
                   </p>
                   <AnimatePresence>
                   {reviews.length===0
@@ -679,7 +696,7 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
                 {/* Comments */}
                 <div className="space-y-3">
                   <p className="text-[0.68rem] font-bold uppercase tracking-widest flex items-center gap-2" style={{color:'var(--adm-text3)'}}>
-                    <MessageCircle className="w-3.5 h-3.5" style={{color:'var(--adm-gold)'}}/>Pending Comments ({comments.length})
+                    <MessageCircle className="w-3.5 h-3.5" style={{color:'var(--adm-text2)'}}/>Pending Comments ({comments.length})
                   </p>
                   <AnimatePresence>
                   {comments.length===0
@@ -693,7 +710,7 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
                         <p className="text-[0.78rem] leading-relaxed p-3 rounded-lg" style={{background:'var(--adm-card2)',color:'var(--adm-text2)'}}>{cmt.comment}</p>
                         {replyId===cmt.id
                           ? <form onSubmit={e=>modReply(e,cmt)} className="space-y-2">
-                              <label className={LBL} style={{color:'var(--adm-gold)'}}>Curator Reply</label>
+                              <label className={LBL} style={{color:'var(--adm-text2)'}}>Reply</label>
                               <textarea required value={replyTxt} onChange={e=>setReplyTxt(e.target.value)} rows={3} placeholder="Write your official reply…" className={`${INP} resize-none`}/>
                               <div className="flex justify-end gap-2">
                                 <button type="button" className="adm-btn-ghost" onClick={()=>{setReplyId(null);setReplyTxt('');}}>Cancel</button>
@@ -702,7 +719,7 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
                             </form>
                           : <div className="flex justify-end gap-2 pt-1">
                               <button onClick={()=>modComment(cmt.id,'reject')} className="adm-btn-ghost" style={{color:'#e05252',borderColor:'rgba(220,80,80,0.22)'}}>Reject</button>
-                              <button onClick={()=>setReplyId(cmt.id)} className="adm-btn-ghost">Reply as Curator</button>
+                              <button onClick={()=>setReplyId(cmt.id)} className="adm-btn-ghost">Reply</button>
                               <button onClick={()=>modComment(cmt.id,'approve')} className="adm-btn-primary" style={{background:'#3da87a'}}><Check className="w-3 h-3"/>Approve</button>
                             </div>
                         }
@@ -719,7 +736,7 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
           {section==='blog' && (
             <motion.div key="blog" variants={PAGE} initial="hidden" animate="visible" exit="exit" className="space-y-4">
               <div className="flex items-start justify-between gap-3 flex-wrap">
-                <SectionHead title="Blog CMS" sub={`${blogPosts.filter(b=>b.is_published).length} published · ${blogPosts.filter(b=>!b.is_published).length} drafts`} />
+                <SectionHead title="Blog" sub={`${blogPosts.filter(b=>b.is_published).length} published · ${blogPosts.filter(b=>!b.is_published).length} drafts`} />
                 <motion.button whileHover={{y:-1}} whileTap={{scale:0.97}} onClick={()=>openBlog(null)} className="adm-btn-primary">
                   <PlusCircle className="w-3.5 h-3.5"/>New Article
                 </motion.button>
@@ -760,26 +777,222 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
           {/* ── USERS ── */}
           {section==='users' && (
             <motion.div key="users" variants={PAGE} initial="hidden" animate="visible" exit="exit" className="space-y-4">
-              <SectionHead title="User Management" sub={`${profiles.length} profiles · ${profiles.filter(p=>p.role==='admin').length} admins`} />
+              <div className="flex items-start justify-between gap-3 flex-wrap">
+                <SectionHead title="User Management" sub={`${profiles.length} profiles · ${profiles.filter(p=>p.role==='admin').length} admins`} />
+                <div className="relative">
+                  <input value={userSearch} onChange={e=>setUserSearch(e.target.value)} placeholder="Search name, email, ID…" className={`${INP} w-64 pl-8`} />
+                  <Users className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2" style={{color:'var(--adm-text3)'}} />
+                </div>
+              </div>
               <motion.div variants={FADE} initial="hidden" animate="visible" className="adm-card overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full adm-table">
-                    <thead><tr>{['User ID','Role','Registered','Last Active','Change Role'].map(h=><th key={h}>{h}</th>)}</tr></thead>
+                    <thead><tr>{['User','Email','Role','Registered','Actions'].map(h=><th key={h}>{h}</th>)}</tr></thead>
                     <tbody>
-                      {profiles.length===0
-                        ? <tr><td colSpan={5} className="text-center py-10 italic text-[0.78rem]" style={{color:'var(--adm-text3)'}}>No profiles found.</td></tr>
-                        : profiles.map((p,i)=>(
-                          <motion.tr key={p.id} initial={{opacity:0,x:-10}} animate={{opacity:1,x:0}} transition={{delay:i*0.03,duration:0.22}}>
-                            <td className="font-mono text-[0.68rem] max-w-[200px] truncate" style={{color:'var(--adm-text3)'}}>{p.id}</td>
+                      {(() => {
+                        const q = userSearch.toLowerCase();
+                        const filtered = profiles.filter(p =>
+                          !q ||
+                          (p.full_name||'').toLowerCase().includes(q) ||
+                          (p.email||'').toLowerCase().includes(q) ||
+                          p.id.toLowerCase().includes(q)
+                        );
+                        if(filtered.length===0) return <tr><td colSpan={5} className="text-center py-10 italic text-[0.78rem]" style={{color:'var(--adm-text3)'}}>No profiles found.</td></tr>;
+                        return filtered.map((p,i)=>(
+                          <motion.tr key={p.id} initial={{opacity:0,x:-10}} animate={{opacity:1,x:0}} transition={{delay:i*0.03,duration:0.22}}
+                            className="cursor-pointer" onClick={()=>{ setSelectedUser(p); setUserInquiries([]); setUserPanelLoading(true);
+                              import('@/lib/supabase/client').then(({supabase})=>{
+                                supabase.from('inquiries').select('id,name,message,type,status,created_at,product:products(name)').eq('user_id',p.id).order('created_at',{ascending:false}).limit(20).then(({data})=>{ setUserInquiries(data||[]); setUserPanelLoading(false); });
+                              });
+                            }}>
+                            <td>
+                              <div className="flex items-center gap-2.5">
+                                <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-[0.65rem] font-bold"
+                                  style={{background:'rgba(63,63,70,0.12)',color:'var(--adm-text2)'}}>
+                                  {(p.full_name?.[0]||p.email?.[0]||'?').toUpperCase()}
+                                </div>
+                                <div className="min-w-0">
+                                  <p className="text-[0.76rem] font-semibold truncate" style={{color:'var(--adm-text)'}}>{p.full_name||<span className="italic" style={{color:'var(--adm-text3)'}}>No name</span>}</p>
+                                  <p className="font-mono text-[0.58rem] truncate max-w-[160px]" style={{color:'var(--adm-text3)'}}>{p.id.slice(0,16)}…</p>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="text-[0.72rem]" style={{color:'var(--adm-text2)'}}>{p.email||'—'}</td>
                             <td><span className={p.role==='admin'?'adm-badge-gold':'adm-badge-muted'}>{p.role||'user'}</span></td>
                             <td className="whitespace-nowrap" style={{color:'var(--adm-text3)'}}>{p.created_at?new Date(p.created_at).toLocaleDateString('en-IN'):'—'}</td>
-                            <td className="whitespace-nowrap" style={{color:'var(--adm-text3)'}}>{p.updated_at?new Date(p.updated_at).toLocaleDateString('en-IN'):'—'}</td>
-                            <td><select value={p.role||'user'} onChange={e=>roleChange(p.id,e.target.value as 'user'|'admin')} className={INP} style={{width:'auto',padding:'0.3rem 0.6rem'}}>
-                              <option value="user">User</option><option value="admin">Admin</option>
-                            </select></td>
+                            <td onClick={e=>e.stopPropagation()}>
+                              <div className="flex items-center gap-1.5">
+                                <LuxSelect admin value={p.role||'user'} onChange={v=>roleChange(p.id,v as 'user'|'admin')} options={[{value:'user',label:'User'},{value:'admin',label:'Admin'}]} placement={'bottom-right'} panelClassName={'min-w-[120px]'} />
+                                <button onClick={()=>{ setSelectedUser(p); setUserInquiries([]); setUserPanelLoading(true);
+                                  import('@/lib/supabase/client').then(({supabase})=>{
+                                    supabase.from('inquiries').select('id,name,message,type,status,created_at,product:products(name)').eq('user_id',p.id).order('created_at',{ascending:false}).limit(20).then(({data})=>{ setUserInquiries(data||[]); setUserPanelLoading(false); });
+                                  });
+                                }} className="adm-icon-btn" title="Manage user"><ChevronRight className="w-3.5 h-3.5"/></button>
+                              </div>
+                            </td>
                           </motion.tr>
-                        ))
-                      }
+                        ));
+                      })()}
+                    </tbody>
+                  </table>
+                </div>
+              </motion.div>
+
+              {/* ── User Detail Slide-out Panel ── */}
+              <AnimatePresence>
+              {selectedUser && (
+                <>
+                  <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} onClick={()=>setSelectedUser(null)}
+                    className="fixed inset-0 z-50" style={{background:'rgba(0,0,0,0.45)',backdropFilter:'blur(4px)'}} />
+                  <motion.div initial={{x:'100%'}} animate={{x:0}} exit={{x:'100%'}} transition={{type:'spring',stiffness:320,damping:34}}
+                    className="fixed right-0 top-0 bottom-0 w-full max-w-md z-50 flex flex-col overflow-hidden"
+                    style={{background:'var(--adm-modal-bg)',borderLeft:'1px solid var(--adm-border)'}}>
+                    {/* Header */}
+                    <div className="flex items-center justify-between px-5 py-4 flex-shrink-0" style={{borderBottom:'1px solid var(--adm-border)'}}>
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold"
+                          style={{background:'rgba(63,63,70,0.14)',color:'var(--adm-text2)'}}>
+                          {(selectedUser.full_name?.[0]||selectedUser.email?.[0]||'?').toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="text-base font-semibold" style={{color:'var(--adm-text)'}}>{selectedUser.full_name||'No name'}</p>
+                          <p className="text-[0.65rem]" style={{color:'var(--adm-text3)'}}>{selectedUser.email||'—'}</p>
+                        </div>
+                      </div>
+                      <button onClick={()=>setSelectedUser(null)} className="adm-icon-btn"><X className="w-4 h-4"/></button>
+                    </div>
+                    {/* Body */}
+                    <div className="flex-1 overflow-y-auto p-5 space-y-5">
+                      {/* Info cards */}
+                      <div className="grid grid-cols-2 gap-3">
+                        {[
+                          {label:'Role', value:<span className={selectedUser.role==='admin'?'adm-badge-gold':'adm-badge-muted'}>{selectedUser.role||'user'}</span>},
+                          {label:'Joined', value:selectedUser.created_at?new Date(selectedUser.created_at).toLocaleDateString('en-IN'):'—'},
+                          {label:'Last Active', value:selectedUser.updated_at?new Date(selectedUser.updated_at).toLocaleDateString('en-IN'):'—'},
+                          {label:'User ID', value:<span className="font-mono text-[0.6rem]" style={{color:'var(--adm-text3)'}}>{selectedUser.id.slice(0,18)}…</span>},
+                        ].map(({label,value})=>(
+                          <div key={label} className="adm-card2 p-3 rounded-lg">
+                            <p className="text-[0.58rem] font-bold uppercase tracking-widest mb-1" style={{color:'var(--adm-text3)'}}>{label}</p>
+                            <div className="text-[0.76rem] font-semibold" style={{color:'var(--adm-text)'}}>{value}</div>
+                          </div>
+                        ))}
+                      </div>
+                      {/* Copy full ID */}
+                      <div className="adm-card2 rounded-lg p-3 flex items-center justify-between gap-3">
+                        <p className="font-mono text-[0.62rem] truncate flex-1" style={{color:'var(--adm-text3)'}}>{selectedUser.id}</p>
+                        <button onClick={()=>{ navigator.clipboard.writeText(selectedUser.id); addToast('User ID copied.','success'); }} className="adm-icon-btn flex-shrink-0" title="Copy ID">
+                          <Copy className="w-3.5 h-3.5"/>
+                        </button>
+                      </div>
+                      {/* Inquiries */}
+                      <div>
+                        <p className="text-[0.68rem] font-bold uppercase tracking-widest mb-2 flex items-center gap-2" style={{color:'var(--adm-text3)'}}>
+                          <MessageSquare className="w-3.5 h-3.5" style={{color:'var(--adm-text2)'}}/>
+                          Inquiries ({userInquiries.length})
+                        </p>
+                        {userPanelLoading ? (
+                          <div className="space-y-2">{[1,2,3].map(i=><div key={i} className="h-14 rounded-lg animate-pulse" style={{background:'var(--adm-card2)'}}/>)}</div>
+                        ) : userInquiries.length===0 ? (
+                          <div className="adm-card2 rounded-lg p-5 text-center text-[0.75rem] italic" style={{color:'var(--adm-text3)'}}>No inquiries from this user.</div>
+                        ) : (
+                          <div className="space-y-2">
+                            {userInquiries.map(inq=>(
+                              <div key={inq.id} className="adm-card2 rounded-lg p-3">
+                                <div className="flex items-center justify-between gap-2 mb-1">
+                                  <span className="text-[0.65rem] font-bold" style={{color:'var(--adm-text)'}}>{inq.product?.name||'General inquiry'}</span>
+                                  <span className={inq.status==='pending'?'adm-badge-amber':inq.status==='replied'?'adm-badge-green':'adm-badge-muted'}>{inq.status}</span>
+                                </div>
+                                <p className="text-[0.7rem] leading-relaxed line-clamp-2" style={{color:'var(--adm-text3)'}}>{inq.message}</p>
+                                <p className="text-[0.58rem] mt-1" style={{color:'var(--adm-text3)'}}>{new Date(inq.created_at).toLocaleDateString('en-IN')}</p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    {/* Footer actions */}
+                    <div className="flex gap-3 px-5 py-4 flex-shrink-0" style={{borderTop:'1px solid var(--adm-border)'}}>
+                      <LuxSelect admin value={selectedUser.role||'user'} onChange={v=>{ roleChange(selectedUser.id,v as 'user'|'admin'); setSelectedUser({...selectedUser,role:v}); }}
+                        options={[{value:'user',label:'User'},{value:'admin',label:'Admin'}]} label="Role:" placement={'bottom-left'} panelClassName={'min-w-[120px]'} />
+                      <button onClick={()=>setSelectedUser(null)} className="adm-btn-ghost ml-auto">Close</button>
+                    </div>
+                  </motion.div>
+                </>
+              )}
+              </AnimatePresence>
+            </motion.div>
+          )}
+
+          {/* ── VOUCHERS ── */}
+          {section==='vouchers' && (
+            <motion.div key="vouchers" variants={PAGE} initial="hidden" animate="visible" exit="exit" className="space-y-4">
+              <div className="flex items-start justify-between gap-3 flex-wrap">
+                <SectionHead title="Vouchers" sub={`${vouchers.length} total · ${vouchers.filter(v=>v.is_active).length} active`} />
+                <motion.button whileHover={{y:-1}} whileTap={{scale:0.97}} onClick={()=>{ setEditVoucher(null); setVCode(''); setVDesc(''); setVType('percentage'); setVValue(10); setVMin(0); setVMax(0); setVMaxUses(0); setVExpiry(''); setVActive(true); setShowVoucher(true); }} className="adm-btn-primary">
+                  <PlusCircle className="w-3.5 h-3.5"/> New Voucher
+                </motion.button>
+              </div>
+              {/* Search */}
+              <div className="relative w-64">
+                <input value={voucherSearch} onChange={e=>setVoucherSearch(e.target.value)} placeholder="Search code or description…" className={`${INP} pl-8`} />
+                <Tag className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2" style={{color:'var(--adm-text3)'}} />
+              </div>
+              <motion.div variants={FADE} initial="hidden" animate="visible" className="adm-card overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full adm-table">
+                    <thead><tr>{['Code','Type','Value','Min Order','Uses','Expiry','Status','Actions'].map(h=><th key={h}>{h}</th>)}</tr></thead>
+                    <tbody>
+                      {(()=>{
+                        const q=voucherSearch.toLowerCase();
+                        const filtered=vouchers.filter(v=>!q||(v.code||'').toLowerCase().includes(q)||(v.description||'').toLowerCase().includes(q));
+                        if(filtered.length===0) return <tr><td colSpan={8} className="text-center py-10 italic text-[0.78rem]" style={{color:'var(--adm-text3)'}}>No vouchers yet.</td></tr>;
+                        return filtered.map((v,i)=>(
+                          <motion.tr key={v.id} initial={{opacity:0,x:-10}} animate={{opacity:1,x:0}} transition={{delay:i*0.04,duration:0.22}}>
+                            <td>
+                              <div className="flex items-center gap-2">
+                                <span className="font-mono font-bold text-[0.78rem]" style={{color:'var(--adm-text2)'}}>{v.code}</span>
+                                <button onClick={()=>{ navigator.clipboard.writeText(v.code); addToast('Code copied.','success'); }} className="adm-icon-btn" style={{width:'1.4rem',height:'1.4rem'}} title="Copy">
+                                  <Copy className="w-3 h-3"/>
+                                </button>
+                              </div>
+                              {v.description && <p className="text-[0.62rem] mt-0.5 truncate max-w-[140px]" style={{color:'var(--adm-text3)'}}>{v.description}</p>}
+                            </td>
+                            <td><span className="adm-badge-muted capitalize">{v.discount_type?.replace('_',' ')}</span></td>
+                            <td className="font-bold" style={{color:'var(--adm-text)'}}>
+                              {v.discount_type==='percentage'?`${v.discount_value}%`:`₹${v.discount_value}`}
+                            </td>
+                            <td style={{color:'var(--adm-text3)'}}>{v.min_order_value?`₹${v.min_order_value}`:'—'}</td>
+                            <td style={{color:'var(--adm-text3)'}}>{v.used_count}{v.max_global_uses?`/${v.max_global_uses}`:''}</td>
+                            <td className="whitespace-nowrap" style={{color:'var(--adm-text3)'}}>{v.expiry_date?new Date(v.expiry_date).toLocaleDateString('en-IN'):'No expiry'}</td>
+                            <td><span className={v.is_active?'adm-badge-green':'adm-badge-muted'}>{v.is_active?'Active':'Inactive'}</span></td>
+                            <td>
+                              <div className="flex items-center gap-1">
+                                <button onClick={async()=>{
+                                  try{ const {supabase}=await import('@/lib/supabase/client');
+                                    await supabase.from('vouchers').update({is_active:!v.is_active}).eq('id',v.id);
+                                    setVouchers(vouchers.map(x=>x.id===v.id?{...x,is_active:!v.is_active}:x));
+                                    addToast(v.is_active?'Voucher deactivated.':'Voucher activated.','success');
+                                  }catch(e:any){ addToast(e.message,'error'); }
+                                }} className="adm-icon-btn" title={v.is_active?'Deactivate':'Activate'}>
+                                  {v.is_active?<ShieldOff className="w-3.5 h-3.5"/>:<Shield className="w-3.5 h-3.5"/>}
+                                </button>
+                                <button onClick={()=>{ setEditVoucher(v); setVCode(v.code); setVDesc(v.description||''); setVType(v.discount_type||'percentage'); setVValue(v.discount_value||0); setVMin(v.min_order_value||0); setVMax(v.max_discount||0); setVMaxUses(v.max_global_uses||0); setVExpiry(v.expiry_date?v.expiry_date.slice(0,10):''); setVActive(v.is_active); setShowVoucher(true); }} className="adm-icon-btn" title="Edit">
+                                  <Edit className="w-3.5 h-3.5"/>
+                                </button>
+                                <button onClick={async()=>{
+                                  if(!confirm('Delete this voucher?')) return;
+                                  try{ const {supabase}=await import('@/lib/supabase/client');
+                                    await supabase.from('vouchers').delete().eq('id',v.id);
+                                    setVouchers(vouchers.filter(x=>x.id!==v.id)); addToast('Deleted.','success');
+                                  }catch(e:any){ addToast(e.message,'error'); }
+                                }} className="adm-icon-btn danger" title="Delete">
+                                  <Trash2 className="w-3.5 h-3.5"/>
+                                </button>
+                              </div>
+                            </td>
+                          </motion.tr>
+                        ));
+                      })()}
                     </tbody>
                   </table>
                 </div>
@@ -795,7 +1008,7 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
                 {(['general','seo','notifications'] as const).map(t=>(
                   <motion.button key={t} onClick={()=>setSettTab(t)} whileTap={{scale:0.96}}
                     className="px-4 py-1.5 rounded-lg text-[0.7rem] font-bold uppercase tracking-wide transition-all capitalize"
-                    style={{background:settTab===t?'var(--adm-gold)':'transparent',color:settTab===t?'#0d0b09':'var(--adm-text3)'}}>
+                    style={{background:settTab===t?'#18181b':'transparent',color:settTab===t?'#fafafa':'var(--adm-text3)'}}>
                     {t}
                   </motion.button>
                 ))}
@@ -806,7 +1019,7 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
                   <div className="adm-card p-5 space-y-3">
                     <p className="text-[0.68rem] font-bold uppercase tracking-widest" style={{color:'var(--adm-text3)'}}>Business Information</p>
                     <p className="text-[0.72rem] leading-relaxed p-3 rounded-lg" style={{background:'var(--adm-card2)',color:'var(--adm-text3)',border:'1px solid var(--adm-border2)'}}>
-                      These are read-only references. Edit <code style={{color:'var(--adm-gold)'}}>.env.local</code> to update values.
+                      These are read-only references. Edit <code style={{color:'var(--adm-text2)'}}>.env.local</code> to update values.
                     </p>
                     {[
                       {label:'Gallery Name',  value:'Chandan Art Gallery'},
@@ -842,7 +1055,7 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
                 <motion.div key="seo" variants={PAGE} initial="hidden" animate="visible" exit="exit" className="adm-card p-5 max-w-2xl space-y-4">
                   <p className="text-[0.68rem] font-bold uppercase tracking-widest" style={{color:'var(--adm-text3)'}}>SEO Configuration</p>
                   <p className="text-[0.72rem] leading-relaxed p-3 rounded-lg" style={{background:'var(--adm-card2)',color:'var(--adm-text3)',border:'1px solid var(--adm-border2)'}}>
-                    Metadata is managed in <code style={{color:'var(--adm-gold)'}}>app/layout.tsx</code>. Per-product and per-post SEO is set in their forms above.
+                    Metadata is managed in <code style={{color:'var(--adm-text2)'}}>app/layout.tsx</code>. Per-product and per-post SEO is set in their forms above.
                   </p>
                   {[
                     {label:'Meta Title',       value:'Chandan Art Gallery | Luxury Custom Framing & Indian Wall Decor'},
@@ -867,7 +1080,7 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
                 <motion.div key="notif" variants={PAGE} initial="hidden" animate="visible" exit="exit" className="adm-card p-5 max-w-xl space-y-3">
                   <p className="text-[0.68rem] font-bold uppercase tracking-widest" style={{color:'var(--adm-text3)'}}>Email Notifications</p>
                   <p className="text-[0.72rem] leading-relaxed p-3 rounded-lg" style={{background:'var(--adm-card2)',color:'var(--adm-text3)',border:'1px solid var(--adm-border2)'}}>
-                    Powered by <strong style={{color:'var(--adm-text2)'}}>Resend</strong>. Configure <code style={{color:'var(--adm-gold)'}}>RESEND_API_KEY</code> and <code style={{color:'var(--adm-gold)'}}>CONTACT_EMAIL_RECIPIENT</code> in <code style={{color:'var(--adm-gold)'}}>env.local</code>.
+                    Powered by <strong style={{color:'var(--adm-text2)'}}>Resend</strong>. Configure <code style={{color:'var(--adm-text2)'}}>RESEND_API_KEY</code> and <code style={{color:'var(--adm-text2)'}}>CONTACT_EMAIL_RECIPIENT</code> in <code style={{color:'var(--adm-text2)'}}>env.local</code>.
                   </p>
                   {[
                     {label:'Contact Form Submissions', desc:'Email sent to admin on contact form submit.', active:true,  key:'RESEND_API_KEY'},
@@ -878,13 +1091,13 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
                     <motion.div key={n.label} initial={{opacity:0,x:-6}} animate={{opacity:1,x:0}} transition={{delay:i*0.05}}
                       className="flex items-start gap-4 py-3" style={{borderBottom:'1px solid var(--adm-border2)'}}>
                       <div className="w-8 h-4 rounded-full flex-shrink-0 mt-0.5 relative cursor-default"
-                        style={{background:n.active?'var(--adm-gold)':'var(--adm-border)',transition:'background 0.2s'}}>
+                        style={{background:n.active?'#18181b':'var(--adm-border)',transition:'background 0.2s'}}>
                         <div className="absolute top-0.5 w-3 h-3 rounded-full bg-white transition-all" style={{left:n.active?'calc(100% - 0.875rem)':'2px'}}/>
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-[0.78rem] font-semibold" style={{color:'var(--adm-text)'}}>{n.label}</p>
                         <p className="text-[0.68rem]" style={{color:'var(--adm-text3)'}}>{n.desc}</p>
-                        {n.key&&<code className="text-[0.62rem]" style={{color:'var(--adm-gold)'}}>{n.key}</code>}
+                        {n.key&&<code className="text-[0.62rem]" style={{color:'var(--adm-text2)'}}>{n.key}</code>}
                       </div>
                     </motion.div>
                   ))}
@@ -905,7 +1118,7 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
           <>
             <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} onClick={()=>setDelConf(null)} className="fixed inset-0 z-[60]" style={{background:'rgba(0,0,0,0.55)',backdropFilter:'blur(4px)'}}/>
             <motion.div variants={MODAL} initial="hidden" animate="visible" exit="exit" className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm z-[61] rounded-2xl p-6 shadow-2xl" style={{background:'var(--adm-modal-bg)',border:'1px solid var(--adm-border)'}}>
-              <h4 className="font-serif text-xl mb-2" style={{color:'var(--adm-text)'}}>Confirm Deletion</h4>
+              <h4 className="text-lg font-semibold mb-2" style={{color:'var(--adm-text)'}}>Delete?</h4>
               <p className="text-[0.78rem] leading-relaxed mb-6" style={{color:'var(--adm-text3)'}}>This is permanent and cannot be undone. Continue?</p>
               <div className="flex gap-3">
                 <button onClick={()=>setDelConf(null)} className="adm-btn-ghost flex-1 justify-center">Cancel</button>
@@ -923,7 +1136,7 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
             <motion.div initial={{opacity:0}} animate={{opacity:0.6}} exit={{opacity:0}} onClick={()=>setShowBlog(false)} className="fixed inset-0 bg-black z-50"/>
             <motion.div variants={MODAL} initial="hidden" animate="visible" exit="exit" className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl z-[51] rounded-2xl shadow-2xl overflow-y-auto max-h-[90vh]" style={{background:'var(--adm-modal-bg)',border:'1px solid var(--adm-border)'}}>
               <div className="sticky top-0 flex items-center justify-between px-6 py-4 z-10" style={{background:'var(--adm-modal-bg)',borderBottom:'1px solid var(--adm-border2)'}}>
-                <div><h3 className="font-serif text-xl" style={{color:'var(--adm-text)'}}>{editBlog?'Edit Article':'New Article'}</h3><p className="text-[0.62rem] uppercase tracking-widest" style={{color:'var(--adm-text3)'}}>Blog CMS</p></div>
+                <div><h3 className="text-lg font-semibold" style={{color:'var(--adm-text)'}}>{editBlog?'Edit Article':'New Article'}</h3><p className="text-[0.62rem] uppercase tracking-widest" style={{color:'var(--adm-text3)'}}>Blog</p></div>
                 <button onClick={()=>setShowBlog(false)} className="adm-icon-btn"><X className="w-4 h-4"/></button>
               </div>
               <form onSubmit={saveBlog} className="p-6 space-y-4">
@@ -933,7 +1146,7 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
                 </div>
                 <div><label className={`${LBL}`} style={{color:'var(--adm-text3)'}}>Content *</label><textarea required value={bContent} onChange={e=>setBContent(e.target.value)} rows={8} placeholder="Full article text…" className={`${INP} resize-none leading-relaxed`}/></div>
                 <div className="grid grid-cols-2 gap-3">
-                  <div><label className={`${LBL}`} style={{color:'var(--adm-text3)'}}>Category</label><select value={bCat} onChange={e=>setBCat(e.target.value)} className={INP}>{blogCategories.map((c:any)=><option key={c.id} value={c.id}>{c.name}</option>)}</select></div>
+                  <div><label className={`${LBL}`} style={{color:'var(--adm-text3)'}}>Category</label><LuxSelect admin value={bCat} onChange={setBCat} options={blogCategories.map((c:any)=>({value:String(c.id),label:c.name}))} placement={'bottom-left'} panelClassName={'min-w-[160px]'} /></div>
                   <div><label className={`${LBL}`} style={{color:'var(--adm-text3)'}}>Reading Time (min)</label><input type="number" min={1} value={bTime} onChange={e=>setBTime(Number(e.target.value))} className={INP}/></div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
@@ -945,12 +1158,103 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
                   <div><label className={`${LBL}`} style={{color:'var(--adm-text3)'}}>SEO Description</label><input type="text" value={bSeoD} onChange={e=>setBSeoD(e.target.value)} className={INP}/></div>
                 </div>
                 <label className="flex items-center gap-2.5 cursor-pointer">
-                  <input type="checkbox" checked={bPub} onChange={e=>setBPub(e.target.checked)} className="w-4 h-4 rounded accent-[#b99a64]"/>
+                  <input type="checkbox" checked={bPub} onChange={e=>setBPub(e.target.checked)} className="w-4 h-4 rounded accent-neutral-800"/>
                   <span className="text-[0.78rem] font-semibold" style={{color:'var(--adm-text)'}}>Publish immediately (unchecked = draft)</span>
                 </label>
                 <div className="flex gap-3 pt-2" style={{borderTop:'1px solid var(--adm-border2)'}}>
                   <button type="button" onClick={()=>setShowBlog(false)} className="adm-btn-ghost flex-1 justify-center">Discard</button>
                   <button type="submit" disabled={loading} className="adm-btn-primary flex-1 justify-center" style={{opacity:loading?0.6:1}}>{loading?'Saving…':editBlog?'Update':'Publish'}</button>
+                </div>
+              </form>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* ── VOUCHER MODAL ── */}
+      <AnimatePresence>
+        {showVoucher&&(
+          <>
+            <motion.div initial={{opacity:0}} animate={{opacity:0.6}} exit={{opacity:0}} onClick={()=>setShowVoucher(false)} className="fixed inset-0 bg-black z-50"/>
+            <motion.div variants={MODAL} initial="hidden" animate="visible" exit="exit" className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg z-[51] rounded-2xl shadow-2xl overflow-y-auto max-h-[90vh]" style={{background:'var(--adm-modal-bg)',border:'1px solid var(--adm-border)'}}>
+              <div className="sticky top-0 flex items-center justify-between px-6 py-4 z-10" style={{background:'var(--adm-modal-bg)',borderBottom:'1px solid var(--adm-border2)'}}>
+                <div><h3 className="text-lg font-semibold" style={{color:'var(--adm-text)'}}>{editVoucher?'Edit Voucher':'New Voucher'}</h3><p className="text-[0.62rem] uppercase tracking-widest" style={{color:'var(--adm-text3)'}}>Voucher Management</p></div>
+                <button onClick={()=>setShowVoucher(false)} className="adm-icon-btn"><X className="w-4 h-4"/></button>
+              </div>
+              <form onSubmit={async(e)=>{
+                e.preventDefault(); setSaving(true);
+                try{
+                  const {supabase}=await import('@/lib/supabase/client');
+                  const payload:any={
+                    code: vCode.trim().toUpperCase(),
+                    description: vDesc||null,
+                    discount_type: vType,
+                    discount_value: vValue,
+                    min_order_value: vMin||null,
+                    max_discount: vMax||null,
+                    max_global_uses: vMaxUses||null,
+                    expiry_date: vExpiry||null,
+                    is_active: vActive,
+                  };
+                  if(editVoucher){
+                    const {error}=await supabase.from('vouchers').update(payload).eq('id',editVoucher.id);
+                    if(error) throw error;
+                    setVouchers(vouchers.map(v=>v.id===editVoucher.id?{...v,...payload}:v));
+                    addToast('Voucher updated.','success');
+                  } else {
+                    const {data,error}=await supabase.from('vouchers').insert(payload).select().single();
+                    if(error) throw error;
+                    setVouchers([data,...vouchers]);
+                    addToast('Voucher created.','success');
+                  }
+                  setShowVoucher(false);
+                }catch(err:any){ addToast(err.message,'error'); }finally{ setSaving(false); }
+              }} className="p-6 space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className={`${LBL}`} style={{color:'var(--adm-text3)'}}>Code *</label>
+                    <input required type="text" value={vCode} onChange={e=>setVCode(e.target.value.toUpperCase())} placeholder="SAVE20" className={INP} style={{fontFamily:'monospace'}}/>
+                  </div>
+                  <div>
+                    <label className={`${LBL}`} style={{color:'var(--adm-text3)'}}>Discount Type *</label>
+                    <LuxSelect admin value={vType} onChange={v=>setVType(v as any)} options={[{value:'percentage',label:'Percentage %'},{value:'fixed_amount',label:'Fixed ₹'}]} placement={'bottom-left'} panelClassName={'min-w-[160px]'} />
+                  </div>
+                </div>
+                <div>
+                  <label className={`${LBL}`} style={{color:'var(--adm-text3)'}}>Description</label>
+                  <input type="text" value={vDesc} onChange={e=>setVDesc(e.target.value)} placeholder="e.g. Summer sale 20% off" className={INP}/>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className={`${LBL}`} style={{color:'var(--adm-text3)'}}>{vType==='percentage'?'Discount %':'Discount ₹'} *</label>
+                    <input required type="number" min={0} value={vValue} onChange={e=>setVValue(Number(e.target.value))} className={INP}/>
+                  </div>
+                  <div>
+                    <label className={`${LBL}`} style={{color:'var(--adm-text3)'}}>Min Order Value (₹)</label>
+                    <input type="number" min={0} value={vMin||''} onChange={e=>setVMin(Number(e.target.value))} placeholder="0 = no minimum" className={INP}/>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  {vType==='percentage'&&<div>
+                    <label className={`${LBL}`} style={{color:'var(--adm-text3)'}}>Max Discount Cap (₹)</label>
+                    <input type="number" min={0} value={vMax||''} onChange={e=>setVMax(Number(e.target.value))} placeholder="0 = no cap" className={INP}/>
+                  </div>}
+                  <div>
+                    <label className={`${LBL}`} style={{color:'var(--adm-text3)'}}>Max Total Uses</label>
+                    <input type="number" min={0} value={vMaxUses||''} onChange={e=>setVMaxUses(Number(e.target.value))} placeholder="0 = unlimited" className={INP}/>
+                  </div>
+                </div>
+                <div>
+                  <label className={`${LBL}`} style={{color:'var(--adm-text3)'}}>Expiry Date</label>
+                  <input type="date" value={vExpiry} onChange={e=>setVExpiry(e.target.value)} className={INP}/>
+                </div>
+                <label className="flex items-center gap-2.5 cursor-pointer">
+                  <input type="checkbox" checked={vActive} onChange={e=>setVActive(e.target.checked)} className="w-4 h-4 rounded accent-neutral-800"/>
+                  <span className="text-[0.78rem] font-semibold" style={{color:'var(--adm-text)'}}>Active (visible to customers)</span>
+                </label>
+                <div className="flex gap-3 pt-2" style={{borderTop:'1px solid var(--adm-border2)'}}>
+                  <button type="button" onClick={()=>setShowVoucher(false)} className="adm-btn-ghost flex-1 justify-center">Discard</button>
+                  <button type="submit" disabled={saving} className="adm-btn-primary flex-1 justify-center" style={{opacity:saving?0.6:1}}>{saving?'Saving…':editVoucher?'Update Voucher':'Create Voucher'}</button>
                 </div>
               </form>
             </motion.div>
@@ -965,7 +1269,7 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
             <motion.div initial={{opacity:0}} animate={{opacity:0.6}} exit={{opacity:0}} onClick={()=>setShowProd(false)} className="fixed inset-0 bg-black z-50"/>
             <motion.div variants={MODAL} initial="hidden" animate="visible" exit="exit" className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl z-[51] rounded-2xl shadow-2xl overflow-y-auto max-h-[90vh]" style={{background:'var(--adm-modal-bg)',border:'1px solid var(--adm-border)'}}>
               <div className="sticky top-0 flex items-center justify-between px-6 py-4 z-10" style={{background:'var(--adm-modal-bg)',borderBottom:'1px solid var(--adm-border2)'}}>
-                <div><h3 className="font-serif text-xl" style={{color:'var(--adm-text)'}}>{editProd?'Edit Product':'New Product'}</h3><p className="text-[0.62rem] uppercase tracking-widest" style={{color:'var(--adm-text3)'}}>Art Inventory</p></div>
+                <div><h3 className="text-lg font-semibold" style={{color:'var(--adm-text)'}}>{editProd?'Edit Product':'New Product'}</h3><p className="text-[0.62rem] uppercase tracking-widest" style={{color:'var(--adm-text3)'}}>Products</p></div>
                 <button onClick={()=>setShowProd(false)} className="adm-icon-btn"><X className="w-4 h-4"/></button>
               </div>
               <form onSubmit={saveProd} className="p-6 space-y-4">
@@ -977,12 +1281,12 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
                 <div><label className={`${LBL}`} style={{color:'var(--adm-text3)'}}>Full Description</label><textarea value={pDesc} onChange={e=>setPDesc(e.target.value)} rows={4} placeholder="Detailed artwork story…" className={`${INP} resize-none`}/></div>
                 <div className="grid grid-cols-3 gap-3">
                   <div><label className={`${LBL}`} style={{color:'var(--adm-text3)'}}>Base Price (INR) *</label><input required type="number" value={pPrice} onChange={e=>setPPrice(Number(e.target.value))} className={INP}/></div>
-                  <div><label className={`${LBL}`} style={{color:'var(--adm-text3)'}}>Category</label><select value={pCat} onChange={e=>setPCat(e.target.value)} className={INP}>{categories.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></div>
+                  <div><label className={`${LBL}`} style={{color:'var(--adm-text3)'}}>Category</label><LuxSelect admin value={pCat} onChange={setPCat} options={categories.map(c=>({value:String(c.id),label:c.name}))} placement={'bottom-left'} panelClassName={'min-w-[160px]'} /></div>
                   <div><label className={`${LBL}`} style={{color:'var(--adm-text3)'}}>Weight</label><input type="text" value={pWeight} onChange={e=>setPWeight(e.target.value)} placeholder="1.5 kg" className={INP}/></div>
                 </div>
                 {/* Gallery */}
                 <div className="rounded-xl p-4 space-y-2" style={{border:'1px solid var(--adm-border2)',background:'var(--adm-card2)'}}>
-                  <div className="flex items-center justify-between"><label className={`${LBL} mb-0`} style={{color:'var(--adm-text3)'}}>Gallery Images</label><button type="button" onClick={()=>setPImgs([...pImgs,''])} className="text-[0.65rem] font-bold" style={{color:'var(--adm-gold)'}}>+ Add</button></div>
+                  <div className="flex items-center justify-between"><label className={`${LBL} mb-0`} style={{color:'var(--adm-text3)'}}>Gallery Images</label><button type="button" onClick={()=>setPImgs([...pImgs,''])} className="text-[0.65rem] font-bold" style={{color:'var(--adm-text2)'}}>+ Add</button></div>
                   {pImgs.map((url,i)=>(
                     <div key={i} className="flex gap-2 items-center">
                       <input type="url" value={url} placeholder="Image URL" onChange={e=>{const u=[...pImgs];u[i]=e.target.value;setPImgs(u);}} className={`${INP} flex-1`}/>
@@ -998,11 +1302,11 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
                       {pImgs.length>1&&<button type="button" onClick={()=>setPImgs(pImgs.filter((_,j)=>j!==i))} className="text-red-400 font-bold text-lg leading-none px-1">×</button>}
                     </div>
                   ))}
-                  {uploading&&<p className="text-[0.68rem] animate-pulse" style={{color:'var(--adm-gold)'}}>Uploading…</p>}
+                  {uploading&&<p className="text-[0.68rem] animate-pulse" style={{color:'var(--adm-text2)'}}>Uploading…</p>}
                 </div>
                 {/* Sizes */}
                 <div className="rounded-xl p-4 space-y-2" style={{border:'1px solid var(--adm-border2)',background:'var(--adm-card2)'}}>
-                  <div className="flex items-center justify-between"><label className={`${LBL} mb-0`} style={{color:'var(--adm-text3)'}}>Dimension Options</label><button type="button" onClick={()=>setPSizes([...pSizes,{value:'',modifier:0,label:'',tag:'Standard'}])} className="text-[0.65rem] font-bold" style={{color:'var(--adm-gold)'}}>+ Add</button></div>
+                  <div className="flex items-center justify-between"><label className={`${LBL} mb-0`} style={{color:'var(--adm-text3)'}}>Dimension Options</label><button type="button" onClick={()=>setPSizes([...pSizes,{value:'',modifier:0,label:'',tag:'Standard'}])} className="text-[0.65rem] font-bold" style={{color:'var(--adm-text2)'}}>+ Add</button></div>
                   {pSizes.map((sz,i)=>(
                     <div key={i} className="grid grid-cols-5 gap-2 items-center">
                       <input type="text" value={sz.label||''} onChange={e=>{const u=[...pSizes];u[i]={...u[i],label:e.target.value};setPSizes(u);}} placeholder="Label" className={`${INP} text-[0.72rem]`}/>
@@ -1015,7 +1319,7 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
                 </div>
                 {/* Materials */}
                 <div className="rounded-xl p-4 space-y-2" style={{border:'1px solid var(--adm-border2)',background:'var(--adm-card2)'}}>
-                  <div className="flex items-center justify-between"><label className={`${LBL} mb-0`} style={{color:'var(--adm-text3)'}}>Frame Materials</label><button type="button" onClick={()=>setPMats([...pMats,{label:'',value:'',tag:'Natural',modifier:0}])} className="text-[0.65rem] font-bold" style={{color:'var(--adm-gold)'}}>+ Add</button></div>
+                  <div className="flex items-center justify-between"><label className={`${LBL} mb-0`} style={{color:'var(--adm-text3)'}}>Frame Materials</label><button type="button" onClick={()=>setPMats([...pMats,{label:'',value:'',tag:'Natural',modifier:0}])} className="text-[0.65rem] font-bold" style={{color:'var(--adm-text2)'}}>+ Add</button></div>
                   {pMats.map((mat,i)=>(
                     <div key={i} className="grid grid-cols-4 gap-2 items-center">
                       <input type="text" required value={mat.label} onChange={e=>{const u=[...pMats];u[i]={...u[i],label:e.target.value};setPMats(u);}} placeholder="Pine Wood" className={`${INP} text-[0.72rem]`}/>
@@ -1030,7 +1334,7 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
                 </div>
                 {/* Colors */}
                 <div className="rounded-xl p-4 space-y-2" style={{border:'1px solid var(--adm-border2)',background:'var(--adm-card2)'}}>
-                  <div className="flex items-center justify-between"><label className={`${LBL} mb-0`} style={{color:'var(--adm-text3)'}}>Color Finishes</label><button type="button" onClick={()=>setPCols([...pCols,{label:'',modifier:0}])} className="text-[0.65rem] font-bold" style={{color:'var(--adm-gold)'}}>+ Add</button></div>
+                  <div className="flex items-center justify-between"><label className={`${LBL} mb-0`} style={{color:'var(--adm-text3)'}}>Color Finishes</label><button type="button" onClick={()=>setPCols([...pCols,{label:'',modifier:0}])} className="text-[0.65rem] font-bold" style={{color:'var(--adm-text2)'}}>+ Add</button></div>
                   {pCols.map((col,i)=>(
                     <div key={i} className="flex gap-2 items-center">
                       <input type="text" required value={col.label} onChange={e=>{const u=[...pCols];u[i]={...u[i],label:e.target.value};setPCols(u);}} placeholder="Walnut Brown" className={`${INP} flex-1 text-[0.72rem]`}/>
@@ -1049,7 +1353,7 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
                 <div className="flex flex-wrap gap-4 py-1">
                   {[{label:'Customizable',val:pCustom,set:setPCustom},{label:'Featured',val:pFeat,set:setPFeat},{label:'Trending',val:pTrend,set:setPTrend},{label:'Best Seller',val:pBest,set:setPBest}].map(f=>(
                     <label key={f.label} className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" checked={f.val} onChange={e=>f.set(e.target.checked)} className="w-4 h-4 rounded accent-[#b99a64]"/>
+                      <input type="checkbox" checked={f.val} onChange={e=>f.set(e.target.checked)} className="w-4 h-4 rounded accent-neutral-800"/>
                       <span className="text-[0.78rem] font-semibold" style={{color:'var(--adm-text)'}}>{f.label}</span>
                     </label>
                   ))}
@@ -1057,7 +1361,7 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
                 <div className="flex gap-3 pt-2" style={{borderTop:'1px solid var(--adm-border2)'}}>
                   <button type="button" onClick={()=>setShowProd(false)} className="adm-btn-ghost flex-1 justify-center">Discard</button>
                   <button type="submit" disabled={saving||uploading||!pName||!pSku} className="adm-btn-primary flex-1 justify-center" style={{opacity:saving||uploading?0.6:1}}>
-                    {saving?'Saving…':editProd?'Update Product':'Launch Product'}
+                    {saving?'Saving…':editProd?'Update Product':'Save product'}
                   </button>
                 </div>
               </form>

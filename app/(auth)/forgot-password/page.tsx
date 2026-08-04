@@ -49,15 +49,15 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="commerce-page flex-1 flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-8 bg-luxury-offwhite dark:bg-luxury-black relative overflow-hidden">
+    <div className="flex-1 flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-8 bg-neutral-50 dark:bg-neutral-950 relative overflow-hidden">
       <div className="sm:mx-auto sm:w-full sm:max-w-md z-10">
         <Link 
           href="/login" 
-          className="inline-flex items-center text-xs tracking-wider text-stone-600 hover:text-luxury-gold transition-colors duration-200 mb-6 uppercase"
+          className="inline-flex items-center text-xs tracking-wider text-stone-600 hover:text-neutral-600 transition-colors duration-200 mb-6 uppercase"
         >
           <ArrowLeft className="w-3.5 h-3.5 mr-1" /> Back to Sign In
         </Link>
-        <h1 className="text-center text-4xl font-serif tracking-tight text-luxury-black dark:text-luxury-beige">
+        <h1 className="text-center text-4xl font-serif tracking-tight text-neutral-900 dark:text-neutral-100">
           Chandan Art Gallery
         </h1>
         <p className="mt-2 text-center text-xs tracking-widest text-stone-600 dark:text-stone-400 uppercase">
@@ -101,7 +101,7 @@ export default function ForgotPasswordPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="lux-input block w-full px-4 py-3 rounded-[12px] text-luxury-charcoal dark:text-white text-sm"
+                  className="lux-input block w-full px-4 py-3 rounded-[12px] text-neutral-800 dark:text-white text-sm"
                   placeholder="name@example.com"
                 />
                 <Mail className="absolute right-3.5 top-3.5 w-4 h-4 text-stone-500" />

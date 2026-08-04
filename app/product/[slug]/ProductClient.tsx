@@ -51,7 +51,7 @@ export default function ProductClient({ product, initialReviews, initialComments
   const colorOptions = parseColors(product.color);
 
   const TrustIcon = ({ icon }: { icon: TrustBadge['icon'] }) => {
-    const cls = 'w-5 h-5 text-luxury-gold mb-1.5';
+    const cls = 'w-5 h-5 text-neutral-600 mb-1.5';
     switch (icon) {
       case 'shield':
         return <ShieldCheck className={cls} />;
@@ -242,8 +242,14 @@ export default function ProductClient({ product, initialReviews, initialComments
     setReviewError(null);
     setReviewSuccess(false);
 
-    if (!reviewName.trim() || !reviewComment.trim()) {
-      setReviewError('Please fill out all required fields.');
+    if (!user) {
+      setReviewError('You must be signed in to submit a review.');
+      window.location.href = `/login?next=${encodeURIComponent(`/product/${product.slug}`)}`;
+      return;
+    }
+
+    if (!reviewComment.trim() || reviewComment.trim().length < 10) {
+      setReviewError('Please write a review of at least 10 characters.');
       return;
     }
 
@@ -262,8 +268,11 @@ export default function ProductClient({ product, initialReviews, initialComments
         },
         body: JSON.stringify({
           productId: product.id,
-          userId: user?.id,
-          userName: reviewName,
+          userName:
+            reviewName.trim() ||
+            user.user_metadata?.full_name ||
+            user.email?.split('@')[0] ||
+            'Member',
           rating: reviewRating,
           title: reviewTitle,
           comment: reviewComment,
@@ -280,7 +289,6 @@ export default function ProductClient({ product, initialReviews, initialComments
       setReviewComment('');
       setReviewTitle('');
       setRecaptchaToken(null);
-      // Close modal after a brief success delay
       setTimeout(() => {
         setReviewModalOpen(false);
         setReviewSuccess(false);
@@ -356,36 +364,36 @@ export default function ProductClient({ product, initialReviews, initialComments
   });
 
   return (
-    <div className="lux-container pt-36 pb-20">
+    <div className="lux-container pt-24 pb-16">
       {/* Breadcrumbs */}
-      <nav className="flex flex-wrap items-center gap-2 text-xs tracking-wider text-stone-600 dark:text-stone-400 uppercase mb-10 select-none">
-        <Link href="/" className="hover:text-luxury-gold transition-colors duration-200">Home</Link>
+      <nav className="flex flex-wrap items-center gap-2 text-xs text-neutral-500 mb-8 select-none">
+        <Link href="/" className="hover:text-neutral-900 dark:hover:text-white transition-colors">Home</Link>
         <ChevronRight className="w-3.5 h-3.5" />
-        <Link href="/shop" className="hover:text-luxury-gold transition-colors duration-200">Shop</Link>
+        <Link href="/shop" className="hover:text-neutral-900 dark:hover:text-white transition-colors">Shop</Link>
         {product.category && (
           <>
             <ChevronRight className="w-3.5 h-3.5" />
             <Link 
               href={`/shop?category=${product.category.slug}`} 
-              className="hover:text-luxury-gold transition-colors duration-200"
+              className="hover:text-neutral-900 dark:hover:text-white transition-colors"
             >
               {product.category.name}
             </Link>
           </>
         )}
         <ChevronRight className="w-3.5 h-3.5" />
-        <span className="text-luxury-charcoal dark:text-luxury-beige line-clamp-1">{product.name}</span>
+        <span className="text-neutral-800 dark:text-neutral-200 line-clamp-1">{product.name}</span>
       </nav>
 
       {/* Main Detail Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-[0.95fr_1fr] gap-10 lg:gap-16 mb-20">
-        {/* Left Column: Premium Gallery with Zoom */}
-        <div className="space-y-4">
+      <div className="grid grid-cols-1 lg:grid-cols-[0.95fr_1fr] gap-10 lg:gap-14 mb-16">
+        {/* Left Column: Gallery */}
+        <div className="space-y-3">
           <div 
             ref={containerRef}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
-            className="relative aspect-[4/5] cursor-crosshair overflow-hidden rounded-[24px] border border-black/10 bg-white shadow-[0_18px_48px_rgba(36,27,18,0.12)] select-none dark:border-white/10 dark:bg-zinc-950"
+            className="relative aspect-[4/5] cursor-crosshair overflow-hidden border border-neutral-200 bg-neutral-50 select-none dark:border-neutral-800 dark:bg-neutral-900"
           >
             <SmartImage
               src={activeImage}
@@ -404,7 +412,7 @@ export default function ProductClient({ product, initialReviews, initialComments
             {/* Float Badges */}
             <div className="absolute top-4 left-4 z-10 flex flex-col space-y-2">
               {product.is_featured && (
-                <span className="commerce-label dark:bg-luxury-gold dark:text-luxury-black">
+                <span className="commerce-label dark:bg-neutral-900 dark:text-neutral-900">
                   {pageConfig.badgeLabels.featured}
                 </span>
               )}
@@ -414,7 +422,7 @@ export default function ProductClient({ product, initialReviews, initialComments
                 </span>
               )}
               {product.is_best_seller && (
-                <span className="commerce-label bg-luxury-gold text-zinc-950">
+                <span className="commerce-label bg-neutral-900 text-zinc-950">
                   {pageConfig.badgeLabels.bestSeller}
                 </span>
               )}
@@ -439,7 +447,7 @@ export default function ProductClient({ product, initialReviews, initialComments
                   onClick={() => setActiveImage(img.image_url)}
                   className={`w-20 h-20 bg-white dark:bg-zinc-950 border rounded-[12px] overflow-hidden flex-shrink-0 cursor-pointer transition-all duration-200 p-0.5 ${
                     activeImage === img.image_url 
-                      ? 'border-luxury-gold ring-1 ring-luxury-gold' 
+                      ? 'border-neutral-300 ring-1 ring-neutral-400' 
                       : 'border-gray-100 dark:border-zinc-800/80'
                   }`}
                 >
@@ -461,13 +469,13 @@ export default function ProductClient({ product, initialReviews, initialComments
         <div className="commerce-surface flex flex-col justify-between space-y-7 p-5 sm:p-8">
           <div>
             {/* Tagline */}
-            <div className="flex items-center space-x-1.5 text-xs text-luxury-gold font-semibold uppercase tracking-widest mb-2">
+            <div className="flex items-center space-x-1.5 text-xs text-neutral-600 font-semibold uppercase tracking-widest mb-2">
               <Sparkles className="w-3.5 h-3.5" />
               <span>{pageConfig.tagline}</span>
             </div>
 
             {/* Product Title */}
-            <h1 className="font-serif text-4xl leading-tight text-luxury-black dark:text-white sm:text-5xl">
+            <h1 className="font-serif text-4xl leading-tight text-neutral-900 dark:text-white sm:text-5xl">
               {product.name}
             </h1>
 
@@ -483,7 +491,7 @@ export default function ProductClient({ product, initialReviews, initialComments
                   />
                 ))}
               </div>
-              <span className="text-xs font-bold text-luxury-charcoal dark:text-luxury-beige">
+              <span className="text-xs font-bold text-neutral-800 dark:text-neutral-100">
                 {averageRating} ({reviews.length} {reviews.length === 1 ? 'Review' : 'Reviews'})
               </span>
             </div>
@@ -508,8 +516,8 @@ export default function ProductClient({ product, initialReviews, initialComments
                       onClick={() => setSelectedSize(sz.value)}
                       className={`p-3 border rounded-[12px] flex flex-col items-center justify-center transition-all duration-200 text-xs font-semibold cursor-pointer ${
                         selectedSize === sz.value
-                          ? 'border-luxury-gold bg-luxury-gold/10 text-luxury-gold-dark shadow-sm'
-                          : 'border-black/10 dark:border-white/10 text-luxury-charcoal dark:text-stone-400 hover:border-luxury-gold/40'
+                          ? 'border-neutral-300 bg-neutral-900/10 text-neutral-700 shadow-sm'
+                          : 'border-black/10 dark:border-white/10 text-neutral-800 dark:text-stone-400 hover:border-neutral-300/40'
                       }`}
                     >
                       <span>{sz.label}</span>
@@ -533,8 +541,8 @@ export default function ProductClient({ product, initialReviews, initialComments
                       onClick={() => setSelectedFrame(mat.value)}
                       className={`p-3 border rounded-[12px] flex flex-col items-center justify-center transition-all duration-200 text-xs font-semibold cursor-pointer ${
                         selectedFrame === mat.value
-                          ? 'border-luxury-gold bg-luxury-gold/10 text-luxury-gold-dark shadow-sm'
-                          : 'border-black/10 dark:border-white/10 text-luxury-charcoal dark:text-stone-400 hover:border-luxury-gold/40'
+                          ? 'border-neutral-300 bg-neutral-900/10 text-neutral-700 shadow-sm'
+                          : 'border-black/10 dark:border-white/10 text-neutral-800 dark:text-stone-400 hover:border-neutral-300/40'
                       }`}
                     >
                       <span>{mat.label}</span>
@@ -558,8 +566,8 @@ export default function ProductClient({ product, initialReviews, initialComments
                       onClick={() => setSelectedFinish(fin.label)}
                       className={`px-3 py-2 border rounded-[12px] text-xs font-semibold cursor-pointer transition-all duration-200 ${
                         selectedFinish === fin.label
-                          ? 'border-luxury-gold bg-luxury-gold/10 text-luxury-gold-dark shadow-sm'
-                          : 'border-black/10 dark:border-white/10 text-luxury-charcoal dark:text-stone-400 hover:border-luxury-gold/40'
+                          ? 'border-neutral-300 bg-neutral-900/10 text-neutral-700 shadow-sm'
+                          : 'border-black/10 dark:border-white/10 text-neutral-800 dark:text-stone-400 hover:border-neutral-300/40'
                       }`}
                     >
                       {fin.label}
@@ -576,7 +584,7 @@ export default function ProductClient({ product, initialReviews, initialComments
             <div className="flex justify-between items-center">
               <div>
                 <span className="text-xs uppercase tracking-wider text-stone-600 dark:text-stone-400 block">Total Est. Price</span>
-                <span className="text-3xl font-bold text-luxury-black dark:text-luxury-beige">
+                <span className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
                   ₹{totalPrice.toLocaleString()}
                 </span>
               </div>
@@ -585,16 +593,16 @@ export default function ProductClient({ product, initialReviews, initialComments
               <div className="flex items-center border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20 px-1">
                 <button 
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="p-2 hover:text-luxury-gold cursor-pointer"
+                  className="p-2 hover:text-neutral-600 cursor-pointer"
                 >
                   <Minus className="w-3.5 h-3.5" />
                 </button>
-                <span className="px-3 text-sm font-bold text-luxury-charcoal dark:text-white select-none">
+                <span className="px-3 text-sm font-bold text-neutral-800 dark:text-white select-none">
                   {quantity}
                 </span>
                 <button 
                   onClick={() => setQuantity(quantity + 1)}
-                  className="p-2 hover:text-luxury-gold cursor-pointer"
+                  className="p-2 hover:text-neutral-600 cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
                 </button>
@@ -628,7 +636,7 @@ export default function ProductClient({ product, initialReviews, initialComments
               {pageConfig.trustBadges.map((badge, i) => (
                 <div key={i} className="flex flex-col items-center">
                   <TrustIcon icon={badge.icon} />
-                  <span className="text-[10px] font-bold text-luxury-charcoal dark:text-white uppercase">{badge.title}</span>
+                  <span className="text-[10px] font-bold text-neutral-800 dark:text-white uppercase">{badge.title}</span>
                   <span className="text-[9px] text-gray-400 mt-0.5">{badge.subtitle}</span>
                 </div>
               ))}
@@ -640,7 +648,7 @@ export default function ProductClient({ product, initialReviews, initialComments
 
       {/* Extra Technical Specs / Details */}
       <div className="border-b border-black/10 dark:border-white/10 pb-16 mb-16">
-        <h3 className="font-serif text-4xl text-luxury-black dark:text-white mb-6">{pageConfig.storyTitle}</h3>
+        <h3 className="font-serif text-4xl text-neutral-900 dark:text-white mb-6">{pageConfig.storyTitle}</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-stone-700 dark:text-stone-400 leading-relaxed">
           <p>
             {product.description || 'Every piece at Chandan Art Gallery is crafted on a custom, order-by-order basis. By sourcing natural teak and pine woods, our frames represent the absolute apex of home decor art. The anti-glare museum acrylic shields your photos from UV rays and details are finalized in real time on WhatsApp with our design team.'}
@@ -648,23 +656,23 @@ export default function ProductClient({ product, initialReviews, initialComments
           <div className="commerce-surface space-y-2.5 p-5 text-xs">
             <div className="flex justify-between border-b border-gray-50 dark:border-zinc-800/40 pb-1.5">
               <span className="font-bold text-stone-600 dark:text-stone-400 uppercase">Base Dimensions</span>
-              <span className="text-luxury-charcoal dark:text-white">{formatDimensionsForSpecs(product.dimensions)}</span>
+              <span className="text-neutral-800 dark:text-white">{formatDimensionsForSpecs(product.dimensions)}</span>
             </div>
             <div className="flex justify-between border-b border-gray-50 dark:border-zinc-800/40 pb-1.5">
               <span className="font-bold text-gray-400 uppercase">Core Material</span>
-              <span className="text-luxury-charcoal dark:text-white">{selectedFrame}</span>
+              <span className="text-neutral-800 dark:text-white">{selectedFrame}</span>
             </div>
             <div className="flex justify-between border-b border-gray-50 dark:border-zinc-800/40 pb-1.5">
               <span className="font-bold text-gray-400 uppercase">Core Finish</span>
-              <span className="text-luxury-charcoal dark:text-white">{selectedFinish}</span>
+              <span className="text-neutral-800 dark:text-white">{selectedFinish}</span>
             </div>
             <div className="flex justify-between border-b border-gray-50 dark:border-zinc-800/40 pb-1.5">
               <span className="font-bold text-gray-400 uppercase">Weight Range</span>
-              <span className="text-luxury-charcoal dark:text-white">{product.weight || '1.5 kg'}</span>
+              <span className="text-neutral-800 dark:text-white">{product.weight || '1.5 kg'}</span>
             </div>
             <div className="flex justify-between">
               <span className="font-bold text-gray-400 uppercase">Customizable?</span>
-              <span className={`font-bold ${product.is_customizable ? 'text-luxury-gold' : 'text-gray-400'}`}>
+              <span className={`font-bold ${product.is_customizable ? 'text-neutral-600' : 'text-gray-400'}`}>
                 {product.is_customizable ? pageConfig.customizableYesText : pageConfig.customizableNoText}
               </span>
             </div>
@@ -676,9 +684,9 @@ export default function ProductClient({ product, initialReviews, initialComments
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 border-b border-black/10 dark:border-white/10 pb-16 mb-16" id="reviews">
         {/* Rating Summaries */}
         <div>
-          <h3 className="font-serif text-2xl text-luxury-black dark:text-white mb-3">Client Reviews</h3>
+          <h3 className="font-serif text-2xl text-neutral-900 dark:text-white mb-3">Client Reviews</h3>
           <div className="flex items-baseline space-x-2.5 mb-5">
-            <span className="text-5xl font-bold font-serif text-luxury-black dark:text-luxury-beige">{averageRating}</span>
+            <span className="text-5xl font-bold font-serif text-neutral-900 dark:text-neutral-100">{averageRating}</span>
             <span className="text-xs text-gray-400 uppercase font-semibold">Out of 5.0</span>
           </div>
 
@@ -701,7 +709,7 @@ export default function ProductClient({ product, initialReviews, initialComments
                 <Star className="w-3 h-3 text-amber-400 fill-current mr-2" />
                 <div className="flex-1 h-2 bg-gray-100 dark:bg-zinc-800 rounded-[12px] overflow-hidden">
                   <div 
-                    className="h-full bg-luxury-gold" 
+                    className="h-full bg-neutral-900" 
                     style={{ width: `${starPercentages[idx]}%` }}
                   />
                 </div>
@@ -712,10 +720,17 @@ export default function ProductClient({ product, initialReviews, initialComments
 
           {/* Submit review CTA */}
           <button
-            onClick={() => setReviewModalOpen(true)}
-            className="mt-8 w-full py-3 px-4 border border-luxury-gold text-luxury-gold-dark dark:border-luxury-gold dark:text-luxury-beige hover:bg-luxury-gold/5 rounded-[12px] text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer"
+            onClick={() => {
+              if (!user) {
+                window.location.href = `/login?next=${encodeURIComponent(`/product/${product.slug}`)}`;
+                return;
+              }
+              setReviewName(user.user_metadata?.full_name || user.email?.split('@')[0] || '');
+              setReviewModalOpen(true);
+            }}
+            className="mt-8 w-full py-3 px-4 border border-neutral-300 text-neutral-700 dark:border-neutral-300 dark:text-neutral-100 hover:bg-neutral-900/5 rounded-[12px] text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer"
           >
-            Submit an Honest Review
+            {user ? 'Submit an Honest Review' : 'Sign in to Write a Review'}
           </button>
         </div>
 
@@ -736,7 +751,7 @@ export default function ProductClient({ product, initialReviews, initialComments
                 {/* Rating stars */}
                 <div className="flex justify-between items-start mb-2.5">
                   <div>
-                    <h4 className="text-sm font-serif text-luxury-black dark:text-white font-bold">{rev.title || 'Verified Buyer'}</h4>
+                    <h4 className="text-sm font-serif text-neutral-900 dark:text-white font-bold">{rev.title || 'Verified Buyer'}</h4>
                     <span className="text-[10px] text-gray-400 block mt-0.5">By {rev.user_name} | {new Date(rev.created_at).toLocaleDateString()}</span>
                   </div>
                   <div className="flex items-center text-amber-400">
@@ -754,7 +769,7 @@ export default function ProductClient({ product, initialReviews, initialComments
 
       {/* Discussion / Comments Section */}
       <div className="max-w-4xl">
-        <h3 className="font-serif text-2xl text-luxury-black dark:text-white mb-2">Curator Discussions & Q&A</h3>
+        <h3 className="font-serif text-2xl text-neutral-900 dark:text-white mb-2">Curator Discussions & Q&A</h3>
         <p className="text-xs text-gray-400 uppercase tracking-widest mb-8">
           Logged-in members can leave inquiries. Approved comments and replies will display below.
         </p>
@@ -771,12 +786,12 @@ export default function ProductClient({ product, initialReviews, initialComments
                 onChange={(e) => setNewComment(e.target.value)}
                 placeholder="Ask about customization details, mounting guidance, or shipping times..."
                 rows={3}
-                className="flex-1 p-4 border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 rounded-[12px] text-xs text-luxury-charcoal dark:text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-luxury-gold"
+                className="flex-1 p-4 border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 rounded-[12px] text-xs text-neutral-800 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-neutral-400"
               />
               <button
                 type="submit"
                 disabled={commentSubmitting || !newComment.trim()}
-                className="self-end px-5 py-4 bg-luxury-black dark:bg-luxury-gold text-white dark:text-luxury-black text-xs font-bold rounded-[12px] uppercase tracking-wider flex items-center hover:bg-luxury-gold transition-colors disabled:opacity-40 cursor-pointer"
+                className="self-end px-5 py-4 bg-luxury-black dark:bg-neutral-900 text-white dark:text-neutral-900 text-xs font-bold rounded-[12px] uppercase tracking-wider flex items-center hover:bg-neutral-900 transition-colors disabled:opacity-40 cursor-pointer"
               >
                 <Send className="w-3.5 h-3.5 mr-2" />
                 Submit
@@ -787,7 +802,7 @@ export default function ProductClient({ product, initialReviews, initialComments
           <div className="bg-gray-50 dark:bg-zinc-950/20 p-5 rounded-[18px] border border-gray-100 dark:border-zinc-800/60 text-center mb-10">
             <p className="text-xs text-gray-500">
               Please{' '}
-              <Link href="/login" className="font-bold text-luxury-gold hover:underline">Sign In</Link>
+              <Link href="/login" className="font-bold text-neutral-600 hover:underline">Sign In</Link>
               {' '}to join the discussion and post customization inquiries.
             </p>
           </div>
@@ -802,11 +817,11 @@ export default function ProductClient({ product, initialReviews, initialComments
               const replies = comments.filter((c) => c.parent_id === cmt.id);
               
               return (
-                <div key={cmt.id} className="border-l-2 border-luxury-gold/30 pl-5 space-y-4">
+                <div key={cmt.id} className="border-l-2 border-neutral-300/30 pl-5 space-y-4">
                   {/* Primary Comment */}
                   <div className="bg-white dark:bg-zinc-900/40 p-5 rounded-[12px] border border-gray-50 dark:border-zinc-800/40 relative">
                     <div className="flex justify-between items-baseline mb-2">
-                      <span className="text-xs font-bold text-luxury-charcoal dark:text-white">{cmt.user_name}</span>
+                      <span className="text-xs font-bold text-neutral-800 dark:text-white">{cmt.user_name}</span>
                       <span className="text-[10px] text-gray-400">{new Date(cmt.created_at).toLocaleDateString()}</span>
                     </div>
                     <p className="text-xs text-gray-500 leading-relaxed mb-3">{cmt.comment}</p>
@@ -815,7 +830,7 @@ export default function ProductClient({ product, initialReviews, initialComments
                     {user && replyingToId !== cmt.id && (
                       <button
                         onClick={() => setReplyingToId(cmt.id)}
-                        className="text-[10px] font-bold text-luxury-gold hover:underline uppercase tracking-wider cursor-pointer"
+                        className="text-[10px] font-bold text-neutral-600 hover:underline uppercase tracking-wider cursor-pointer"
                       >
                         Reply to this question
                       </button>
@@ -829,7 +844,7 @@ export default function ProductClient({ product, initialReviews, initialComments
                           onChange={(e) => setReplyText(e.target.value)}
                           placeholder="Write your response..."
                           rows={2}
-                          className="w-full p-3 border border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-950/20 rounded-[12px] text-xs text-luxury-charcoal dark:text-white"
+                          className="w-full p-3 border border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-950/20 rounded-[12px] text-xs text-neutral-800 dark:text-white"
                         />
                         <div className="flex space-x-2 justify-end">
                           <button
@@ -842,7 +857,7 @@ export default function ProductClient({ product, initialReviews, initialComments
                           <button
                             type="submit"
                             disabled={!replyText.trim()}
-                            className="px-4 py-1.5 bg-luxury-black dark:bg-luxury-gold text-white dark:text-luxury-black text-[10px] font-bold rounded-[12px] uppercase tracking-wider disabled:opacity-40 cursor-pointer"
+                            className="px-4 py-1.5 bg-luxury-black dark:bg-neutral-900 text-white dark:text-neutral-900 text-[10px] font-bold rounded-[12px] uppercase tracking-wider disabled:opacity-40 cursor-pointer"
                           >
                             Post Reply
                           </button>
@@ -867,17 +882,17 @@ export default function ProductClient({ product, initialReviews, initialComments
                             key={reply.id} 
                             className={`p-4.5 rounded-[12px] border relative ${
                               isAdminReply
-                                ? 'bg-luxury-gold/5 border-luxury-gold/40'
+                                ? 'bg-neutral-900/5 border-neutral-300/40'
                                 : 'bg-gray-50/40 border-gray-50/60 dark:bg-zinc-950/20 dark:border-zinc-800/40'
                             }`}
                           >
                             <div className="flex justify-between items-baseline mb-2">
                               <div className="flex items-center space-x-2">
-                                <span className="text-xs font-bold text-luxury-charcoal dark:text-white">
+                                <span className="text-xs font-bold text-neutral-800 dark:text-white">
                                   {reply.user_name}
                                 </span>
                                 {isAdminReply && (
-                                  <span className="bg-luxury-gold/25 text-luxury-gold-dark text-[8px] font-bold px-1.5 py-0.5 rounded-[8px] uppercase tracking-wider border border-luxury-gold/20">
+                                  <span className="bg-neutral-900/25 text-neutral-700 text-[8px] font-bold px-1.5 py-0.5 rounded-[8px] uppercase tracking-wider border border-neutral-300/20">
                                     Curator
                                   </span>
                                 )}
@@ -914,7 +929,7 @@ export default function ProductClient({ product, initialReviews, initialComments
               exit={{ opacity: 0, scale: 0.95, y: 15 }}
               className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/80 rounded-[18px] shadow-2xl z-50 p-6 sm:p-8 overflow-y-auto max-h-[90vh]"
             >
-              <h3 className="font-serif text-2xl text-luxury-black dark:text-white mb-1">Write your Review</h3>
+              <h3 className="font-serif text-2xl text-neutral-900 dark:text-white mb-1">Write your Review</h3>
               <p className="text-xs text-gray-400 uppercase tracking-widest mb-6">
                 Your experience helps our local framing artisans.
               </p>
@@ -935,15 +950,16 @@ export default function ProductClient({ product, initialReviews, initialComments
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-semibold uppercase text-gray-400 mb-1.5">Your Name *</label>
+                      <label className="block text-xs font-semibold uppercase text-gray-400 mb-1.5">Display Name *</label>
                       <input
                         type="text"
                         required
                         value={reviewName}
                         onChange={(e) => setReviewName(e.target.value)}
-                        placeholder="John Doe"
-                        className="w-full px-4.5 py-3 border border-gray-200 dark:border-zinc-800 rounded-[12px] text-xs bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none focus:ring-1 focus:ring-luxury-gold"
+                        placeholder="Your name"
+                        className="w-full px-4.5 py-3 border border-gray-200 dark:border-zinc-800 rounded-[12px] text-xs bg-gray-50/50 dark:bg-zinc-950/20 text-neutral-800 dark:text-white focus:outline-none focus:ring-1 focus:ring-neutral-400"
                       />
+                      <p className="mt-1 text-[0.65rem] text-neutral-400">Signed in as {user?.email}</p>
                     </div>
                     <div>
                       <label className="block text-xs font-semibold uppercase text-gray-400 mb-1.5">Rating *</label>
@@ -969,7 +985,7 @@ export default function ProductClient({ product, initialReviews, initialComments
                       value={reviewTitle}
                       onChange={(e) => setReviewTitle(e.target.value)}
                       placeholder="e.g. Stunning craftsmanship!"
-                      className="w-full px-4.5 py-3 border border-gray-200 dark:border-zinc-800 rounded-[12px] text-xs bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none focus:ring-1 focus:ring-luxury-gold"
+                      className="w-full px-4.5 py-3 border border-gray-200 dark:border-zinc-800 rounded-[12px] text-xs bg-gray-50/50 dark:bg-zinc-950/20 text-neutral-800 dark:text-white focus:outline-none focus:ring-1 focus:ring-neutral-400"
                     />
                   </div>
 
@@ -981,7 +997,7 @@ export default function ProductClient({ product, initialReviews, initialComments
                       onChange={(e) => setReviewComment(e.target.value)}
                       placeholder="Describe your wood finish, frame alignment, standoff quality, or general feedback..."
                       rows={4}
-                      className="w-full p-4 border border-gray-200 dark:border-zinc-800 rounded-[12px] text-xs bg-gray-50/50 dark:bg-zinc-950/20 text-luxury-charcoal dark:text-white focus:outline-none focus:ring-1 focus:ring-luxury-gold"
+                      className="w-full p-4 border border-gray-200 dark:border-zinc-800 rounded-[12px] text-xs bg-gray-50/50 dark:bg-zinc-950/20 text-neutral-800 dark:text-white focus:outline-none focus:ring-1 focus:ring-neutral-400"
                     />
                   </div>
 
@@ -1001,7 +1017,7 @@ export default function ProductClient({ product, initialReviews, initialComments
                     <button
                       type="submit"
                       disabled={reviewSubmitting}
-                      className="flex-1 py-3 px-4 bg-luxury-black dark:bg-luxury-gold text-white dark:text-luxury-black hover:bg-luxury-gold dark:hover:bg-luxury-beige transition-colors text-xs font-bold rounded-[12px] uppercase tracking-wider flex justify-center items-center cursor-pointer"
+                      className="flex-1 py-3 px-4 bg-luxury-black dark:bg-neutral-900 text-white dark:text-neutral-900 hover:bg-neutral-900 dark:hover:bg-neutral-100 transition-colors text-xs font-bold rounded-[12px] uppercase tracking-wider flex justify-center items-center cursor-pointer"
                     >
                       {reviewSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" />}
                       Publish Review

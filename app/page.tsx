@@ -103,7 +103,7 @@ export default async function HomePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-luxury-offwhite dark:bg-luxury-black">
+    <div className="min-h-screen flex flex-col bg-neutral-50 dark:bg-neutral-950">
       {/* Insert JSON-LD schemas */}
       <script
         type="application/ld+json"

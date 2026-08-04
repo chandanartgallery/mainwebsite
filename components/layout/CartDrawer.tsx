@@ -84,17 +84,17 @@ export default function CartDrawer() {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'tween', duration: 0.3 }}
-            className="fixed top-0 right-0 h-full w-full sm:max-w-md bg-luxury-offwhite dark:bg-luxury-black shadow-2xl z-50 flex flex-col"
+            className="fixed top-0 right-0 h-full w-full sm:max-w-md bg-neutral-50 dark:bg-neutral-950 shadow-2xl z-50 flex flex-col"
           >
             {/* Header */}
             <div className="px-6 py-5 border-b border-black/10 dark:border-white/10 flex justify-between items-center bg-white/40 dark:bg-white/[0.035] backdrop-blur">
               <div className="flex items-center space-x-2">
-                <ShoppingBag className="w-5 h-5 text-luxury-gold" />
-                <h3 className="font-serif text-2xl text-luxury-black dark:text-luxury-beige">Private Cart</h3>
+                <ShoppingBag className="w-5 h-5 text-neutral-600" />
+                <h3 className="font-serif text-2xl text-neutral-900 dark:text-neutral-100">Private Cart</h3>
               </div>
               <button
                 onClick={() => setCartOpen(false)}
-                className="text-gray-400 hover:text-luxury-black dark:hover:text-luxury-beige cursor-pointer"
+                className="text-gray-400 hover:text-neutral-900 dark:hover:text-neutral-100 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -123,7 +123,7 @@ export default function CartDrawer() {
                     </div>
                     <div className="flex-1 ml-4 flex flex-col justify-between">
                       <div>
-                        <h4 className="font-serif text-sm text-luxury-black dark:text-white line-clamp-1">
+                        <h4 className="font-serif text-sm text-neutral-900 dark:text-white line-clamp-1">
                           {item.name}
                         </h4>
                         {item.variant && (
@@ -131,7 +131,7 @@ export default function CartDrawer() {
                             {item.variant}
                           </p>
                         )}
-                        <p className="text-xs font-semibold text-luxury-gold mt-1">
+                        <p className="text-xs font-semibold text-neutral-600 mt-1">
                           ₹{item.price.toLocaleString()}
                         </p>
                       </div>
@@ -139,16 +139,16 @@ export default function CartDrawer() {
                         <div className="flex items-center border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20">
                           <button
                             onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            className="p-1.5 hover:text-luxury-gold cursor-pointer"
+                            className="p-1.5 hover:text-neutral-600 cursor-pointer"
                           >
                             <Minus className="w-3 h-3" />
                           </button>
-                          <span className="px-2 text-xs font-medium text-luxury-charcoal dark:text-white">
+                          <span className="px-2 text-xs font-medium text-neutral-800 dark:text-white">
                             {item.quantity}
                           </span>
                           <button
                             onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            className="p-1.5 hover:text-luxury-gold cursor-pointer"
+                            className="p-1.5 hover:text-neutral-600 cursor-pointer"
                           >
                             <Plus className="w-3 h-3" />
                           </button>
@@ -171,7 +171,7 @@ export default function CartDrawer() {
               <div className="p-6 border-t border-gray-100 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-950/20">
                 <div className="flex justify-between text-sm font-semibold mb-4">
                   <span className="text-gray-500">Subtotal</span>
-                  <span className="text-luxury-black dark:text-luxury-beige">
+                  <span className="text-neutral-900 dark:text-neutral-100">
                     ₹{getTotalPrice().toLocaleString()}
                   </span>
                 </div>

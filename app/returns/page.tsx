@@ -15,9 +15,9 @@ const steps = [
 
 export default function ReturnsPage() {
   return (
-    <div className="commerce-page min-h-screen flex flex-col bg-luxury-offwhite dark:bg-luxury-black">
+    <div className="min-h-screen flex flex-col bg-neutral-50 dark:bg-neutral-950">
       <Navbar />
-      <main className="lux-container flex-grow pt-36 pb-20">
+      <main className="lux-container flex-grow pt-24 pb-20">
         <div className="page-hero">
           <div>
             <p className="commerce-kicker">Order support</p>
@@ -31,10 +31,10 @@ export default function ReturnsPage() {
         <div className="mt-10 grid gap-5 lg:grid-cols-3">
           {steps.map(([number, title, body]) => (
             <section key={title} className="lux-card rounded-[22px] p-7">
-              <span className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-luxury-charcoal text-sm font-black text-luxury-beige dark:bg-luxury-beige dark:text-luxury-black">
+              <span className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-neutral-900 text-sm font-black text-neutral-100 dark:bg-neutral-100 dark:text-neutral-900">
                 {number}
               </span>
-              <h2 className="mt-6 font-serif text-3xl text-luxury-charcoal dark:text-luxury-beige">{title}</h2>
+              <h2 className="mt-6 font-serif text-3xl text-neutral-800 dark:text-neutral-100">{title}</h2>
               <p className="mt-3 text-sm leading-8 text-stone-700 dark:text-stone-400">{body}</p>
             </section>
           ))}
@@ -42,15 +42,15 @@ export default function ReturnsPage() {
 
         <div className="mt-5 grid gap-5 md:grid-cols-2">
           <section className="lux-panel rounded-[22px] p-7">
-            <PackageOpen className="h-6 w-6 text-luxury-gold" />
-            <h2 className="mt-5 font-serif text-3xl text-luxury-charcoal dark:text-luxury-beige">Returns</h2>
+            <PackageOpen className="h-6 w-6 text-neutral-600" />
+            <h2 className="mt-5 font-serif text-3xl text-neutral-800 dark:text-neutral-100">Returns</h2>
             <p className="mt-3 text-sm leading-8 text-stone-700 dark:text-stone-400">
               Because many products are customized, returns are reviewed individually. If there is a manufacturing issue or transit damage, we work with you toward a fair resolution.
             </p>
           </section>
           <section className="lux-panel rounded-[22px] p-7">
-            <ClipboardCheck className="h-6 w-6 text-luxury-gold" />
-            <h2 className="mt-5 font-serif text-3xl text-luxury-charcoal dark:text-luxury-beige">Custom Work</h2>
+            <ClipboardCheck className="h-6 w-6 text-neutral-600" />
+            <h2 className="mt-5 font-serif text-3xl text-neutral-800 dark:text-neutral-100">Custom Work</h2>
             <p className="mt-3 text-sm leading-8 text-stone-700 dark:text-stone-400">
               Size, finish, frame style, and artwork details are confirmed via WhatsApp before production, keeping your final order precise and documented.
             </p>

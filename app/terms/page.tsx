@@ -25,6 +25,11 @@ const terms = [
   },
   {
     icon: PackageCheck,
+    title: 'Accounts and reviews',
+    body: 'You must be signed in to submit product reviews. Reviews are subject to moderation. Misuse of accounts, spam, or abusive content may result in removal and account restriction.',
+  },
+  {
+    icon: PackageCheck,
     title: 'After-Sales Support',
     body: 'Damage, defect, or adjustment requests are reviewed by our team with repair, replacement, or resolution guidance based on the order type.',
   },
@@ -32,9 +37,9 @@ const terms = [
 
 export default function TermsPage() {
   return (
-    <div className="commerce-page min-h-screen flex flex-col bg-luxury-offwhite dark:bg-luxury-black">
+    <div className="min-h-screen flex flex-col bg-neutral-50 dark:bg-neutral-950">
       <Navbar />
-      <main className="lux-container flex-grow pt-36 pb-20">
+      <main className="lux-container flex-grow pt-24 pb-20">
         <div className="page-hero">
           <div>
             <p className="commerce-kicker">Shopping terms</p>
@@ -48,8 +53,8 @@ export default function TermsPage() {
         <div className="mt-10 grid gap-5 sm:grid-cols-2">
           {terms.map(({ icon: Icon, title, body }) => (
             <section key={title} className="lux-card rounded-[22px] p-7">
-              <Icon className="h-6 w-6 text-luxury-gold" />
-              <h2 className="mt-5 font-serif text-3xl text-luxury-charcoal dark:text-luxury-beige">{title}</h2>
+              <Icon className="h-6 w-6 text-neutral-600" />
+              <h2 className="mt-5 font-serif text-3xl text-neutral-800 dark:text-neutral-100">{title}</h2>
               <p className="mt-3 text-sm leading-8 text-stone-700 dark:text-stone-400">{body}</p>
             </section>
           ))}

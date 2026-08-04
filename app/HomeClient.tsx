@@ -1,23 +1,31 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useRef, useState, useMemo } from 'react';
 import Link from 'next/link';
-import { AnimatePresence, motion } from 'framer-motion';
 import {
-  ArrowRight,
-  ChevronDown,
-  Gem,
-  type LucideIcon,
-  Mail,
-  MessageSquare,
-  ShieldCheck,
-  Sparkles,
-  Star,
-  Trees,
-} from 'lucide-react';
+  AnimatePresence,
+  motion,
+  useScroll,
+  useTransform,
+  useReducedMotion,
+} from 'framer-motion';
+import { ArrowRight, Mail, Minus, Plus, Quote } from 'lucide-react';
 import { useUIStore } from '@/store/uiStore';
 import SmartImage from '@/components/ui/SmartImage';
-import BlurText from '@/components/ui/BlurText';
+import ProductCard3D from '@/components/ProductCard3D';
+import AnimeReveal from '@/components/AnimeReveal';
+import SplitText from '@/components/SplitText';
+import AccordionGallery from '@/components/AccordionGallery';
+import CurvedLoop from '@/components/CurvedLoop';
+import CircularGallery from '@/components/CircularGallery';
+import ScrollReveal from '@/components/ScrollReveal';
+import FadeContent from '@/components/FadeContent';
+import TrueFocus from '@/components/TrueFocus';
+import TiltedCard from '@/components/TiltedCard';
+import CardSwap, { Card } from '@/components/CardSwap';
+import CountUp from '@/components/CountUp';
+import GradualBlur from '@/components/GradualBlur';
+import FlowingMenu from '@/components/FlowingMenu';
 
 interface HomeClientProps {
   banners: any[];
@@ -25,23 +33,6 @@ interface HomeClientProps {
   featuredProducts: any[];
   testimonials: any[];
 }
-
-const fallbackSlides = [
-  {
-    id: 'default-1',
-    title: 'Bespoke frames for homes with memory.',
-    subtitle: 'Solid timber frames, acrylic showcases, canvas editions, and devotional art finished through one-to-one curator dialogue.',
-    image_url: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=1920',
-    link_url: '/shop',
-  },
-  {
-    id: 'default-2',
-    title: 'Quiet craft, made with real wood.',
-    subtitle: 'Museum-grade protection, warm Indian materials, and restrained details for considered interiors.',
-    image_url: 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=1920',
-    link_url: '/shop?category=custom-photo-frames',
-  },
-];
 
 const fallbackCategoryMedia: Record<string, string> = {
   'photo-frames': 'https://images.unsplash.com/photo-1591129841117-3adfd313a6dd?q=80&w=1400',
@@ -51,354 +42,637 @@ const fallbackCategoryMedia: Record<string, string> = {
   'religious-frames': 'https://images.unsplash.com/photo-1518998053901-5348d3961a04?q=80&w=1400',
 };
 
-const fallbackArtworkMedia = 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=900';
+const fallbackArt = 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=900';
+
+const studioImages = [
+  'https://images.unsplash.com/photo-1600210491369-e753d80a41f3?q=80&w=800',
+  'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=800',
+  'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=800',
+  'https://images.unsplash.com/photo-1577083552431-6e5fd01988f1?q=80&w=800',
+  'https://images.unsplash.com/photo-1591129841117-3adfd313a6dd?q=80&w=800',
+];
+
+const fallbackTestimonials = [
+  {
+    name: 'Ananya R.',
+    role: 'Delhi',
+    comment: 'The walnut frame arrived perfectly sized for our living room wall. WhatsApp ordering was simple.',
+  },
+  {
+    name: 'Vikram S.',
+    role: 'Jaipur',
+    comment: 'Custom dimensions, clean finish, careful packing. Exactly what we asked for.',
+  },
+  {
+    name: 'Meera K.',
+    role: 'Mumbai',
+    comment: 'Our mandir frame feels intentional — proportion and wood tone matched the space.',
+  },
+];
 
 const faqs = [
   {
-    q: 'How does the WhatsApp ordering process work?',
-    a: 'Choose a piece, select your preferred options, and send the curated order note to our studio. A specialist confirms dimensions, finish, pricing, and shipping before production begins.',
+    q: 'How does WhatsApp ordering work?',
+    a: 'Pick a piece, choose options, send the order note on WhatsApp. We confirm size, finish, price, and shipping before production.',
   },
   {
     q: 'Which woods do you use?',
-    a: 'Our core collections use seasoned pine, teak, mango wood, and selected hardwood profiles depending on the finish and structural requirement.',
+    a: 'Seasoned pine, teak, mango wood, and selected hardwoods by finish.',
   },
   {
     q: 'Can I request a custom size?',
-    a: 'Yes. Most frame and canvas formats can be tailored from desk portraits to large wall compositions after a quick consultation.',
+    a: 'Yes — most frames and canvases are made to your dimensions after a short consult.',
   },
   {
     q: 'How are fragile pieces shipped?',
-    a: 'Orders are packed with layered protection, reinforced corners, and courier-ready cartons. Damage cases are handled with repair or replacement support.',
+    a: 'Layered protection and reinforced packaging. Damage cases get repair or replacement.',
   },
 ];
 
-const pillars: Array<{ title: string; copy: string; Icon: LucideIcon }> = [
-  { title: 'Real materials', copy: 'Seasoned hardwood profiles, refined finishes, and honest grain.', Icon: Trees },
-  { title: 'Museum protection', copy: 'Premium acrylic, UV-conscious detailing, and careful assembly.', Icon: ShieldCheck },
-  { title: 'Curator led', copy: 'No cold checkout. Every custom order is confirmed by a specialist.', Icon: MessageSquare },
-];
-
-export default function HomeClient({ banners, categories, featuredProducts, testimonials }: HomeClientProps) {
+export default function HomeClient({
+  banners: _banners,
+  categories,
+  featuredProducts,
+  testimonials,
+}: HomeClientProps) {
   const { addToast } = useUIStore();
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const reduce = useReducedMotion();
   const [openFaq, setOpenFaq] = useState<number | null>(0);
-  const [loadedSlides, setLoadedSlides] = useState<Record<string, boolean>>({});
-  const slides = banners.length > 0 ? banners : fallbackSlides;
+  const heroRef = useRef<HTMLElement>(null);
+  const quotes = testimonials.length > 0 ? testimonials : fallbackTestimonials;
 
-  useEffect(() => {
-    if (slides.length <= 1) return;
-    const interval = setInterval(() => setCurrentSlide((prev) => (prev + 1) % slides.length), 6500);
-    return () => clearInterval(interval);
-  }, [slides.length]);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ['start start', 'end start'],
+  });
+  const heroImgY = useTransform(scrollYProgress, [0, 1], ['0%', '18%']);
+  const heroFade = useTransform(scrollYProgress, [0, 0.85], [1, 0.35]);
+  const heroTextY = useTransform(scrollYProgress, [0, 1], ['0%', '12%']);
+
+  const accordionItems = useMemo(
+    () =>
+      categories.slice(0, 6).map((cat) => ({
+        image: cat.image_url || fallbackCategoryMedia[cat.slug] || fallbackArt,
+        label: cat.name,
+        link: `/shop?category=${cat.slug}`,
+        alt: cat.name,
+      })),
+    [categories],
+  );
+
+  const flowingItems = useMemo(
+    () => [
+      {
+        link: '/shop',
+        text: 'Shop bestsellers',
+        image: featuredProducts[0]?.product_images?.[0]?.image_url || fallbackArt,
+      },
+      {
+        link: '/shop?category=custom-photo-frames',
+        text: 'Request custom size',
+        image: fallbackCategoryMedia['custom-photo-frames'],
+      },
+      {
+        link: 'https://wa.me/918468845759',
+        text: 'Order on WhatsApp',
+        image: fallbackCategoryMedia['photo-frames'],
+      },
+      {
+        link: '/contact',
+        text: 'Interior project quote',
+        image: 'https://images.unsplash.com/photo-1600210491369-e753d80a41f3?q=80&w=1400',
+      },
+      {
+        link: '/shop?category=religious-frames',
+        text: 'Devotional pieces',
+        image: fallbackCategoryMedia['religious-frames'],
+      },
+    ],
+    [featuredProducts],
+  );
+
+  const circularItems = useMemo(() => {
+    const fromProducts = featuredProducts.slice(0, 8).map((p) => ({
+      image: p.product_images?.[0]?.image_url || fallbackArt,
+      text: p.name,
+    }));
+    if (fromProducts.length >= 4) return fromProducts;
+    return Object.entries(fallbackCategoryMedia).map(([slug, image]) => ({
+      image,
+      text: slug.replace(/-/g, ' '),
+    }));
+  }, [featuredProducts]);
+
+  const featured = featuredProducts.slice(0, 6);
 
   return (
-    <div className="relative overflow-hidden">
-      <section className="relative min-h-[100svh] overflow-hidden bg-luxury-black text-luxury-beige">
-        <AnimatePresence mode="wait">
-          {slides.map((slide, index) => {
-            if (index !== currentSlide) return null;
-            return (
-              <motion.div
-                key={slide.id}
-                initial={{ opacity: 0, scale: 1.025 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.01 }}
-                transition={{ duration: 1.15, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute inset-0"
-              >
-                <SmartImage
-                  src={slide.image_url}
-                  alt={slide.title}
-                  className={`h-full w-full object-cover transition duration-700 ${loadedSlides[slide.id] ? 'opacity-78 blur-0' : 'opacity-0 blur-sm'}`}
-                  containerClassName="h-full w-full"
-                  priority
-                  onLoaded={() => setLoadedSlides((prev) => ({ ...prev, [slide.id]: true }))}
-                  fallbackLabel="Hero media unavailable"
-                />
-                <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(9,8,7,0.92),rgba(9,8,7,0.55)_43%,rgba(9,8,7,0.12)),linear-gradient(0deg,rgba(9,8,7,0.72),transparent_45%)]" />
-              </motion.div>
-            );
-          })}
-        </AnimatePresence>
-        {!loadedSlides[slides[currentSlide]?.id] && (
-          <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(18,15,12,0.98),rgba(30,24,19,0.94))]" aria-hidden="true" />
-        )}
-
-        <div className="lux-container relative z-10 flex min-h-[100svh] items-end pb-16 pt-36 sm:pb-20">
-          <div className="grid w-full gap-10 lg:grid-cols-[minmax(0,0.95fr)_22rem] lg:items-end">
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-              className="max-w-4xl"
-            >
-              <div className="lux-eyebrow mb-5 flex items-center gap-2 text-luxury-gold">
-                <Sparkles className="h-4 w-4" />
-                Chandan Art Gallery
-              </div>
-              <BlurText
-                key={slides[currentSlide].id}
-                text={slides[currentSlide].title}
-                animateBy="words"
-                direction="top"
-                delay={110}
-                stepDuration={0.42}
-                className="lux-title hero-title-readable text-luxury-beige"
-              />
-              <p className="mt-7 max-w-xl text-base leading-8 text-luxury-beige/76 sm:text-lg">
-                {slides[currentSlide].subtitle}
-              </p>
-              <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-                <Link href={slides[currentSlide].link_url || '/shop'} className="lux-button lux-button-primary bg-luxury-beige text-luxury-black">
-                  Explore collection <ArrowRight className="h-4 w-4" />
-                </Link>
-                <Link href="/contact" className="lux-button border border-white/20 bg-white/10 text-luxury-beige backdrop-blur hover:bg-white/15">
-                  Studio consultation
-                </Link>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-              className="hidden rounded-[22px] border border-white/14 bg-white/10 p-5 shadow-2xl backdrop-blur-xl lg:block"
-            >
-              <div className="aspect-[4/5] overflow-hidden rounded-[18px] bg-luxury-black/30">
-                <SmartImage
-                  src="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=900"
-                  alt="Warm framed interior"
-                  className="h-full w-full object-cover"
-                  containerClassName="h-full w-full"
-                  fallbackLabel="Studio visual unavailable"
-                />
-              </div>
-              <div className="mt-5 flex items-center justify-between gap-5">
-                <div>
-                  <p className="font-serif text-xl text-luxury-beige">Hand-finished in India</p>
-                  <p className="mt-1 text-xs leading-relaxed text-luxury-beige/60">Each order is reviewed before it enters production.</p>
-                </div>
-                <span className="rounded-[12px] border border-luxury-gold/35 px-3 py-1 text-[0.62rem] font-black uppercase tracking-[0.18em] text-luxury-gold">
-                  Bespoke
-                </span>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-
-        {slides.length > 1 && (
-          <div className="absolute bottom-7 left-1/2 z-20 flex -translate-x-1/2 gap-2">
-            {slides.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => setCurrentSlide(idx)}
-                className={`h-1.5 rounded-[12px] transition-all duration-500 ${idx === currentSlide ? 'w-10 bg-luxury-gold' : 'w-2.5 bg-white/40'}`}
-                aria-label={`Show slide ${idx + 1}`}
-              />
-            ))}
-          </div>
-        )}
-      </section>
-
-      <section className="bg-luxury-offwhite py-12 dark:bg-luxury-black">
-        <div className="lux-container grid gap-8 border-b border-black/10 py-8 dark:border-white/10 md:grid-cols-3 md:gap-px md:divide-x md:divide-black/10 md:dark:divide-white/10">
-          {pillars.map(({ title, copy, Icon }) => (
-            <div key={title} className="px-1 md:px-7">
-              <Icon className="mb-5 h-5 w-5 text-luxury-gold" />
-              <h2 className="font-serif text-2xl text-luxury-charcoal dark:text-luxury-beige">{title}</h2>
-              <p className="mt-2 text-sm leading-7 text-stone-600 dark:text-stone-400">{copy}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="py-20 sm:py-28">
-        <div className="lux-container">
-          <div className="mb-12 grid gap-6 lg:grid-cols-[0.8fr_1fr] lg:items-end">
-            <div>
-              <p className="lux-eyebrow">Curated disciplines</p>
-              <h2 className="lux-section-title mt-3">Materials, memories, and sacred spaces.</h2>
-            </div>
-            <p className="lux-copy max-w-xl lg:justify-self-end">
-              A restrained catalog for homes that prefer warmth over spectacle: framed photographs, devotional art, acrylic depth, and canvas surfaces chosen with care.
-            </p>
-          </div>
-
-          <div className="grid auto-rows-[21rem] grid-cols-1 gap-4 md:grid-cols-6">
-            {categories.slice(0, 5).map((cat, idx) => (
-              <Link
-                key={cat.id}
-                href={`/shop?category=${cat.slug}`}
-                className={`group relative overflow-hidden rounded-[22px] bg-luxury-black shadow-2xl ${
-                  idx === 0 ? 'md:col-span-3 md:row-span-2' : idx === 1 ? 'md:col-span-3' : 'md:col-span-2'
-                }`}
-              >
-                <SmartImage
-                  src={cat.image_url || fallbackCategoryMedia[cat.slug] || fallbackArtworkMedia}
-                  fallbackSrc={fallbackCategoryMedia[cat.slug] || fallbackArtworkMedia}
-                  alt={cat.name}
-                  className="image-lift h-full w-full object-cover opacity-86"
-                  containerClassName="h-full w-full"
-                  fallbackLabel="Collection media unavailable"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-luxury-black/88 via-luxury-black/18 to-transparent" />
-                <div className="absolute inset-x-0 bottom-0 p-7">
-                  <span className="text-[0.62rem] font-black uppercase tracking-[0.2em] text-luxury-gold">Collection</span>
-                  <h3 className="mt-2 font-serif text-3xl text-luxury-beige">{cat.name}</h3>
-                  <p className="mt-2 max-w-sm text-sm leading-6 text-luxury-beige/65">{cat.description}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-luxury-charcoal py-20 text-luxury-beige dark:bg-[#0c0a08] sm:py-28">
-        <div className="lux-container">
-          <div className="mb-12 flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
-            <div>
-              <p className="lux-eyebrow text-luxury-gold">Collector favorites</p>
-              <h2 className="lux-section-title mt-3 text-luxury-beige">Objects with a quieter presence.</h2>
-            </div>
-            <Link href="/shop" className="lux-button border border-white/15 bg-white/8 text-luxury-beige hover:bg-white/12">
-              View gallery <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {featuredProducts.length === 0 ? (
-              <p className="col-span-full text-center text-sm text-luxury-beige/60">Loading custom artworks...</p>
-            ) : (
-              featuredProducts.map((prod) => {
-                const img = prod.product_images?.[0]?.image_url || 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=700';
-                return (
-                  <Link
-                    key={prod.id}
-                    href={`/product/${prod.slug}`}
-                    className="group rounded-[18px] border border-white/12 bg-[#1f1b17]/82 p-3 text-luxury-beige shadow-[0_16px_34px_rgba(0,0,0,0.28)] transition duration-300 hover:-translate-y-0.5 hover:border-luxury-gold/32 hover:bg-[#28231d]/88"
-                  >
-                    <div className="relative aspect-[4/5] overflow-hidden rounded-[18px] bg-black/20">
-                      <SmartImage
-                        src={img}
-                        fallbackSrc={fallbackArtworkMedia}
-                        alt={prod.name}
-                        className="image-lift h-full w-full object-cover"
-                        containerClassName="h-full w-full"
-                        fallbackLabel="Artwork preview unavailable"
-                      />
-                      {prod.is_best_seller && (
-                        <span className="commerce-label absolute left-4 top-4 bg-luxury-beige text-luxury-black">
-                          Bestseller
-                        </span>
-                      )}
-                    </div>
-                    <div className="px-2 py-5">
-                      <p className="text-[0.62rem] font-black uppercase tracking-[0.18em] text-luxury-gold">{prod.dimensions}</p>
-                      <h3 className="mt-2 font-serif text-xl leading-tight text-luxury-beige">{prod.name}</h3>
-                      <p className="mt-2 line-clamp-2 text-xs leading-6 text-luxury-beige/74">{prod.short_description}</p>
-                      <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4">
-                        <span className="text-sm font-extrabold">{prod.price ? `₹${prod.price.toLocaleString()}` : 'Price on request'}</span>
-                        <ArrowRight className="h-4 w-4 text-luxury-gold transition group-hover:translate-x-1" />
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })
-            )}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-20 sm:py-28">
-        <div className="lux-container grid gap-8 lg:grid-cols-[1fr_0.82fr] lg:items-center">
-          <div className="relative min-h-[34rem] overflow-hidden rounded-[24px] bg-luxury-black">
-            <SmartImage
-              src="https://images.unsplash.com/photo-1600210491369-e753d80a41f3?q=80&w=1400"
-              alt="Premium framed interior"
-              className="h-full min-h-[34rem] w-full object-cover opacity-82"
-              containerClassName="h-full min-h-[34rem] w-full"
-              fallbackLabel="Interior preview unavailable"
+    <div className="bg-[#f7f7f5] text-neutral-900 dark:bg-neutral-950 dark:text-neutral-50">
+      {/* HERO */}
+      <section ref={heroRef} className="relative h-[100svh] min-h-[640px] overflow-hidden bg-neutral-950">
+        <motion.div
+          className="absolute inset-0"
+          style={reduce ? undefined : { y: heroImgY, opacity: heroFade }}
+        >
+          <motion.div
+            className="absolute inset-0"
+            initial={reduce ? false : { scale: 1.12, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 1.8, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/background.png"
+              alt=""
+              className="h-full w-full object-cover"
+              fetchPriority="high"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-luxury-black/82 via-transparent to-transparent" />
-            <div className="absolute bottom-0 max-w-xl p-8 sm:p-10">
-              <p className="lux-eyebrow text-luxury-gold">The studio method</p>
-              <h2 className="mt-3 font-serif text-4xl leading-none text-luxury-beige sm:text-6xl">Slow decisions. Better walls.</h2>
-              <p className="mt-5 text-sm leading-7 text-luxury-beige/68">
-                We treat proportion, finish, photo scale, and room mood as one composition before your frame is made.
+            <div className="absolute inset-0 bg-[linear-gradient(105deg,rgba(0,0,0,0.72)_0%,rgba(0,0,0,0.45)_42%,rgba(0,0,0,0.25)_100%)]" />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.25)_0%,transparent_35%,rgba(0,0,0,0.55)_100%)]" />
+          </motion.div>
+        </motion.div>
+
+        <motion.div
+          className="relative z-10 flex h-full flex-col justify-end px-5 pb-20 pt-28 sm:px-8 lg:px-12 lg:pb-28"
+          style={reduce ? undefined : { y: heroTextY }}
+        >
+          <motion.p
+            initial={reduce ? false : { opacity: 0, y: 16, letterSpacing: '0.35em' }}
+            animate={{ opacity: 1, y: 0, letterSpacing: '0.2em' }}
+            transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            className="mb-5 font-sans text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-[#c4a574] sm:mb-6 sm:text-[0.72rem]"
+          >
+            Handcrafted. Timeless. Yours.
+          </motion.p>
+
+          <SplitText
+            text="Art in Every Frame."
+            tag="h1"
+            splitType="chars"
+            delay={100}
+            duration={0.6}
+            ease="power3.out"
+            from={{ opacity: 0, y: 40 }}
+            to={{ opacity: 1, y: 0 }}
+            threshold={0}
+            rootMargin="0px"
+            textAlign="left"
+            className="!block max-w-[10.5ch] font-serif text-[clamp(2.35rem,5.8vw,4.75rem)] font-normal leading-[1.12] tracking-[-0.01em] text-white"
+          />
+
+          <motion.p
+            initial={reduce ? false : { opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 1.15, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-5 max-w-lg font-sans text-[0.95rem] leading-relaxed text-white/80 sm:mt-6 sm:text-base"
+          >
+            Luxury Photo Frames &amp; Bespoke Wall Art
+            <br />
+            Designed to Elevate Your Space.
+          </motion.p>          <motion.div
+            initial={reduce ? false : { opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1.45, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-8 flex flex-row flex-wrap items-center gap-3 sm:mt-10"
+          >
+            <Link
+              href="/shop"
+              className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 bg-white px-7 text-xs font-semibold uppercase tracking-[0.12em] text-neutral-950 transition hover:bg-neutral-200"
+            >
+              Shop now <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link
+              href="#collections"
+              className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 border border-white/35 px-7 text-xs font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-white/10"
+            >
+              Explore
+            </Link>
+          </motion.div>
+        </motion.div>
+
+        {!reduce && (
+          <GradualBlur
+            target="parent"
+            position="bottom"
+            height="7rem"
+            strength={2}
+            divCount={5}
+            curve="bezier"
+            opacity={0.9}
+            zIndex={5}
+            className="pointer-events-none"
+          />
+        )}
+      </section>
+
+      {/* INDEX — visual accordion browse */}
+      <section
+        id="collections"
+        className="border-b border-neutral-200 bg-[#f7f7f5] py-16 dark:border-neutral-800 dark:bg-neutral-950 sm:py-24"
+      >
+        <div className="mb-4 px-5 sm:px-8 lg:px-12">
+          <AnimeReveal>
+            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-neutral-400">
+              01 — Collections
+            </p>
+            <h2 className="mt-3 font-serif text-3xl tracking-tight sm:text-5xl">Browse the wall</h2>
+            <p className="mt-3 max-w-lg text-sm leading-6 text-neutral-500">
+              Image-first discovery. Hover a panel to expand a collection and open the shop from the
+              picture — not a text list.
+            </p>
+          </AnimeReveal>
+        </div>
+
+        <FadeContent blur duration={900} className="mt-8 px-5 sm:px-8 lg:px-12">
+          {accordionItems.length > 0 ? (
+            <AccordionGallery
+              items={accordionItems}
+              defaultIndex={Math.min(1, accordionItems.length - 1)}
+              height={520}
+              gap={8}
+              radius={0}
+              expandRatio={0.48}
+              orientation="horizontal"
+              duration={0.55}
+              ease="power3.out"
+              parallax={0.45}
+              tilt={6}
+              trigger="hover"
+              showLabels
+              grayscale={false}
+              accentColor="#ffffff"
+              overlayColor="#0a0a0a"
+              textColor="#ffffff"
+              className="w-full"
+            />
+          ) : (
+            <p className="text-sm text-neutral-500">No collections yet.</p>
+          )}
+        </FadeContent>
+      </section>
+
+      {/* MATERIALS — CurvedLoop */}
+      <section className="overflow-hidden border-b border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-950">
+        <CurvedLoop
+          marqueeText="Pine · Teak · Mango · Acrylic · Canvas · Glass · Hardwood ·"
+          speed={2.4}
+          curveAmount={48}
+          direction="left"
+          interactive
+          className="fill-neutral-700 dark:fill-neutral-300"
+        />
+      </section>
+
+      {/* FEATURED — uniform ProductCard3D grid */}
+      <section className="bg-white py-16 dark:bg-neutral-950 sm:py-24">
+        <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12">
+          <AnimeReveal className="mb-12 flex flex-col gap-4 sm:mb-14 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-neutral-400">
+                02 — Featured
               </p>
+              <h2 className="mt-3 font-serif text-3xl tracking-tight sm:text-5xl">Selected pieces</h2>
+            </div>
+            <Link
+              href="/shop"
+              className="inline-flex h-11 w-fit cursor-pointer items-center gap-2 border border-neutral-900 px-5 text-xs font-semibold uppercase tracking-[0.12em] text-neutral-900 transition hover:bg-neutral-900 hover:text-white dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-neutral-900"
+            >
+              Open shop <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </AnimeReveal>
+
+          {featured.length === 0 ? (
+            <p className="text-sm text-neutral-500">No featured products yet.</p>
+          ) : (
+            <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+              {featured.map((prod, i) => (
+                <AnimeReveal key={prod.id} delay={i * 60} y={32}>
+                  <ProductCard3D
+                    href={`/product/${prod.slug}`}
+                    image={prod.product_images?.[0]?.image_url || fallbackArt}
+                    name={prod.name}
+                    price={prod.price}
+                    meta={prod.dimensions}
+                    badge={
+                      prod.is_best_seller
+                        ? 'Bestseller'
+                        : prod.is_featured
+                          ? 'Featured'
+                          : null
+                    }
+                  />
+                </AnimeReveal>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* LOOKBOOK */}
+      <section className="overflow-hidden bg-[#f7f7f5] py-16 dark:bg-neutral-900 sm:py-20">
+        <div className="mb-8 px-5 text-center sm:px-8 lg:px-12">
+          <AnimeReveal>
+            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-neutral-400">
+              03 — Lookbook
+            </p>
+            <h2 className="mt-3 font-serif text-3xl tracking-tight sm:text-4xl">Drag the orbit</h2>
+          </AnimeReveal>
+        </div>
+        <div className="h-[420px] w-full sm:h-[520px]">
+          <CircularGallery
+            items={circularItems}
+            bend={2.4}
+            textColor="#171717"
+            borderRadius={0.02}
+            font="500 22px Georgia, serif"
+            scrollSpeed={1.8}
+            scrollEase={0.06}
+          />
+        </div>
+      </section>
+
+      {/* START PATHS — actions, not category browse */}
+      <section className="bg-neutral-950">
+        <div className="mx-auto max-w-[1400px] px-5 py-12 sm:px-8 lg:px-12">
+          <AnimeReveal>
+            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-white/40">
+              04 — Start here
+            </p>
+            <h2 className="mt-3 font-serif text-3xl text-white sm:text-4xl">Ways into the studio</h2>
+            <p className="mt-3 max-w-lg text-sm leading-6 text-white/50">
+              Not another category wall — these are next steps: shop, custom size, WhatsApp order, or
+              a project quote. Hover for a preview, then go.
+            </p>
+          </AnimeReveal>
+        </div>
+        <div className="h-[min(62vh,480px)] w-full border-t border-white/10">
+          <FlowingMenu
+            items={flowingItems}
+            speed={18}
+            textColor="#fafafa"
+            bgColor="#0a0a0a"
+            marqueeBgColor="#fafafa"
+            marqueeTextColor="#0a0a0a"
+            borderColor="#262626"
+          />
+        </div>
+      </section>
+
+      {/* STUDIO — TiltedCard + in-room image */}
+      <section className="overflow-hidden bg-white dark:bg-neutral-950">
+        <div className="grid items-center gap-12 px-5 py-16 sm:px-8 lg:grid-cols-2 lg:gap-12 lg:px-12 lg:py-24">
+          <div className="relative mx-auto flex w-full max-w-lg justify-center py-4">
+            <div className="relative h-[340px] w-full sm:h-[400px]">
+              <div className="absolute left-0 top-6 z-[1] w-[58%] -rotate-6 sm:left-2">
+                <TiltedCard
+                  imageSrc={studioImages[0]}
+                  altText="Studio work"
+                  captionText="Workshop"
+                  containerHeight="260px"
+                  containerWidth="100%"
+                  imageHeight="260px"
+                  imageWidth="100%"
+                  scaleOnHover={1.06}
+                  rotateAmplitude={10}
+                  showMobileWarning={false}
+                  showTooltip
+                />
+              </div>
+              <div className="absolute right-0 top-0 z-[2] w-[62%] rotate-3 sm:right-2">
+                <TiltedCard
+                  imageSrc={studioImages[1]}
+                  altText="Timber detail"
+                  captionText="Timber"
+                  containerHeight="280px"
+                  containerWidth="100%"
+                  imageHeight="280px"
+                  imageWidth="100%"
+                  scaleOnHover={1.06}
+                  rotateAmplitude={10}
+                  showMobileWarning={false}
+                  showTooltip
+                />
+              </div>
+              <div className="absolute bottom-0 left-[18%] z-[3] w-[55%] -rotate-2">
+                <TiltedCard
+                  imageSrc={studioImages[2]}
+                  altText="Finished frame"
+                  captionText="Finish"
+                  containerHeight="220px"
+                  containerWidth="100%"
+                  imageHeight="220px"
+                  imageWidth="100%"
+                  scaleOnHover={1.06}
+                  rotateAmplitude={10}
+                  showMobileWarning={false}
+                  showTooltip
+                />
+              </div>
             </div>
           </div>
+          <div>
+            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-neutral-400">
+              05 — Studio
+            </p>
+            <ScrollReveal
+              baseOpacity={0.12}
+              enableBlur
+              baseRotation={2}
+              blurStrength={5}
+              containerClassName="mt-4"
+              textClassName="font-serif text-3xl leading-snug tracking-tight text-neutral-900 dark:text-white sm:text-4xl lg:text-[2.75rem]"
+            >
+              Built to the wall, not the warehouse. Size, wood, and finish locked before anything
+              leaves the bench.
+            </ScrollReveal>
+            <FadeContent delay={200} className="mt-8">
+              <Link
+                href="/about"
+                className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-neutral-900 underline-offset-4 hover:underline dark:text-white"
+              >
+                About the studio <ArrowRight className="h-4 w-4" />
+              </Link>
+            </FadeContent>
+          </div>
+        </div>
 
-          <div className="space-y-4">
-            {testimonials.length > 0 && (
-              <div className="commerce-module p-8">
-                <div className="mb-6 flex gap-1 text-luxury-gold">
-                  {[1, 2, 3, 4, 5].map((s) => <Star key={s} className="h-4 w-4 fill-current" />)}
-                </div>
-                <p className="font-serif text-3xl leading-snug text-luxury-charcoal dark:text-luxury-beige">
-                  "{testimonials[0].comment}"
-                </p>
-                <div className="mt-7 flex items-center gap-3">
-                  {testimonials[0].avatar_url && (
-                    <SmartImage
-                      src={testimonials[0].avatar_url}
-                      alt={testimonials[0].name}
-                      className="h-11 w-11 rounded-[12px] object-cover"
-                      containerClassName="h-11 w-11 rounded-[12px]"
-                      fallbackLabel="User"
-                    />
-                  )}
-                  <div>
-                    <p className="text-sm font-extrabold text-luxury-charcoal dark:text-luxury-beige">{testimonials[0].name}</p>
-                    <p className="text-xs text-stone-500 dark:text-stone-400">{testimonials[0].role || 'Collector'}</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="commerce-module p-8">
-              <Gem className="mb-5 h-6 w-6 text-luxury-gold" />
-              <h3 className="font-serif text-3xl text-luxury-charcoal dark:text-luxury-beige">Designed for direct curation.</h3>
-              <p className="mt-3 text-sm leading-7 text-stone-600 dark:text-stone-400">
-                Product pages preserve the familiar flow, but the purchase moment stays personal through WhatsApp confirmation.
+        <div className="relative h-[58vh] min-h-[420px] w-full overflow-hidden bg-neutral-900">
+          <img
+            src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1800"
+            alt="Framed work in a living space"
+            className="absolute inset-0 h-full w-full object-cover"
+            loading="lazy"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-black/10" />
+          <div className="relative z-10 flex h-full items-end px-5 pb-12 sm:px-8 lg:px-12">
+            <div className="max-w-md text-white">
+              <p className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-white/55">
+                In the room
+              </p>
+              <p className="mt-3 font-serif text-2xl leading-snug sm:text-3xl">
+                Frames meant to settle into your wall — not compete with it.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="border-y border-black/10 bg-white/35 py-20 dark:border-white/10 dark:bg-white/[0.035]">
-        <div className="lux-container grid gap-12 lg:grid-cols-[0.72fr_1fr]">
-          <div>
-            <p className="lux-eyebrow">Questions</p>
-            <h2 className="lux-section-title mt-3">Before the first consultation.</h2>
+      {/* PROCESS — TrueFocus */}
+      <section className="border-y border-neutral-200 bg-[#f7f7f5] py-16 dark:border-neutral-800 dark:bg-neutral-900 sm:py-20">
+        <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12">
+          <AnimeReveal className="mb-10 text-center">
+            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-neutral-400">
+              06 — Process
+            </p>
+            <div className="mt-8 flex justify-center">
+              <TrueFocus
+                sentence="Choose Confirm Receive"
+                manualMode={false}
+                blurAmount={5}
+                borderColor="#171717"
+                glowColor="rgba(23,23,23,0.2)"
+                animationDuration={0.5}
+                pauseBetweenAnimations={1.15}
+              />
+            </div>
+            <p className="mx-auto mt-8 max-w-md text-sm leading-6 text-neutral-500">
+              Pick online, confirm on WhatsApp, receive made-to-order — packed for glass and acrylic.
+            </p>
+          </AnimeReveal>
+
+          <div className="mt-14 grid grid-cols-3 gap-6 border-t border-neutral-200 pt-10 dark:border-neutral-800">
+            {[
+              { to: 12, label: 'Years framing', suffix: '+' },
+              { to: 500, label: 'Custom pieces', suffix: '+' },
+              { to: 28, label: 'Cities shipped', suffix: '' },
+            ].map((stat) => (
+              <div key={stat.label} className="text-center">
+                <p className="font-serif text-3xl tracking-tight text-neutral-900 dark:text-white sm:text-4xl">
+                  <CountUp to={stat.to} duration={2.2} className="inline" />
+                  {stat.suffix}
+                </p>
+                <p className="mt-2 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-neutral-400">
+                  {stat.label}
+                </p>
+              </div>
+            ))}
           </div>
-          <div className="space-y-3">
+        </div>
+      </section>
+
+      {/* TESTIMONIALS — CardSwap */}
+      <section className="relative overflow-hidden bg-neutral-950 py-16 text-white sm:py-24">
+        <div className="mx-auto grid max-w-[1400px] items-center gap-12 px-5 sm:px-8 lg:grid-cols-2 lg:gap-8 lg:px-12">
+          <AnimeReveal>
+            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-white/40">
+              07 — Voices
+            </p>
+            <h2 className="mt-3 font-serif text-3xl sm:text-5xl">From the wall</h2>
+            <p className="mt-4 max-w-md text-sm leading-6 text-white/50">
+              Clients on finish, packing, and WhatsApp ordering — cards cycle on their own.
+            </p>
+          </AnimeReveal>
+
+          <div className="relative mx-auto h-[420px] w-full max-w-[520px] lg:mx-0 lg:justify-self-end">
+            <CardSwap
+              width={400}
+              height={340}
+              cardDistance={48}
+              verticalDistance={55}
+              delay={4500}
+              pauseOnHover
+              skewAmount={4}
+              easing="elastic"
+            >
+              {quotes.slice(0, 4).map((t, i) => (
+                <Card
+                  key={`${t.name}-${i}`}
+                  customClass="!rounded-none !border-white/15 !bg-neutral-900 flex flex-col overflow-hidden p-7 sm:p-8"
+                >
+                  <Quote className="h-5 w-5 text-white/35" />
+                  <p className="mt-5 flex-1 font-serif text-lg leading-snug text-white/90 sm:text-xl">
+                    &ldquo;{t.comment}&rdquo;
+                  </p>
+                  <p className="mt-6 text-sm text-white/45">
+                    {t.name}
+                    {t.role ? ` · ${t.role}` : ''}
+                  </p>
+                </Card>
+              ))}
+            </CardSwap>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="bg-[#f7f7f5] py-16 dark:bg-neutral-900 sm:py-24">
+        <div className="mx-auto grid max-w-[1400px] gap-12 px-5 sm:px-8 lg:grid-cols-[0.38fr_0.62fr] lg:gap-16 lg:px-12">
+          <AnimeReveal className="lg:sticky lg:top-28 lg:self-start">
+            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-neutral-400">
+              08 — FAQ
+            </p>
+            <h2 className="mt-3 font-serif text-3xl leading-tight sm:text-5xl">
+              Before you
+              <br />
+              order
+            </h2>
+            <p className="mt-4 max-w-sm text-sm leading-6 text-neutral-500">
+              Ordering, materials, and shipping — answered briefly.
+            </p>
+            <Link
+              href="/contact"
+              className="mt-8 inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-neutral-900 underline-offset-4 hover:underline dark:text-white"
+            >
+              Still unsure? Contact us <ArrowRight className="h-4 w-4" />
+            </Link>
+          </AnimeReveal>
+
+          <div className="divide-y divide-neutral-300 dark:divide-neutral-700">
             {faqs.map((faq, idx) => {
-              const isOpen = openFaq === idx;
+              const open = openFaq === idx;
               return (
-                <div key={faq.q} className="commerce-module overflow-hidden">
+                <div key={faq.q} className="group">
                   <button
-                    onClick={() => setOpenFaq(isOpen ? null : idx)}
-                    className="flex w-full items-center justify-between gap-5 p-6 text-left"
+                    type="button"
+                    onClick={() => setOpenFaq(open ? null : idx)}
+                    className="flex w-full cursor-pointer items-start gap-5 py-6 text-left sm:gap-8"
                   >
-                    <span className="font-serif text-xl text-luxury-charcoal dark:text-luxury-beige">{faq.q}</span>
-                    <ChevronDown className={`h-5 w-5 text-luxury-gold transition ${isOpen ? 'rotate-180' : ''}`} />
-                  </button>
-                  <AnimatePresence initial={false}>
-                    {isOpen && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        className="overflow-hidden"
+                    <span className="mt-1 font-mono text-[0.7rem] tabular-nums text-neutral-400">
+                      {String(idx + 1).padStart(2, '0')}
+                    </span>
+                    <span className="flex-1">
+                      <span
+                        className={`block font-serif text-xl leading-snug transition sm:text-2xl ${
+                          open
+                            ? 'text-neutral-950 dark:text-white'
+                            : 'text-neutral-700 group-hover:text-neutral-950 dark:text-neutral-300 dark:group-hover:text-white'
+                        }`}
                       >
-                        <p className="border-t border-black/10 px-6 py-5 text-sm leading-7 text-stone-600 dark:border-white/10 dark:text-stone-400">
-                          {faq.a}
-                        </p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                        {faq.q}
+                      </span>
+                      <AnimatePresence initial={false}>
+                        {open && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                            className="overflow-hidden"
+                          >
+                            <p className="mt-3 text-sm leading-7 text-neutral-500">{faq.a}</p>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </span>
+                    <span
+                      className={`mt-1 inline-flex h-8 w-8 shrink-0 items-center justify-center border transition ${
+                        open
+                          ? 'border-neutral-950 bg-neutral-950 text-white dark:border-white dark:bg-white dark:text-neutral-950'
+                          : 'border-neutral-300 text-neutral-500 dark:border-neutral-600'
+                      }`}
+                    >
+                      {open ? <Minus className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
+                    </span>
+                  </button>
                 </div>
               );
             })}
@@ -406,32 +680,38 @@ export default function HomeClient({ banners, categories, featuredProducts, test
         </div>
       </section>
 
-      <section className="bg-luxury-black py-20 text-luxury-beige sm:py-24">
-        <div className="lux-container grid gap-8 lg:grid-cols-[0.9fr_1fr] lg:items-center">
-          <div>
-            <p className="lux-eyebrow text-luxury-gold">Private notes</p>
-            <h2 className="mt-3 font-serif text-4xl leading-none text-luxury-beige sm:text-6xl">Join the heritage circle.</h2>
-          </div>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              addToast('Thank you for subscribing to our journal.', 'success');
-            }}
-            className="flex flex-col gap-3 rounded-[12px] border border-white/12 bg-white/8 p-2 backdrop-blur sm:flex-row"
-          >
-            <div className="relative flex-1">
-              <Mail className="absolute left-5 top-1/2 h-4 w-4 -translate-y-1/2 text-luxury-gold" />
-              <input
-                type="email"
-                required
-                placeholder="Email address"
-                className="h-14 w-full rounded-[12px] border border-transparent bg-transparent pl-12 pr-5 text-sm text-luxury-beige outline-none placeholder:text-luxury-beige/38"
-              />
-            </div>
-            <button type="submit" className="lux-button bg-luxury-beige text-luxury-black">
-              Subscribe
-            </button>
-          </form>
+      {/* NEWSLETTER */}
+      <section className="relative overflow-hidden bg-neutral-950 py-16 text-white sm:py-20">
+        <div className="relative z-10 mx-auto flex max-w-[1400px] flex-col gap-8 px-5 sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:px-12">
+          <AnimeReveal>
+            <h2 className="font-serif text-3xl sm:text-4xl">New work, occasionally.</h2>
+            <p className="mt-2 text-sm text-white/50">No spam. Studio notes and releases.</p>
+          </AnimeReveal>
+          <AnimeReveal delay={100}>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                addToast('Thank you for subscribing.', 'success');
+              }}
+              className="flex w-full max-w-md gap-2"
+            >
+              <div className="relative flex-1">
+                <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
+                <input
+                  type="email"
+                  required
+                  placeholder="Email"
+                  className="h-12 w-full border border-white/15 bg-transparent pl-10 pr-3 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/40"
+                />
+              </div>
+              <button
+                type="submit"
+                className="h-12 cursor-pointer bg-white px-5 text-xs font-semibold uppercase tracking-[0.12em] text-neutral-950 transition hover:bg-neutral-200"
+              >
+                Join
+              </button>
+            </form>
+          </AnimeReveal>
         </div>
       </section>
     </div>

@@ -1,0 +1,94 @@
+﻿{
+  "pagination": {
+    "total": 12,
+    "offset": 0,
+    "limit": 100,
+    "hasMore": false
+  },
+  "items": [
+    {
+      "name": "GlareHover-JS-TW",
+      "type": "registry:component",
+      "description": "Adds a realistic moving glare highlight on hover over any element.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/GlareHover-JS-TW"
+    },
+    {
+      "name": "GlareHover-TS-TW",
+      "type": "registry:component",
+      "description": "Adds a realistic moving glare highlight on hover over any element.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/GlareHover-TS-TW"
+    },
+    {
+      "name": "GlareHover-TS-CSS",
+      "type": "registry:component",
+      "description": "Adds a realistic moving glare highlight on hover over any element.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/GlareHover-TS-CSS"
+    },
+    {
+      "name": "GlareHover-JS-CSS",
+      "type": "registry:component",
+      "description": "Adds a realistic moving glare highlight on hover over any element.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/GlareHover-JS-CSS"
+    },
+    {
+      "name": "ProfileCard-TS-CSS",
+      "type": "registry:component",
+      "description": "Animated profile card glare with 3D hover effect.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/ProfileCard-TS-CSS"
+    },
+    {
+      "name": "ProfileCard-TS-TW",
+      "type": "registry:component",
+      "description": "Animated profile card glare with 3D hover effect.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/ProfileCard-TS-TW"
+    },
+    {
+      "name": "ProfileCard-JS-TW",
+      "type": "registry:component",
+      "description": "Animated profile card glare with 3D hover effect.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/ProfileCard-JS-TW"
+    },
+    {
+      "name": "ProfileCard-JS-CSS",
+      "type": "registry:component",
+      "description": "Animated profile card glare with 3D hover effect.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/ProfileCard-JS-CSS"
+    },
+    {
+      "name": "LogoLoop-TS-CSS",
+      "type": "registry:component",
+      "description": "Continuously looping marquee of brand or tech logos with seamless repeat and hover pause.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/LogoLoop-TS-CSS"
+    },
+    {
+      "name": "LogoLoop-JS-TW",
+      "type": "registry:component",
+      "description": "Continuously looping marquee of brand or tech logos with seamless repeat and hover pause.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/LogoLoop-JS-TW"
+    },
+    {
+      "name": "LogoLoop-TS-TW",
+      "type": "registry:component",
+      "description": "Continuously looping marquee of brand or tech logos with seamless repeat and hover pause.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/LogoLoop-TS-TW"
+    },
+    {
+      "name": "LogoLoop-JS-CSS",
+      "type": "registry:component",
+      "description": "Continuously looping marquee of brand or tech logos with seamless repeat and hover pause.",
+      "registry": "@react-bits",
+      "addCommandArgument": "@react-bits/LogoLoop-JS-CSS"
+    }
+  ]
+}

@@ -50,12 +50,12 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <div className="commerce-page flex-1 flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-8 bg-luxury-offwhite dark:bg-luxury-black">
+    <div className="flex-1 flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-8 bg-neutral-50 dark:bg-neutral-950">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <Link href="/login" className="inline-flex items-center text-xs tracking-wider text-stone-600 hover:text-luxury-gold transition-colors duration-200 mb-6 uppercase">
+        <Link href="/login" className="inline-flex items-center text-xs tracking-wider text-stone-600 hover:text-neutral-600 transition-colors duration-200 mb-6 uppercase">
           <ArrowLeft className="w-3.5 h-3.5 mr-1" /> Back to Sign In
         </Link>
-        <h1 className="text-center text-4xl font-serif tracking-tight text-luxury-black dark:text-luxury-beige">Reset password</h1>
+        <h1 className="text-center text-4xl font-serif tracking-tight text-neutral-900 dark:text-neutral-100">Reset password</h1>
         <p className="mt-2 text-center text-xs tracking-widest text-stone-600 dark:text-stone-400 uppercase">Account security</p>
       </div>
 

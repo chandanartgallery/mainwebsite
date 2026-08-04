@@ -78,15 +78,15 @@ export default async function BlogPostPage({ params }: BlogPostProps) {
     .slice(0, 4);
 
   return (
-    <div className="commerce-page min-h-screen flex flex-col bg-luxury-offwhite dark:bg-luxury-black">
+    <div className="min-h-screen flex flex-col bg-neutral-50 dark:bg-neutral-950">
       <Navbar />
 
-      <main className="lux-container flex-grow pt-36 pb-20">
+      <main className="lux-container flex-grow pt-24 pb-20">
         
         {/* Back Link */}
         <Link 
           href="/blog" 
-          className="inline-flex items-center text-xs tracking-wider text-stone-600 hover:text-luxury-gold transition-colors duration-200 mb-8 uppercase font-semibold"
+          className="inline-flex items-center text-xs tracking-wider text-stone-600 hover:text-neutral-600 transition-colors duration-200 mb-8 uppercase font-semibold"
         >
           <ArrowLeft className="w-3.5 h-3.5 mr-1" /> Back to Chronicles
         </Link>
@@ -96,7 +96,7 @@ export default async function BlogPostPage({ params }: BlogPostProps) {
           
           {/* Header Metadata */}
           <div className="space-y-4">
-            <div className="flex items-center space-x-2 text-xs text-luxury-gold font-bold uppercase tracking-widest">
+            <div className="flex items-center space-x-2 text-xs text-neutral-600 font-bold uppercase tracking-widest">
               <span>{post.category?.name || 'decor inspiration'}</span>
             </div>
             <h1 className="lux-section-title max-w-5xl">
@@ -120,11 +120,11 @@ export default async function BlogPostPage({ params }: BlogPostProps) {
           </div>
 
           {/* Featured Image */}
-          <div className="aspect-[21/10] bg-white rounded-[24px] overflow-hidden border border-black/10 dark:border-white/10 shadow-2xl relative select-none">
-            <img 
-              src={post.featured_image || 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=1200'} 
-              alt={post.title} 
-              className="w-full h-full object-cover"
+          <div className="relative mx-auto w-full max-w-4xl overflow-hidden border border-neutral-200 dark:border-neutral-800">
+            <img
+              src={post.featured_image || 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=1200'}
+              alt={post.title}
+              className="h-48 w-full object-cover sm:h-56 md:h-72"
             />
           </div>
 
@@ -137,13 +137,13 @@ export default async function BlogPostPage({ params }: BlogPostProps) {
               {/* Table of Contents */}
               {headings.length > 0 && (
                 <div className="lux-card p-5 rounded-[18px] space-y-4">
-                  <h4 className="font-serif text-xs text-luxury-black dark:text-white uppercase tracking-widest border-b border-gray-50 dark:border-zinc-800 pb-2">
+                  <h4 className="font-serif text-xs text-neutral-900 dark:text-white uppercase tracking-widest border-b border-gray-50 dark:border-zinc-800 pb-2">
                     In this Article
                   </h4>
                   <ul className="space-y-2.5 text-xs text-stone-600 dark:text-stone-400 font-sans">
                     {headings.map((h: string, i: number) => (
-                      <li key={i} className="hover:text-luxury-gold cursor-pointer transition-colors duration-150 flex items-start">
-                        <span className="text-luxury-gold mr-1.5 font-semibold">0{i+1}</span>
+                      <li key={i} className="hover:text-neutral-600 cursor-pointer transition-colors duration-150 flex items-start">
+                        <span className="text-neutral-600 mr-1.5 font-semibold">0{i+1}</span>
                         <span className="line-clamp-1">{h.slice(0, 30)}...</span>
                       </li>
                     ))}
@@ -153,14 +153,14 @@ export default async function BlogPostPage({ params }: BlogPostProps) {
 
               {/* Curator Shares */}
               <div className="lux-card p-5 rounded-[18px] space-y-4">
-                <h4 className="font-serif text-xs text-luxury-black dark:text-white uppercase tracking-widest border-b border-gray-50 dark:border-zinc-800 pb-2">
+                <h4 className="font-serif text-xs text-neutral-900 dark:text-white uppercase tracking-widest border-b border-gray-50 dark:border-zinc-800 pb-2">
                   Share Chronicle
                 </h4>
                 <div className="flex space-x-3 text-gray-400">
-                  <button className="p-2 border border-gray-100 dark:border-zinc-800 rounded-[12px] hover:text-luxury-gold duration-150 cursor-pointer" title="Share on Twitter">
+                  <button className="p-2 border border-gray-100 dark:border-zinc-800 rounded-[12px] hover:text-neutral-600 duration-150 cursor-pointer" title="Share on Twitter">
                     <Share2 className="w-4 h-4" />
                   </button>
-                  <button className="p-2 border border-gray-100 dark:border-zinc-800 rounded-[12px] hover:text-luxury-gold duration-150 cursor-pointer" title="Copy Link">
+                  <button className="p-2 border border-gray-100 dark:border-zinc-800 rounded-[12px] hover:text-neutral-600 duration-150 cursor-pointer" title="Copy Link">
                     <Tag className="w-4 h-4" />
                   </button>
                 </div>
@@ -177,7 +177,7 @@ export default async function BlogPostPage({ params }: BlogPostProps) {
 
                   if (isSubheader) {
                     return (
-                      <h3 key={idx} className="font-serif text-3xl text-luxury-black dark:text-white pt-6 pb-2 border-b border-black/10 dark:border-white/10">
+                      <h3 key={idx} className="font-serif text-3xl text-neutral-900 dark:text-white pt-6 pb-2 border-b border-black/10 dark:border-white/10">
                         {para}
                       </h3>
                     );
@@ -186,7 +186,7 @@ export default async function BlogPostPage({ params }: BlogPostProps) {
                   return (
                     <p 
                       key={idx} 
-                      className={isLead ? 'text-2xl font-serif italic text-luxury-charcoal dark:text-luxury-beige border-l-2 border-luxury-gold pl-5 py-2 leading-relaxed' : ''}
+                      className={isLead ? 'text-2xl font-serif italic text-neutral-800 dark:text-neutral-100 border-l-2 border-neutral-300 pl-5 py-2 leading-relaxed' : ''}
                     >
                       {para}
                     </p>
@@ -197,7 +197,7 @@ export default async function BlogPostPage({ params }: BlogPostProps) {
               {/* Article Tag Footer */}
               {post.tags && post.tags.length > 0 && (
                 <div className="flex items-center space-x-2.5 pt-8 border-t border-gray-100 dark:border-zinc-850 mt-10">
-                  <Tag className="w-4 h-4 text-luxury-gold" />
+                  <Tag className="w-4 h-4 text-neutral-600" />
                   <div className="flex flex-wrap gap-2 text-[10px] uppercase font-bold tracking-widest text-gray-400">
                     {post.tags.map((tg: string) => (
                       <span key={tg} className="bg-gray-150 dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/80 px-2.5 py-1 rounded-[8px]">
@@ -215,7 +215,7 @@ export default async function BlogPostPage({ params }: BlogPostProps) {
         {/* Dynamic Related chronicles */}
         {related && related.length > 0 && (
           <section className="mt-24 border-t border-black/10 dark:border-white/10 pt-16">
-            <h3 className="font-serif text-4xl text-luxury-black dark:text-white mb-10 text-center select-none">
+            <h3 className="font-serif text-4xl text-neutral-900 dark:text-white mb-10 text-center select-none">
               Chronicles Continues
             </h3>
             
@@ -227,7 +227,7 @@ export default async function BlogPostPage({ params }: BlogPostProps) {
                   </Link>
                   <div className="p-5">
                     <Link href={`/blog/${item.slug}`} className="block">
-                      <h4 className="font-serif text-sm text-luxury-black dark:text-white group-hover:text-luxury-gold duration-200 line-clamp-1">
+                      <h4 className="font-serif text-sm text-neutral-900 dark:text-white group-hover:text-neutral-600 duration-200 line-clamp-1">
                         {item.title}
                       </h4>
                     </Link>

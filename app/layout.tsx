@@ -1,15 +1,19 @@
 import type { Metadata } from "next";
-import { Manrope, Playfair_Display } from "next/font/google";
+import { Manrope, Instrument_Serif, Geist } from "next/font/google";
 import "./globals.css";
 import "lenis/dist/lenis.css";
 import AuthProvider from "@/components/providers/AuthProvider";
 import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
 import ToastContainer from "@/components/ui/Toast";
+import DevAdminButton from "@/components/DevAdminButton";
+import { cn } from "@/lib/utils";
 
-const playfair = Playfair_Display({
+const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
+
+const instrument = Instrument_Serif({
   subsets: ["latin"],
-  variable: "--font-playfair",
-  weight: ["500", "600", "700"],
+  variable: "--font-instrument",
+  weight: "400",
   display: "swap",
 });
 
@@ -39,7 +43,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${playfair.variable} ${manrope.variable} h-full antialiased`}
+      className={cn("h-full", "antialiased", instrument.variable, manrope.variable, "font-sans", geist.variable)}
       suppressHydrationWarning
     >
       <head>
@@ -59,11 +63,12 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-full flex flex-col bg-luxury-offwhite text-luxury-charcoal dark:bg-luxury-black dark:text-luxury-beige transition-colors duration-300">
+      <body className="min-h-full flex flex-col bg-neutral-50 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100">
         <SmoothScrollProvider>
           <AuthProvider>
             {children}
             <ToastContainer />
+            <DevAdminButton />
           </AuthProvider>
         </SmoothScrollProvider>
       </body>

@@ -2,15 +2,21 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
+function safeNextPath(raw: string | null): string {
+  if (!raw) return '/'
+  if (!raw.startsWith('/') || raw.startsWith('//')) return '/'
+  return raw
+}
+
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
+  const next = safeNextPath(requestUrl.searchParams.get('next'))
 
   if (!code) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  // FIX
   const cookieStore = await cookies()
 
   const supabase = createServerClient(
@@ -21,11 +27,9 @@ export async function GET(request: NextRequest) {
         get(name: string) {
           return cookieStore.get(name)?.value
         },
-
         set(name: string, value: string, options: any) {
           cookieStore.set(name, value, options)
         },
-
         remove(name: string, options: any) {
           cookieStore.set(name, '', options)
         },
@@ -33,17 +37,26 @@ export async function GET(request: NextRequest) {
     }
   )
 
-  const { error } =
-    await supabase.auth.exchangeCodeForSession(code)
+  const { data, error } = await supabase.auth.exchangeCodeForSession(code)
 
   if (error) {
     console.error(error)
-    return NextResponse.redirect(
-      new URL('/login?error=oauth_failed', request.url)
-    )
+    return NextResponse.redirect(new URL('/login?error=oauth_failed', request.url))
   }
 
-  return NextResponse.redirect(
-    new URL('/', request.url)
-  )
+  // Mirror tokens into the cookies our API routes read
+  const response = NextResponse.redirect(new URL(next, request.url))
+  if (data.session) {
+    const secure = requestUrl.protocol === 'https:'
+    const common = {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 7,
+      sameSite: 'lax' as const,
+      secure,
+    }
+    response.cookies.set('sb-access-token', data.session.access_token, common)
+    response.cookies.set('sb-refresh-token', data.session.refresh_token, common)
+  }
+
+  return response
 }
