@@ -9,9 +9,7 @@ import {
   useTransform,
   useReducedMotion,
 } from 'framer-motion';
-import { ArrowRight, Mail, Minus, Plus, Quote } from 'lucide-react';
-import { useUIStore } from '@/store/uiStore';
-import SmartImage from '@/components/ui/SmartImage';
+import { ArrowRight, Minus, Plus, Quote } from 'lucide-react';
 import ProductCard3D from '@/components/ProductCard3D';
 import AnimeReveal from '@/components/AnimeReveal';
 import SplitText from '@/components/SplitText';
@@ -100,7 +98,6 @@ export default function HomeClient({
   featuredProducts,
   testimonials,
 }: HomeClientProps) {
-  const { addToast } = useUIStore();
   const reduce = useReducedMotion();
   const isMobile = useMediaQuery('(max-width: 640px)');
   const isDark = useIsDarkTheme();
@@ -707,41 +704,6 @@ export default function HomeClient({
               );
             })}
           </div>
-        </div>
-      </section>
-
-      {/* NEWSLETTER */}
-      <section className="relative overflow-hidden bg-neutral-950 py-16 text-white sm:py-20">
-        <div className="relative z-10 mx-auto flex max-w-[1400px] flex-col gap-8 px-5 sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:px-12">
-          <AnimeReveal>
-            <h2 className="font-sans text-3xl sm:text-4xl">New work, occasionally.</h2>
-            <p className="mt-2 text-sm text-white/50">No spam. Studio notes and releases.</p>
-          </AnimeReveal>
-          <AnimeReveal delay={100}>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                addToast('Thank you for subscribing.', 'success');
-              }}
-              className="flex w-full max-w-md flex-col gap-2 sm:flex-row"
-            >
-              <div className="relative flex-1">
-                <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
-                <input
-                  type="email"
-                  required
-                  placeholder="Email"
-                  className="h-12 w-full border border-white/15 bg-transparent pl-10 pr-3 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/40"
-                />
-              </div>
-              <button
-                type="submit"
-                className="h-12 w-full cursor-pointer bg-white px-5 text-xs font-semibold uppercase tracking-[0.12em] text-neutral-950 transition hover:bg-neutral-200 sm:w-auto"
-              >
-                Join
-              </button>
-            </form>
-          </AnimeReveal>
         </div>
       </section>
     </div>

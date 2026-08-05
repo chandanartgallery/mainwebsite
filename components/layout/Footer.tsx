@@ -57,10 +57,10 @@ export default function Footer() {
             <Link href="/" className="brand-logotype text-xl text-neutral-900 dark:text-neutral-50">
               Chandan Art Gallery
             </Link>
-            <p className="mt-3 max-w-xs text-sm leading-6 text-neutral-500">
+            <p className="mt-3 max-w-xs text-sm leading-6 text-neutral-500 dark:text-neutral-400">
               Custom wood framing, canvas prints, and religious art. New Delhi, India.
             </p>
-            <div className="mt-5 flex gap-3 text-neutral-500">
+            <div className="mt-5 flex gap-3 text-neutral-500 dark:text-neutral-400">
               <a href="https://wa.me/918468845759" className="hover:text-neutral-900 dark:hover:text-white" title="WhatsApp">
                 <MessageSquare className="h-4 w-4" />
               </a>
@@ -79,7 +79,7 @@ export default function Footer() {
                 <ul className="mt-4 space-y-2">
                   {column.links.map(([name, href]) => (
                     <li key={href}>
-                      <Link href={href} className="text-sm text-neutral-500 transition hover:text-neutral-900 dark:hover:text-white">
+                      <Link href={href} className="text-sm text-neutral-600 transition hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white">
                         {name}
                       </Link>
                     </li>
@@ -93,7 +93,7 @@ export default function Footer() {
             <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-900 dark:text-neutral-100">
               Newsletter
             </h3>
-            <p className="mt-3 text-sm text-neutral-500">Occasional updates on new products.</p>
+            <p className="mt-3 text-sm text-neutral-500 dark:text-neutral-400">Occasional updates on new products.</p>
             {subscribed ? (
               <p className="mt-4 text-sm text-neutral-700 dark:text-neutral-300">You&apos;re subscribed. Thank you.</p>
             ) : (
@@ -104,11 +104,12 @@ export default function Footer() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Email"
-                  className="min-w-0 flex-1 rounded-md border border-neutral-200 bg-neutral-50 px-3 text-sm outline-none focus:border-neutral-400 dark:border-neutral-700 dark:bg-neutral-900"
+                  className="min-w-0 flex-1 rounded-md border border-neutral-200 bg-neutral-50 px-3 text-sm text-neutral-900 outline-none placeholder:text-neutral-400 focus:border-neutral-400 dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-500"
                 />
                 <button
                   type="submit"
-                  className="flex h-10 w-10 items-center justify-center rounded-md bg-neutral-900 text-white dark:bg-white dark:text-neutral-900"
+                  aria-label="Subscribe"
+                  className="flex h-10 w-10 items-center justify-center rounded-md bg-neutral-900 text-white transition hover:bg-neutral-800 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-200"
                 >
                   <ArrowRight className="h-4 w-4" />
                 </button>

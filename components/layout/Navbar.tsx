@@ -30,6 +30,23 @@ const categories = [
   { name: "Religious Art", href: "/shop?category=religious-frames", note: "Mandir-ready pieces" },
 ];
 
+function ProfileAvatar({ src }: { src: string }) {
+  const [failed, setFailed] = useState(false);
+  if (failed) return <User className="h-4 w-4" />;
+  return (
+    <span className="relative block h-7 w-7 overflow-hidden rounded-full ring-1 ring-neutral-300 dark:ring-white/30">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt=""
+        referrerPolicy="no-referrer"
+        className="h-full w-full object-cover"
+        onError={() => setFailed(true)}
+      />
+    </span>
+  );
+}
+
 export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
@@ -378,19 +395,11 @@ export default function Navbar() {
             {user ? (
               <Link href="/profile" className={iconButton} title="Profile">
                 {user.user_metadata?.avatar_url ? (
-                  <span className="relative block h-7 w-7 overflow-hidden rounded-full ring-1 ring-white/30">
-                    <SmartImage
-                      src={user.user_metadata.avatar_url}
-                      alt="Profile"
-                      className="object-cover"
-                      containerClassName="absolute inset-0 h-full w-full overflow-hidden rounded-full"
-                      referrerPolicy="no-referrer"
-                      fallbackLabel="User"
-                    />
-                  </span>
+                  <ProfileAvatar src={user.user_metadata.avatar_url} />
                 ) : (
                   <User className="h-4 w-4" />
-                )}              </Link>
+                )}
+              </Link>
             ) : (
               <Link href="/login" className={iconButton} title="Account">
                 <User className="h-4 w-4" />

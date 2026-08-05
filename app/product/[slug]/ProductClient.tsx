@@ -45,7 +45,7 @@ export default function ProductClient({ product, initialReviews, initialComments
   const [zoomStyle, setZoomStyle] = useState<React.CSSProperties>({ display: 'none' });
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const pageConfig = parseProductConfig(product.product_config);
+  const pageConfig = parseProductConfig(product.product_config, product.category?.slug);
   const sizes = sizesToDisplayExtended(parseSizesExtended(product.dimensions));
   const materials = parseMaterials(product.material);
   const colorOptions = parseColors(product.color);
@@ -416,7 +416,7 @@ export default function ProductClient({ product, initialReviews, initialComments
             {/* Float Badges */}
             <div className="absolute top-4 left-4 z-10 flex flex-col space-y-2">
               {product.is_featured && (
-                <span className="commerce-label dark:bg-neutral-900 dark:text-neutral-900">
+                <span className="commerce-label dark:bg-white dark:text-neutral-950">
                   {pageConfig.badgeLabels.featured}
                 </span>
               )}
@@ -426,7 +426,7 @@ export default function ProductClient({ product, initialReviews, initialComments
                 </span>
               )}
               {product.is_best_seller && (
-                <span className="commerce-label bg-neutral-900 text-zinc-950">
+                <span className="commerce-label bg-neutral-900 text-white dark:bg-white dark:text-neutral-950">
                   {pageConfig.badgeLabels.bestSeller}
                 </span>
               )}
@@ -473,7 +473,7 @@ export default function ProductClient({ product, initialReviews, initialComments
         <div className="commerce-surface flex flex-col justify-between space-y-7 p-5 sm:p-8">
           <div>
             {/* Tagline */}
-            <div className="flex items-center space-x-1.5 text-xs text-neutral-600 font-semibold uppercase tracking-widest mb-2">
+            <div className="flex items-center space-x-1.5 text-xs text-neutral-600 dark:text-neutral-300 font-semibold uppercase tracking-widest mb-2">
               <Sparkles className="w-3.5 h-3.5" />
               <span>{pageConfig.tagline}</span>
             </div>
@@ -490,7 +490,9 @@ export default function ProductClient({ product, initialReviews, initialComments
                   <Star 
                     key={star} 
                     className={`w-4 h-4 ${
-                      star <= Math.round(Number(averageRating)) ? 'fill-current' : 'text-gray-200 dark:text-zinc-800'
+                      star <= Math.round(Number(averageRating))
+                        ? 'fill-current'
+                        : 'text-neutral-300 dark:text-neutral-600'
                     }`} 
                   />
                 ))}
@@ -520,12 +522,20 @@ export default function ProductClient({ product, initialReviews, initialComments
                       onClick={() => setSelectedSize(sz.value)}
                       className={`p-3 border rounded-[12px] flex flex-col items-center justify-center transition-all duration-200 text-xs font-semibold cursor-pointer ${
                         selectedSize === sz.value
-                          ? 'border-neutral-300 bg-neutral-900/10 text-neutral-700 shadow-sm'
-                          : 'border-black/10 dark:border-white/10 text-neutral-800 dark:text-stone-400 hover:border-neutral-300/40'
+                          ? 'border-neutral-900 bg-neutral-900 text-white shadow-sm dark:border-white dark:bg-white/15 dark:text-white'
+                          : 'border-black/10 dark:border-white/15 text-neutral-800 dark:text-neutral-200 hover:border-neutral-400 dark:hover:border-white/35'
                       }`}
                     >
                       <span>{sz.label}</span>
-                      <span className="text-[10px] text-stone-600 dark:text-stone-400 font-normal mt-0.5">{sz.tag}</span>
+                      <span
+                        className={`text-[10px] font-normal mt-0.5 ${
+                          selectedSize === sz.value
+                            ? 'text-white/70 dark:text-white/70'
+                            : 'text-stone-600 dark:text-neutral-400'
+                        }`}
+                      >
+                        {sz.tag}
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -545,12 +555,20 @@ export default function ProductClient({ product, initialReviews, initialComments
                       onClick={() => setSelectedFrame(mat.value)}
                       className={`p-3 border rounded-[12px] flex flex-col items-center justify-center transition-all duration-200 text-xs font-semibold cursor-pointer ${
                         selectedFrame === mat.value
-                          ? 'border-neutral-300 bg-neutral-900/10 text-neutral-700 shadow-sm'
-                          : 'border-black/10 dark:border-white/10 text-neutral-800 dark:text-stone-400 hover:border-neutral-300/40'
+                          ? 'border-neutral-900 bg-neutral-900 text-white shadow-sm dark:border-white dark:bg-white/15 dark:text-white'
+                          : 'border-black/10 dark:border-white/15 text-neutral-800 dark:text-neutral-200 hover:border-neutral-400 dark:hover:border-white/35'
                       }`}
                     >
                       <span>{mat.label}</span>
-                      <span className="text-[10px] text-stone-600 dark:text-stone-400 font-normal mt-0.5">{mat.tag}</span>
+                      <span
+                        className={`text-[10px] font-normal mt-0.5 ${
+                          selectedFrame === mat.value
+                            ? 'text-white/70 dark:text-white/70'
+                            : 'text-stone-600 dark:text-neutral-400'
+                        }`}
+                      >
+                        {mat.tag}
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -570,8 +588,8 @@ export default function ProductClient({ product, initialReviews, initialComments
                       onClick={() => setSelectedFinish(fin.label)}
                       className={`px-3 py-2 border rounded-[12px] text-xs font-semibold cursor-pointer transition-all duration-200 ${
                         selectedFinish === fin.label
-                          ? 'border-neutral-300 bg-neutral-900/10 text-neutral-700 shadow-sm'
-                          : 'border-black/10 dark:border-white/10 text-neutral-800 dark:text-stone-400 hover:border-neutral-300/40'
+                          ? 'border-neutral-900 bg-neutral-900 text-white shadow-sm dark:border-white dark:bg-white/15 dark:text-white'
+                          : 'border-black/10 dark:border-white/15 text-neutral-800 dark:text-neutral-200 hover:border-neutral-400 dark:hover:border-white/35'
                       }`}
                     >
                       {fin.label}
@@ -795,7 +813,7 @@ export default function ProductClient({ product, initialReviews, initialComments
               <button
                 type="submit"
                 disabled={commentSubmitting || !newComment.trim()}
-                className="self-end px-5 py-4 bg-luxury-black dark:bg-neutral-900 text-white dark:text-neutral-900 text-xs font-bold rounded-[12px] uppercase tracking-wider flex items-center hover:bg-neutral-900 transition-colors disabled:opacity-40 cursor-pointer"
+                className="self-end px-5 py-4 bg-neutral-900 text-white text-xs font-bold rounded-[12px] uppercase tracking-wider flex items-center hover:bg-neutral-800 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-200 transition-colors disabled:opacity-40 cursor-pointer"
               >
                 <Send className="w-3.5 h-3.5 mr-2" />
                 Submit
@@ -806,7 +824,7 @@ export default function ProductClient({ product, initialReviews, initialComments
           <div className="bg-gray-50 dark:bg-zinc-950/20 p-5 rounded-[18px] border border-gray-100 dark:border-zinc-800/60 text-center mb-10">
             <p className="text-xs text-gray-500">
               Please{' '}
-              <Link href="/login" className="font-bold text-neutral-600 hover:underline">Sign In</Link>
+              <Link href="/login" className="font-bold text-neutral-800 hover:underline dark:text-neutral-200">Sign In</Link>
               {' '}to join the discussion and post customization inquiries.
             </p>
           </div>
@@ -861,7 +879,7 @@ export default function ProductClient({ product, initialReviews, initialComments
                           <button
                             type="submit"
                             disabled={!replyText.trim()}
-                            className="px-4 py-1.5 bg-luxury-black dark:bg-neutral-900 text-white dark:text-neutral-900 text-[10px] font-bold rounded-[12px] uppercase tracking-wider disabled:opacity-40 cursor-pointer"
+                            className="px-4 py-1.5 bg-neutral-900 text-white text-[10px] font-bold rounded-[12px] uppercase tracking-wider disabled:opacity-40 cursor-pointer dark:bg-white dark:text-neutral-950"
                           >
                             Post Reply
                           </button>
@@ -1021,7 +1039,7 @@ export default function ProductClient({ product, initialReviews, initialComments
                     <button
                       type="submit"
                       disabled={reviewSubmitting}
-                      className="flex-1 py-3 px-4 bg-luxury-black dark:bg-neutral-900 text-white dark:text-neutral-900 hover:bg-neutral-900 dark:hover:bg-neutral-100 transition-colors text-xs font-bold rounded-[12px] uppercase tracking-wider flex justify-center items-center cursor-pointer"
+                      className="flex-1 py-3 px-4 bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-200 transition-colors text-xs font-bold rounded-[12px] uppercase tracking-wider flex justify-center items-center cursor-pointer"
                     >
                       {reviewSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" />}
                       Publish Review

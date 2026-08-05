@@ -52,18 +52,69 @@ export const DEFAULT_PRODUCT_CONFIG: ProductPageConfig = {
   showColors: true,
 };
 
-export function parseProductConfig(raw: unknown): ProductPageConfig {
-  if (!raw || typeof raw !== 'object') return { ...DEFAULT_PRODUCT_CONFIG };
+export const HOUSEHOLD_PRODUCT_CONFIG: ProductPageConfig = {
+  tagline: 'Household Collection',
+  storyTitle: 'Details & Craft Notes',
+  customizableYesText: 'Yes — custom sizing available',
+  customizableNoText: 'Fixed size',
+  sectionLabels: {
+    dimensions: 'Select Size',
+    materials: 'Select Material',
+    colors: 'Select Color Finish',
+  },
+  trustBadges: [
+    { icon: 'truck', title: 'Free Delivery', subtitle: 'Across India' },
+    { icon: 'shield', title: 'Secure Packing', subtitle: 'Transit Protection' },
+    { icon: 'authentic', title: 'Studio Finished', subtitle: 'Hand-checked Quality' },
+  ],
+  badgeLabels: {
+    featured: 'Featured',
+    bestSeller: 'Bestseller',
+    trending: 'Trending',
+  },
+  showDimensions: true,
+  showMaterials: true,
+  showColors: true,
+};
+
+function defaultsForCategory(categorySlug?: string | null): ProductPageConfig {
+  if (
+    categorySlug === 'decorative-trays' ||
+    categorySlug === 'household' ||
+    categorySlug?.includes('tray')
+  ) {
+    return HOUSEHOLD_PRODUCT_CONFIG;
+  }
+  return DEFAULT_PRODUCT_CONFIG;
+}
+
+export function parseProductConfig(
+  raw: unknown,
+  categorySlug?: string | null
+): ProductPageConfig {
+  const base = defaultsForCategory(categorySlug);
+  if (!raw || typeof raw !== 'object') return { ...base };
   const c = raw as Partial<ProductPageConfig>;
+  // Treat the framing default tagline as unset when this is a household product
+  const rawTagline = c.tagline?.trim() || '';
+  const tagline =
+    rawTagline &&
+    !(
+      base.tagline === HOUSEHOLD_PRODUCT_CONFIG.tagline &&
+      rawTagline === DEFAULT_PRODUCT_CONFIG.tagline
+    )
+      ? rawTagline
+      : base.tagline;
+
   return {
-    tagline: c.tagline || DEFAULT_PRODUCT_CONFIG.tagline,
-    storyTitle: c.storyTitle || DEFAULT_PRODUCT_CONFIG.storyTitle,
-    customizableYesText: c.customizableYesText || DEFAULT_PRODUCT_CONFIG.customizableYesText,
-    customizableNoText: c.customizableNoText || DEFAULT_PRODUCT_CONFIG.customizableNoText,
+    tagline,
+    storyTitle: c.storyTitle || base.storyTitle,
+    customizableYesText: c.customizableYesText || base.customizableYesText,
+    customizableNoText: c.customizableNoText || base.customizableNoText,
     sectionLabels: {
-      dimensions: c.sectionLabels?.dimensions || DEFAULT_PRODUCT_CONFIG.sectionLabels.dimensions,
-      materials: c.sectionLabels?.materials || DEFAULT_PRODUCT_CONFIG.sectionLabels.materials,
-      colors: c.sectionLabels?.colors || DEFAULT_PRODUCT_CONFIG.sectionLabels.colors,
+      dimensions: c.sectionLabels?.dimensions || base.sectionLabels.dimensions,
+      materials: c.sectionLabels?.materials || base.sectionLabels.materials,
+      colors: c.sectionLabels?.colors || base.sectionLabels.colors,
     },
     trustBadges:
       Array.isArray(c.trustBadges) && c.trustBadges.length > 0
@@ -76,11 +127,11 @@ export function parseProductConfig(raw: unknown): ProductPageConfig {
             title: b.title || '',
             subtitle: b.subtitle || '',
           }))
-        : DEFAULT_PRODUCT_CONFIG.trustBadges,
+        : base.trustBadges,
     badgeLabels: {
-      featured: c.badgeLabels?.featured || DEFAULT_PRODUCT_CONFIG.badgeLabels.featured,
-      bestSeller: c.badgeLabels?.bestSeller || DEFAULT_PRODUCT_CONFIG.badgeLabels.bestSeller,
-      trending: c.badgeLabels?.trending || DEFAULT_PRODUCT_CONFIG.badgeLabels.trending,
+      featured: c.badgeLabels?.featured || base.badgeLabels.featured,
+      bestSeller: c.badgeLabels?.bestSeller || base.badgeLabels.bestSeller,
+      trending: c.badgeLabels?.trending || base.badgeLabels.trending,
     },
     showDimensions: c.showDimensions !== false,
     showMaterials: c.showMaterials !== false,
