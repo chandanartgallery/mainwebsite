@@ -26,6 +26,8 @@ export const viewport = {
   initialScale: 1,
 };
 
+const themeInitScript = `(function(){try{var saved=localStorage.getItem('theme');var system=window.matchMedia('(prefers-color-scheme: dark)').matches;if(saved==='dark'||(!saved&&system)){document.documentElement.classList.add('dark')}else{document.documentElement.classList.remove('dark')}}catch(e){}})();`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -37,24 +39,11 @@ export default function RootLayout({
       className={cn("h-full", "antialiased", poppins.variable, "font-sans")}
       suppressHydrationWarning
     >
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function() {
-              try {
-                const saved = localStorage.getItem('theme');
-                const system = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                if (saved === 'dark' || (!saved && system)) {
-                  document.documentElement.classList.add('dark');
-                } else {
-                  document.documentElement.classList.remove('dark');
-                }
-              } catch (e) {}
-            })()`,
-          }}
-        />
-      </head>
-      <body className="min-h-full flex flex-col bg-neutral-50 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100">
+      <body
+        className="flex min-h-full flex-col bg-neutral-50 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100"
+        suppressHydrationWarning
+      >
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <SmoothScrollProvider>
           <AuthProvider>
             {children}

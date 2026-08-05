@@ -26,6 +26,7 @@ import CardSwap, { Card } from '@/components/CardSwap';
 import CountUp from '@/components/CountUp';
 import GradualBlur from '@/components/GradualBlur';
 import FlowingMenu from '@/components/FlowingMenu';
+import { useMediaQuery } from '@/lib/useMediaQuery';
 
 interface HomeClientProps {
   banners: any[];
@@ -97,6 +98,7 @@ export default function HomeClient({
 }: HomeClientProps) {
   const { addToast } = useUIStore();
   const reduce = useReducedMotion();
+  const isMobile = useMediaQuery('(max-width: 640px)');
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const heroRef = useRef<HTMLElement>(null);
   const quotes = testimonials.length > 0 ? testimonials : fallbackTestimonials;
@@ -105,8 +107,9 @@ export default function HomeClient({
     target: heroRef,
     offset: ['start start', 'end start'],
   });
-  const heroImgY = useTransform(scrollYProgress, [0, 1], ['0%', '18%']);
-  const heroFade = useTransform(scrollYProgress, [0, 0.85], [1, 0.35]);
+  const heroImgY = useTransform(scrollYProgress, [0, 1], ['0%', '14%']);
+  const heroImgScale = useTransform(scrollYProgress, [0, 1], [1.24, 1]);
+  const heroFade = useTransform(scrollYProgress, [0, 0.85], [1, 0.4]);
   const heroTextY = useTransform(scrollYProgress, [0, 1], ['0%', '12%']);
 
   const accordionItems = useMemo(
@@ -168,22 +171,26 @@ export default function HomeClient({
   return (
     <div className="bg-[#f7f7f5] text-neutral-900 dark:bg-neutral-950 dark:text-neutral-50">
       {/* HERO */}
-      <section ref={heroRef} className="relative h-[100svh] min-h-[640px] overflow-hidden bg-neutral-950">
+      <section ref={heroRef} className="relative h-[100svh] min-h-[520px] overflow-hidden bg-neutral-950 sm:min-h-[640px]">
         <motion.div
-          className="absolute inset-0"
-          style={reduce ? undefined : { y: heroImgY, opacity: heroFade }}
+          className="absolute inset-0 origin-center will-change-transform"
+          style={
+            reduce
+              ? undefined
+              : { y: heroImgY, scale: heroImgScale, opacity: heroFade }
+          }
         >
           <motion.div
             className="absolute inset-0"
-            initial={reduce ? false : { scale: 1.12, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 1.8, ease: [0.22, 1, 0.36, 1] }}
+            initial={reduce ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.25, ease: [0.22, 1, 0.36, 1] }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/background.png"
               alt=""
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover object-[68%_center] sm:object-center"
               fetchPriority="high"
             />
             <div className="absolute inset-0 bg-[linear-gradient(105deg,rgba(0,0,0,0.72)_0%,rgba(0,0,0,0.45)_42%,rgba(0,0,0,0.25)_100%)]" />
@@ -192,14 +199,14 @@ export default function HomeClient({
         </motion.div>
 
         <motion.div
-          className="relative z-10 flex h-full flex-col justify-end px-5 pb-20 pt-28 sm:px-8 lg:px-12 lg:pb-28"
+          className="relative z-10 flex h-full flex-col justify-end px-5 pb-16 pt-24 sm:px-8 sm:pb-20 sm:pt-28 lg:px-12 lg:pb-28"
           style={reduce ? undefined : { y: heroTextY }}
         >
           <motion.p
             initial={reduce ? false : { opacity: 0, y: 16, letterSpacing: '0.35em' }}
             animate={{ opacity: 1, y: 0, letterSpacing: '0.2em' }}
             transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="mb-5 font-sans text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-[#c4a574] sm:mb-6 sm:text-[0.72rem]"
+            className="mb-4 font-sans text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-[#c4a574] sm:mb-6 sm:text-[0.72rem] sm:tracking-[0.2em]"
           >
             Handcrafted. Timeless. Yours.
           </motion.p>
@@ -216,14 +223,14 @@ export default function HomeClient({
             threshold={0}
             rootMargin="0px"
             textAlign="left"
-          className="!block max-w-[12ch] font-sans text-[clamp(2.35rem,5.8vw,4.75rem)] font-semibold leading-[1.12] tracking-[-0.02em] text-white"
+          className="!block max-w-[11ch] font-sans text-[clamp(2.1rem,9vw,4.75rem)] font-semibold leading-[1.12] tracking-[-0.02em] text-white sm:max-w-[12ch]"
           />
 
           <motion.p
             initial={reduce ? false : { opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 1.15, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-5 max-w-lg font-sans text-[0.95rem] leading-relaxed text-white/80 sm:mt-6 sm:text-base"
+            className="mt-5 max-w-lg font-sans text-[0.9rem] leading-relaxed text-white/80 sm:mt-6 sm:text-base"
           >
             Luxury Photo Frames &amp; Bespoke Wall Art
             <br />
@@ -236,13 +243,13 @@ export default function HomeClient({
           >
             <Link
               href="/shop"
-              className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 bg-white px-7 text-xs font-semibold uppercase tracking-[0.12em] text-neutral-950 transition hover:bg-neutral-200"
+              className="inline-flex h-11 cursor-pointer items-center justify-center gap-2 bg-white px-5 text-xs font-semibold uppercase tracking-[0.12em] text-neutral-950 transition hover:bg-neutral-200 sm:h-12 sm:px-7"
             >
               Shop now <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               href="#collections"
-              className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 border border-white/35 px-7 text-xs font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-white/10"
+              className="inline-flex h-11 cursor-pointer items-center justify-center gap-2 border border-white/35 px-5 text-xs font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-white/10 sm:h-12 sm:px-7"
             >
               Explore
             </Link>
@@ -276,7 +283,7 @@ export default function HomeClient({
             </p>
             <h2 className="mt-3 font-sans text-3xl tracking-tight sm:text-5xl">Browse the wall</h2>
             <p className="mt-3 max-w-lg text-sm leading-6 text-neutral-500">
-              Image-first discovery. Hover a panel to expand a collection and open the shop from the
+              Image-first discovery. Select a panel to expand a collection and open the shop from the
               picture — not a text list.
             </p>
           </AnimeReveal>
@@ -287,15 +294,15 @@ export default function HomeClient({
             <AccordionGallery
               items={accordionItems}
               defaultIndex={Math.min(1, accordionItems.length - 1)}
-              height={520}
-              gap={8}
+              height={isMobile ? 480 : 520}
+              gap={isMobile ? 6 : 8}
               radius={0}
-              expandRatio={0.48}
+              expandRatio={isMobile ? 0.42 : 0.48}
               orientation="horizontal"
               duration={0.55}
               ease="power3.out"
               parallax={0.45}
-              tilt={6}
+              tilt={isMobile ? 0 : 6}
               trigger="hover"
               showLabels
               grayscale={false}
@@ -315,7 +322,7 @@ export default function HomeClient({
         <CurvedLoop
           marqueeText="Pine · Teak · Mango · Acrylic · Canvas · Glass · Hardwood ·"
           speed={2.4}
-          curveAmount={48}
+          curveAmount={isMobile ? 24 : 48}
           direction="left"
           interactive
           className="fill-neutral-700 dark:fill-neutral-300"
@@ -377,13 +384,13 @@ export default function HomeClient({
             <h2 className="mt-3 font-sans text-3xl tracking-tight sm:text-4xl">Drag the orbit</h2>
           </AnimeReveal>
         </div>
-        <div className="h-[420px] w-full sm:h-[520px]">
+        <div className="h-[300px] w-full sm:h-[420px] md:h-[520px]">
           <CircularGallery
             items={circularItems}
-            bend={2.4}
+            bend={isMobile ? 1.4 : 2.4}
             textColor="#171717"
             borderRadius={0.02}
-            font="500 22px Poppins, ui-sans-serif, system-ui, sans-serif"
+            font={isMobile ? '500 16px Poppins, ui-sans-serif, system-ui, sans-serif' : '500 22px Poppins, ui-sans-serif, system-ui, sans-serif'}
             scrollSpeed={1.8}
             scrollEase={0.06}
           />
@@ -400,11 +407,11 @@ export default function HomeClient({
             <h2 className="mt-3 font-sans text-3xl text-white sm:text-4xl">Ways into the studio</h2>
             <p className="mt-3 max-w-lg text-sm leading-6 text-white/50">
               Not another category wall — these are next steps: shop, custom size, WhatsApp order, or
-              a project quote. Hover for a preview, then go.
+              a project quote. Preview a path, then go.
             </p>
           </AnimeReveal>
         </div>
-        <div className="h-[min(62vh,480px)] w-full border-t border-white/10">
+        <div className="h-[min(48vh,360px)] w-full border-t border-white/10 sm:h-[min(62vh,480px)]">
           <FlowingMenu
             items={flowingItems}
             speed={18}
@@ -421,20 +428,20 @@ export default function HomeClient({
       <section className="overflow-hidden bg-white dark:bg-neutral-950">
         <div className="grid items-center gap-12 px-5 py-16 sm:px-8 lg:grid-cols-2 lg:gap-12 lg:px-12 lg:py-24">
           <div className="relative mx-auto flex w-full max-w-lg justify-center py-4">
-            <div className="relative h-[340px] w-full sm:h-[400px]">
+            <div className="relative h-[280px] w-full sm:h-[400px]">
               <div className="absolute left-0 top-6 z-[1] w-[58%] -rotate-6 sm:left-2">
                 <TiltedCard
                   imageSrc={studioImages[0]}
                   altText="Studio work"
                   captionText="Workshop"
-                  containerHeight="260px"
+                  containerHeight={isMobile ? '200px' : '260px'}
                   containerWidth="100%"
-                  imageHeight="260px"
+                  imageHeight={isMobile ? '200px' : '260px'}
                   imageWidth="100%"
                   scaleOnHover={1.06}
                   rotateAmplitude={10}
                   showMobileWarning={false}
-                  showTooltip
+                  showTooltip={!isMobile}
                 />
               </div>
               <div className="absolute right-0 top-0 z-[2] w-[62%] rotate-3 sm:right-2">
@@ -442,14 +449,14 @@ export default function HomeClient({
                   imageSrc={studioImages[1]}
                   altText="Timber detail"
                   captionText="Timber"
-                  containerHeight="280px"
+                  containerHeight={isMobile ? '210px' : '280px'}
                   containerWidth="100%"
-                  imageHeight="280px"
+                  imageHeight={isMobile ? '210px' : '280px'}
                   imageWidth="100%"
                   scaleOnHover={1.06}
                   rotateAmplitude={10}
                   showMobileWarning={false}
-                  showTooltip
+                  showTooltip={!isMobile}
                 />
               </div>
               <div className="absolute bottom-0 left-[18%] z-[3] w-[55%] -rotate-2">
@@ -457,14 +464,14 @@ export default function HomeClient({
                   imageSrc={studioImages[2]}
                   altText="Finished frame"
                   captionText="Finish"
-                  containerHeight="220px"
+                  containerHeight={isMobile ? '170px' : '220px'}
                   containerWidth="100%"
-                  imageHeight="220px"
+                  imageHeight={isMobile ? '170px' : '220px'}
                   imageWidth="100%"
                   scaleOnHover={1.06}
                   rotateAmplitude={10}
                   showMobileWarning={false}
-                  showTooltip
+                  showTooltip={!isMobile}
                 />
               </div>
             </div>
@@ -536,18 +543,18 @@ export default function HomeClient({
             </p>
           </AnimeReveal>
 
-          <div className="mt-14 grid grid-cols-3 gap-6 border-t border-neutral-200 pt-10 dark:border-neutral-800">
+          <div className="mt-14 grid grid-cols-3 gap-3 border-t border-neutral-200 pt-10 dark:border-neutral-800 sm:gap-6">
             {[
               { to: 12, label: 'Years framing', suffix: '+' },
               { to: 500, label: 'Custom pieces', suffix: '+' },
               { to: 28, label: 'Cities shipped', suffix: '' },
             ].map((stat) => (
-              <div key={stat.label} className="text-center">
-                <p className="font-sans text-3xl tracking-tight text-neutral-900 dark:text-white sm:text-4xl">
+              <div key={stat.label} className="min-w-0 text-center">
+                <p className="font-sans text-2xl tracking-tight text-neutral-900 dark:text-white sm:text-4xl">
                   <CountUp to={stat.to} duration={2.2} className="inline" />
                   {stat.suffix}
                 </p>
-                <p className="mt-2 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-neutral-400">
+                <p className="mt-2 text-[0.58rem] font-semibold uppercase leading-snug tracking-[0.1em] text-neutral-400 sm:text-[0.7rem] sm:tracking-[0.14em]">
                   {stat.label}
                 </p>
               </div>
@@ -558,7 +565,7 @@ export default function HomeClient({
 
       {/* TESTIMONIALS — CardSwap */}
       <section className="relative overflow-hidden bg-neutral-950 py-16 text-white sm:py-24">
-        <div className="mx-auto grid max-w-[1400px] items-center gap-12 px-5 sm:px-8 lg:grid-cols-2 lg:gap-8 lg:px-12">
+        <div className="mx-auto grid max-w-[1400px] items-center gap-10 px-5 sm:px-8 lg:grid-cols-2 lg:gap-8 lg:px-12">
           <AnimeReveal>
             <p className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-white/40">
               07 — Voices
@@ -569,27 +576,27 @@ export default function HomeClient({
             </p>
           </AnimeReveal>
 
-          <div className="relative mx-auto h-[420px] w-full max-w-[520px] lg:mx-0 lg:justify-self-end">
+          <div className="relative mx-auto h-[340px] w-full max-w-[min(100%,520px)] sm:h-[420px] lg:mx-0 lg:justify-self-end">
             <CardSwap
-              width={400}
-              height={340}
-              cardDistance={48}
-              verticalDistance={55}
+              width={isMobile ? 300 : 400}
+              height={isMobile ? 280 : 340}
+              cardDistance={isMobile ? 36 : 48}
+              verticalDistance={isMobile ? 42 : 55}
               delay={4500}
               pauseOnHover
-              skewAmount={4}
+              skewAmount={isMobile ? 2 : 4}
               easing="elastic"
             >
               {quotes.slice(0, 4).map((t, i) => (
                 <Card
                   key={`${t.name}-${i}`}
-                  customClass="!rounded-none !border-white/15 !bg-neutral-900 flex flex-col overflow-hidden p-7 sm:p-8"
+                  customClass="!rounded-none !border-white/15 !bg-neutral-900 flex flex-col overflow-hidden p-5 sm:p-8"
                 >
                   <Quote className="h-5 w-5 text-white/35" />
-                  <p className="mt-5 flex-1 font-sans text-lg leading-snug text-white/90 sm:text-xl">
+                  <p className="mt-4 flex-1 font-sans text-base leading-snug text-white/90 sm:mt-5 sm:text-xl">
                     &ldquo;{t.comment}&rdquo;
                   </p>
-                  <p className="mt-6 text-sm text-white/45">
+                  <p className="mt-5 text-sm text-white/45 sm:mt-6">
                     {t.name}
                     {t.role ? ` · ${t.role}` : ''}
                   </p>
@@ -690,7 +697,7 @@ export default function HomeClient({
                 e.preventDefault();
                 addToast('Thank you for subscribing.', 'success');
               }}
-              className="flex w-full max-w-md gap-2"
+              className="flex w-full max-w-md flex-col gap-2 sm:flex-row"
             >
               <div className="relative flex-1">
                 <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
@@ -703,7 +710,7 @@ export default function HomeClient({
               </div>
               <button
                 type="submit"
-                className="h-12 cursor-pointer bg-white px-5 text-xs font-semibold uppercase tracking-[0.12em] text-neutral-950 transition hover:bg-neutral-200"
+                className="h-12 w-full cursor-pointer bg-white px-5 text-xs font-semibold uppercase tracking-[0.12em] text-neutral-950 transition hover:bg-neutral-200 sm:w-auto"
               >
                 Join
               </button>

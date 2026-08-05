@@ -103,7 +103,7 @@ const TrueFocus: React.FC<TrueFocusProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`relative flex flex-wrap items-center justify-center gap-4 px-4 py-5 font-sans ${className}`}
+      className={`relative flex flex-nowrap items-center justify-center gap-2.5 px-1 py-4 font-sans sm:gap-4 sm:px-4 sm:py-5 ${className}`}
       style={{ outline: 'none', userSelect: 'none' }}
     >
       {words.map((word, index) => {
@@ -114,7 +114,7 @@ const TrueFocus: React.FC<TrueFocusProps> = ({
             ref={(el) => {
               wordRefs.current[index] = el;
             }}
-            className="relative cursor-pointer font-sans text-[clamp(2rem,5vw,3rem)] font-semibold tracking-tight text-neutral-950 dark:text-white"
+            className="relative shrink-0 cursor-pointer whitespace-nowrap font-sans text-[clamp(1.15rem,4.6vw,3rem)] font-semibold tracking-tight text-neutral-950 dark:text-white"
             style={{
               filter: isActive ? 'blur(0px)' : `blur(${blurAmount}px)`,
               transition: `filter ${animationDuration}s ease`,

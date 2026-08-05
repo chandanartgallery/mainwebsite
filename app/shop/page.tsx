@@ -35,7 +35,7 @@ function ShopContent() {
   // Filter States
   const [selectedCategory, setSelectedCategory] = useState<string>(searchParams.get('category') || 'all');
   const [searchQuery, setSearchQuery] = useState<string>(searchParams.get('search') || '');
-  const [priceRange, setPriceRange] = useState<number>(5000);
+  const [priceRange, setPriceRange] = useState<number>(10000);
   const [selectedMaterial, setSelectedMaterial] = useState<string>('all');
   const [selectedColor, setSelectedColor] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('featured');
@@ -177,7 +177,7 @@ function ShopContent() {
   const resetFilters = () => {
     setSelectedCategory('all');
     setSearchQuery('');
-    setPriceRange(5000);
+    setPriceRange(10000);
     setSelectedMaterial('all');
     setSelectedColor('all');
     setSortBy('featured');
@@ -442,8 +442,8 @@ function ShopContent() {
                             fallbackLabel="Artwork preview unavailable"
                           />
                         </div>
-                        <div className="pointer-events-none absolute inset-0 bg-neutral-950/0 transition-colors duration-500 ease-out group-hover:bg-neutral-950/35" />
-                        <span className="pointer-events-none absolute inset-x-0 bottom-0 flex translate-y-3 items-center justify-between px-4 pb-4 text-xs font-semibold uppercase tracking-[0.14em] text-white opacity-0 transition-all duration-500 ease-out group-hover:translate-y-0 group-hover:opacity-100">
+                        <div className="pointer-events-none absolute inset-0 bg-neutral-950/20 transition-colors duration-500 ease-out sm:bg-neutral-950/0 sm:group-hover:bg-neutral-950/35" />
+                        <span className="pointer-events-none absolute inset-x-0 bottom-0 flex translate-y-0 items-center justify-between px-4 pb-4 text-xs font-semibold uppercase tracking-[0.14em] text-white opacity-100 transition-all duration-500 ease-out sm:translate-y-3 sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100">
                           View piece
                           <ArrowUpRight className="h-4 w-4" />
                         </span>

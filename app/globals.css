@@ -109,6 +109,7 @@ img, picture, video, canvas, svg {
 
 body {
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 .dark {

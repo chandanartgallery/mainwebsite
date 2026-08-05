@@ -75,7 +75,7 @@ export default function CartDrawer() {
             animate={{ opacity: 0.4 }}
             exit={{ opacity: 0 }}
             onClick={() => setCartOpen(false)}
-            className="fixed inset-0 bg-black z-50 cursor-pointer"
+            className="fixed inset-0 bg-black z-[60] cursor-pointer"
           />
 
           {/* Drawer Container */}
@@ -84,7 +84,7 @@ export default function CartDrawer() {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'tween', duration: 0.3 }}
-            className="fixed top-0 right-0 h-full w-full sm:max-w-md bg-neutral-50 dark:bg-neutral-950 shadow-2xl z-50 flex flex-col"
+            className="fixed top-0 right-0 z-[70] flex h-full w-full flex-col bg-neutral-50 shadow-2xl dark:bg-neutral-950 sm:max-w-md"
           >
             {/* Header */}
             <div className="px-6 py-5 border-b border-black/10 dark:border-white/10 flex justify-between items-center bg-white/40 dark:bg-white/[0.035] backdrop-blur">

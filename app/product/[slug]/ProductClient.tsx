@@ -366,23 +366,27 @@ export default function ProductClient({ product, initialReviews, initialComments
   return (
     <div className="lux-container pt-24 pb-16">
       {/* Breadcrumbs */}
-      <nav className="flex flex-wrap items-center gap-2 text-xs text-neutral-500 mb-8 select-none">
-        <Link href="/" className="hover:text-neutral-900 dark:hover:text-white transition-colors">Home</Link>
-        <ChevronRight className="w-3.5 h-3.5" />
-        <Link href="/shop" className="hover:text-neutral-900 dark:hover:text-white transition-colors">Shop</Link>
+      <nav className="mb-8 flex min-w-0 flex-wrap items-center gap-1.5 text-xs text-neutral-500 select-none sm:gap-2">
+        <Link href="/" className="shrink-0 transition-colors hover:text-neutral-900 dark:hover:text-white">
+          Home
+        </Link>
+        <ChevronRight className="h-3.5 w-3.5 shrink-0" />
+        <Link href="/shop" className="shrink-0 transition-colors hover:text-neutral-900 dark:hover:text-white">
+          Shop
+        </Link>
         {product.category && (
           <>
-            <ChevronRight className="w-3.5 h-3.5" />
-            <Link 
-              href={`/shop?category=${product.category.slug}`} 
-              className="hover:text-neutral-900 dark:hover:text-white transition-colors"
+            <ChevronRight className="h-3.5 w-3.5 shrink-0" />
+            <Link
+              href={`/shop?category=${product.category.slug}`}
+              className="max-w-[9rem] truncate transition-colors hover:text-neutral-900 dark:hover:text-white sm:max-w-none"
             >
               {product.category.name}
             </Link>
           </>
         )}
-        <ChevronRight className="w-3.5 h-3.5" />
-        <span className="text-neutral-800 dark:text-neutral-200 line-clamp-1">{product.name}</span>
+        <ChevronRight className="h-3.5 w-3.5 shrink-0" />
+        <span className="min-w-0 flex-1 truncate text-neutral-800 dark:text-neutral-200">{product.name}</span>
       </nav>
 
       {/* Main Detail Grid */}
@@ -475,7 +479,7 @@ export default function ProductClient({ product, initialReviews, initialComments
             </div>
 
             {/* Product Title */}
-            <h1 className="font-sans text-4xl leading-tight text-neutral-900 dark:text-white sm:text-5xl">
+            <h1 className="font-sans text-3xl leading-tight text-neutral-900 dark:text-white sm:text-5xl">
               {product.name}
             </h1>
 
@@ -648,7 +652,7 @@ export default function ProductClient({ product, initialReviews, initialComments
 
       {/* Extra Technical Specs / Details */}
       <div className="border-b border-black/10 dark:border-white/10 pb-16 mb-16">
-        <h3 className="font-sans text-4xl text-neutral-900 dark:text-white mb-6">{pageConfig.storyTitle}</h3>
+        <h3 className="font-sans text-3xl text-neutral-900 dark:text-white mb-6 sm:text-4xl">{pageConfig.storyTitle}</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-stone-700 dark:text-stone-400 leading-relaxed">
           <p>
             {product.description || 'Every piece at Chandan Art Gallery is crafted on a custom, order-by-order basis. By sourcing natural teak and pine woods, our frames represent the absolute apex of home decor art. The anti-glare museum acrylic shields your photos from UV rays and details are finalized in real time on WhatsApp with our design team.'}

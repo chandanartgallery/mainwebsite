@@ -2,6 +2,7 @@
 
 import { useRef, useEffect, useState, useCallback, CSSProperties, KeyboardEvent, MouseEvent } from 'react';
 import { gsap } from 'gsap';
+import { useMediaQuery } from '@/lib/useMediaQuery';
 
 export interface AccordionGalleryItem {
   image: string;
@@ -70,14 +71,16 @@ const AccordionGallery = ({
   const firstRunRef = useRef(true);
   const mediaSizeRef = useRef(320);
 
-  const vertical = orientation === 'vertical';
+  const isCompact = useMediaQuery('(max-width: 640px)');
+  const vertical = orientation === 'vertical' || isCompact;
+  const effectiveTrigger = isCompact ? 'click' : trigger;
   const count = items.length;
   const [active, setActive] = useState(Math.min(Math.max(defaultIndex, 0), count - 1));
+  const layoutHeight = vertical
+    ? Math.max(Math.round(height * 1.15), count * 88 + 200)
+    : height;
 
-  const prefersReduced =
-    typeof window !== 'undefined' && window.matchMedia
-      ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      : false;
+  const prefersReduced = useMediaQuery('(prefers-reduced-motion: reduce)');
 
   const overlayBg = `linear-gradient(180deg, transparent 45%, color-mix(in srgb, ${overlayColor} 78%, transparent) 100%), color-mix(in srgb, ${overlayColor} calc(var(--ag-dim, 0.35) * 100%), transparent)`;
 
@@ -129,6 +132,10 @@ const AccordionGallery = ({
         if (showLabels && bar && text) {
           if (isActive) {
             tl.to([bar, text], { opacity: 1, x: 0, duration: dur, ease, stagger: prefersReduced ? 0 : stagger }, 0);
+          } else if (vertical) {
+            // Keep labels readable in the stacked phone layout.
+            tl.to(bar, { opacity: 0.55, x: 0, duration: dur * 0.6, ease }, 0);
+            tl.to(text, { opacity: 0.85, x: 0, duration: dur * 0.6, ease }, 0);
           } else {
             tl.to([bar, text], { opacity: 0, x: -14, duration: dur * 0.6, ease }, 0);
           }
@@ -186,7 +193,7 @@ const AccordionGallery = ({
   );
 
   const handleEnter = (i: number) => {
-    if (trigger === 'hover') setActive(i);
+    if (effectiveTrigger === 'hover') setActive(i);
   };
 
   const handleClick = (i: number, e: MouseEvent) => {
@@ -209,8 +216,8 @@ const AccordionGallery = ({
   return (
     <div
       ref={rootRef}
-      className={`flex ${vertical ? 'flex-col' : 'flex-row'} w-full max-w-full [perspective:1400px] max-[520px]:!flex-col max-[520px]:[perspective:none] ${className}`}
-      style={{ gap: `${gap}px`, height: vertical ? `${Math.round(height * 1.6)}px` : `${height}px` }}
+      className={`flex ${vertical ? 'flex-col' : 'flex-row'} w-full max-w-full [perspective:1400px] ${vertical ? '[perspective:none]' : ''} ${className}`}
+      style={{ gap: `${gap}px`, height: `${layoutHeight}px` }}
       role="list"
       aria-label="Image accordion gallery"
     >
@@ -223,7 +230,7 @@ const AccordionGallery = ({
             ref={(el: HTMLElement | null) => {
               panelRefs.current[i] = el;
             }}
-            className="group relative block min-w-0 min-h-0 flex-[1_1_0] cursor-pointer overflow-hidden bg-[#0a0713] no-underline outline-none [transform-style:preserve-3d] [transform-origin:center] [box-shadow:0_10px_30px_-18px_rgba(0,0,0,0.8)] focus-visible:[box-shadow:0_0_0_2px_var(--ag-accent),0_10px_30px_-18px_rgba(0,0,0,0.8)] max-[520px]:min-h-[84px] max-[520px]:!transform-none"
+            className={`group relative block min-w-0 min-h-0 flex-[1_1_0] cursor-pointer overflow-hidden bg-[#0a0713] no-underline outline-none [transform-style:preserve-3d] [transform-origin:center] [box-shadow:0_10px_30px_-18px_rgba(0,0,0,0.8)] focus-visible:[box-shadow:0_0_0_2px_var(--ag-accent),0_10px_30px_-18px_rgba(0,0,0,0.8)] ${vertical ? 'min-h-[76px] !transform-none' : ''}`}
             style={
               {
                 borderRadius: `${radius}px`,

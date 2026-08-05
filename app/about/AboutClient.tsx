@@ -127,18 +127,18 @@ export default function AboutClient() {
       </section>
 
       <section className="border-y border-neutral-200 bg-white py-14 dark:border-neutral-800 dark:bg-neutral-950">
-        <div className="mx-auto grid max-w-[1400px] grid-cols-3 gap-6 px-5 sm:px-8 lg:px-12">
+        <div className="mx-auto grid max-w-[1400px] grid-cols-3 gap-3 px-5 sm:gap-6 sm:px-8 lg:px-12">
           {[
             { to: 12, label: 'Years', suffix: '+' },
             { to: 500, label: 'Custom frames', suffix: '+' },
             { to: 5, label: 'Collections', suffix: '' },
           ].map((s) => (
-            <div key={s.label} className="text-center">
-              <p className="font-sans text-3xl text-neutral-900 dark:text-white sm:text-5xl">
+            <div key={s.label} className="min-w-0 text-center">
+              <p className="font-sans text-2xl text-neutral-900 dark:text-white sm:text-5xl">
                 <CountUp to={s.to} duration={2} className="inline" />
                 {s.suffix}
               </p>
-              <p className="mt-2 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-neutral-400">
+              <p className="mt-2 text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-neutral-400 sm:text-[0.65rem] sm:tracking-[0.16em]">
                 {s.label}
               </p>
             </div>

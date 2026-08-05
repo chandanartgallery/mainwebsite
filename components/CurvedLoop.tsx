@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useEffect, useState, useMemo, useId, FC, PointerEvent } from 'react';
+import { useMediaQuery } from '@/lib/useMediaQuery';
 
 interface CurvedLoopProps {
   marqueeText?: string;
@@ -19,6 +20,10 @@ const CurvedLoop: FC<CurvedLoopProps> = ({
   direction = 'left',
   interactive = true
 }) => {
+  const isMobile = useMediaQuery('(max-width: 640px)');
+  const viewWidth = isMobile ? 520 : 1440;
+  const pathY = isMobile ? 48 : 42;
+
   const text = useMemo(() => {
     // Wider word gaps via non-breaking spaces around separators
     const spaced = marqueeText
@@ -36,8 +41,7 @@ const CurvedLoop: FC<CurvedLoopProps> = ({
   const [offset, setOffset] = useState(0);
   const uid = useId();
   const pathId = `curve-${uid}`;
-  // Full-bleed path: starts and ends at viewport edges
-  const pathD = `M0,42 Q720,${42 + curveAmount} 1440,42`;
+  const pathD = `M0,${pathY} Q${viewWidth / 2},${pathY + curveAmount} ${viewWidth},${pathY}`;
 
   const dragRef = useRef(false);
   const lastXRef = useRef(0);
@@ -46,15 +50,20 @@ const CurvedLoop: FC<CurvedLoopProps> = ({
 
   const textLength = spacing;
   const totalText = textLength
-    ? Array(Math.ceil(2200 / textLength) + 3)
+    ? Array(Math.ceil((viewWidth * 1.6) / textLength) + 3)
         .fill(text)
         .join('')
     : text;
   const ready = spacing > 0;
 
   useEffect(() => {
-    if (measureRef.current) setSpacing(measureRef.current.getComputedTextLength());
-  }, [text, className]);
+    // Remeasure when text, size, or path geometry changes
+    setSpacing(0);
+    const id = requestAnimationFrame(() => {
+      if (measureRef.current) setSpacing(measureRef.current.getComputedTextLength());
+    });
+    return () => cancelAnimationFrame(id);
+  }, [text, className, viewWidth, isMobile]);
 
   useEffect(() => {
     if (!spacing) return;
@@ -125,12 +134,18 @@ const CurvedLoop: FC<CurvedLoopProps> = ({
       onPointerLeave={endDrag}
     >
       <svg
-        className="block h-[72px] w-full select-none sm:h-[84px] text-[clamp(1.1rem,2.4vw,1.65rem)] font-medium leading-none"
-        viewBox="0 0 1440 100"
+        className={`block w-full select-none font-semibold leading-none ${
+          isMobile ? 'h-[96px] text-[1.85rem]' : 'h-[90px] text-[clamp(1.25rem,2.6vw,1.7rem)]'
+        }`}
+        viewBox={`0 0 ${viewWidth} 100`}
         preserveAspectRatio="none"
         aria-hidden={!ready}
       >
-        <text ref={measureRef} xmlSpace="preserve" style={{ visibility: 'hidden', opacity: 0, pointerEvents: 'none' }}>
+        <text
+          ref={measureRef}
+          xmlSpace="preserve"
+          style={{ visibility: 'hidden', opacity: 0, pointerEvents: 'none' }}
+        >
           {text}
         </text>
         <defs>

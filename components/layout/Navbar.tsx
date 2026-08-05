@@ -7,7 +7,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   ChevronDown,
   Heart,
-  LogIn,
   Menu,
   Moon,
   Search,
@@ -45,8 +44,11 @@ export default function Navbar() {
   const searchRef = useRef<HTMLDivElement>(null);
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [isScrolled, setIsScrolled] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
+    useCartStore.persist.rehydrate();
+    setHasMounted(true);
     setTheme(document.documentElement.classList.contains("dark") ? "dark" : "light");
 
     const handleScroll = () => setIsScrolled(window.scrollY > 8);
@@ -113,9 +115,10 @@ export default function Navbar() {
   // Home hero is dark — use white nav there. Elsewhere (and after scroll) use dark text on frosted glass.
   const onDarkHero = pathname === "/" && !isScrolled;
 
-  const iconButton = onDarkHero
-    ? "inline-flex h-9 w-9 items-center justify-center text-white/90 transition hover:text-white dark:text-neutral-200 dark:hover:text-white"
-    : "inline-flex h-9 w-9 items-center justify-center text-neutral-800 transition hover:text-neutral-950 dark:text-neutral-200 dark:hover:text-white";
+  const iconTone = onDarkHero
+    ? "h-9 w-9 items-center justify-center text-white/90 transition hover:text-white dark:text-neutral-200 dark:hover:text-white"
+    : "h-9 w-9 items-center justify-center text-neutral-800 transition hover:text-neutral-950 dark:text-neutral-200 dark:hover:text-white";
+  const iconButton = `inline-flex ${iconTone}`;
 
   const navLinkIdle = onDarkHero
     ? "text-white/85 hover:text-white dark:text-neutral-200 dark:hover:text-white"
@@ -135,19 +138,19 @@ export default function Navbar() {
               : "bg-white/70 shadow-[0_8px_32px_rgba(0,0,0,0.08)] backdrop-blur-2xl backdrop-saturate-150 dark:bg-neutral-950/70 dark:shadow-[0_8px_40px_rgba(0,0,0,0.35)]"
           }`}
         >
-        <nav className="mx-auto flex h-[3.75rem] items-center justify-between gap-4 px-4 sm:h-16 sm:px-6">
-          <div className="flex items-center gap-3">
+        <nav className="mx-auto flex h-[3.75rem] items-center justify-between gap-2 px-3 sm:h-16 sm:gap-4 sm:px-6">
+          <div className="flex min-w-0 items-center gap-1.5 sm:gap-3">
             <button
               onClick={() => setMobileMenuOpen((open) => !open)}
-              className={`${iconButton} lg:hidden`}
+              className={`${iconButton} shrink-0 lg:hidden`}
               aria-label="Open navigation"
             >
               {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </button>
 
-            <Link href="/" className="group min-w-fit">
+            <Link href="/" className="group min-w-0 shrink">
               <span
-                className={`brand-logotype block text-[1.15rem] tracking-[-0.01em] transition group-hover:opacity-80 sm:text-[1.35rem] ${
+                className={`brand-logotype block whitespace-nowrap text-[0.92rem] tracking-[-0.02em] transition group-hover:opacity-80 sm:text-[1.35rem] sm:tracking-[-0.01em] ${
                   onDarkHero ? "text-white dark:text-neutral-50" : "text-neutral-950 dark:text-neutral-50"
                 }`}
               >
@@ -271,7 +274,7 @@ export default function Navbar() {
             )}
           </div>
 
-          <div className="flex items-center gap-0.5 sm:gap-1">
+          <div className="flex shrink-0 items-center gap-0 sm:gap-1">
             <div ref={searchRef} className="relative hidden md:block">
               <form onSubmit={handleSearchSubmit} className="relative">
                 <Search
@@ -348,14 +351,25 @@ export default function Navbar() {
             </div>
 
             <button onClick={toggleTheme} className={iconButton} title="Toggle theme">
-              {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+              <span className="relative block h-4 w-4">
+                <Moon
+                  className={`absolute inset-0 h-4 w-4 transition-opacity ${
+                    hasMounted && theme === "light" ? "opacity-100" : "opacity-0"
+                  }`}
+                />
+                <Sun
+                  className={`absolute inset-0 h-4 w-4 transition-opacity ${
+                    hasMounted && theme === "dark" ? "opacity-100" : "opacity-0"
+                  }`}
+                />
+              </span>
             </button>
-            <Link href="/profile?tab=wishlist" className={`${iconButton} hidden sm:inline-flex`} title="Wishlist">
+            <Link href="/profile?tab=wishlist" className={`hidden sm:inline-flex ${iconTone}`} title="Wishlist">
               <Heart className="h-4 w-4" />
             </Link>
             <button onClick={() => setCartOpen(true)} className={`${iconButton} relative`} title="Cart">
               <ShoppingBag className="h-4 w-4" />
-              {cartItemsCount > 0 && (
+              {hasMounted && cartItemsCount > 0 && (
                 <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center bg-neutral-950 px-1 text-[0.6rem] font-semibold text-white dark:bg-white dark:text-neutral-900">
                   {cartItemsCount}
                 </span>
@@ -378,8 +392,8 @@ export default function Navbar() {
                   <User className="h-4 w-4" />
                 )}              </Link>
             ) : (
-              <Link href="/login" className={iconButton} title="Sign In">
-                <LogIn className="h-4 w-4" />
+              <Link href="/login" className={iconButton} title="Account">
+                <User className="h-4 w-4" />
               </Link>
             )}
           </div>
@@ -438,6 +452,7 @@ export default function Navbar() {
                     ["Journal", "/blog"],
                     ["About", "/about"],
                     ["Contact", "/contact"],
+                    ["Wishlist", "/profile?tab=wishlist"],
                   ].map(([label, href]) => (
                     <Link
                       key={href}

@@ -198,14 +198,14 @@ function ProfileContent() {
     <button
       type="button"
       onClick={() => setActiveTab(id)}
-      className={`flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-left text-sm font-medium transition ${
+      className={`flex shrink-0 items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition sm:w-full sm:gap-3 sm:px-3.5 ${
         activeTab === id
           ? 'bg-neutral-950 text-white dark:bg-white dark:text-neutral-950'
           : 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-white/5'
       }`}
     >
       {icon}
-      <span className="flex-1">{label}</span>
+      <span className="whitespace-nowrap sm:flex-1">{label}</span>
       {typeof count === 'number' && (
         <span
           className={`min-w-5 rounded-full px-1.5 text-center text-[0.65rem] font-semibold ${
@@ -243,9 +243,9 @@ function ProfileContent() {
 
         <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-8">
           {/* Sidebar */}
-          <aside className="h-fit border border-neutral-200/80 bg-white/80 p-5 backdrop-blur-xl dark:border-neutral-800 dark:bg-neutral-900/70">
-            <div className="flex items-center gap-3 border-b border-neutral-100 pb-5 dark:border-neutral-800">
-              <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl bg-neutral-100 ring-1 ring-neutral-200 dark:bg-neutral-800 dark:ring-neutral-700">
+          <aside className="h-fit border border-neutral-200/80 bg-white/80 p-4 backdrop-blur-xl dark:border-neutral-800 dark:bg-neutral-900/70 sm:p-5">
+            <div className="flex items-center gap-3 border-b border-neutral-100 pb-4 dark:border-neutral-800 sm:pb-5">
+              <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl bg-neutral-100 ring-1 ring-neutral-200 dark:bg-neutral-800 dark:ring-neutral-700 sm:h-14 sm:w-14">
                 {displayAvatar ? (
                   <img
                     src={displayAvatar}
@@ -272,7 +272,7 @@ function ProfileContent() {
               </div>
             </div>
 
-            <nav className="mt-4 space-y-1">
+            <nav className="-mx-1 mt-4 flex gap-1 overflow-x-auto px-1 pb-1 sm:mx-0 sm:block sm:space-y-1 sm:overflow-visible sm:px-0 sm:pb-0">
               {navBtn('profile', 'Profile details', <User className="h-4 w-4 shrink-0" />)}
               {navBtn('wishlist', 'Wishlist', <Heart className="h-4 w-4 shrink-0" />, wishlist.length)}
               {navBtn(
