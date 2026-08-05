@@ -455,7 +455,7 @@ function ShopContent() {
                           {prod.is_customizable && ' · Custom'}
                         </p>
                         <Link href={`/product/${prod.slug}`} className="mt-1 block">
-                          <h3 className="line-clamp-2 font-serif text-lg leading-snug text-neutral-900 transition group-hover:opacity-70 dark:text-white">
+                          <h3 className="line-clamp-2 font-sans text-lg leading-snug text-neutral-900 transition group-hover:opacity-70 dark:text-white">
                             {prod.name}
                           </h3>
                         </Link>
@@ -491,7 +491,7 @@ function ShopContent() {
               className="fixed top-0 left-0 h-full w-full sm:max-w-xs bg-neutral-50 dark:bg-neutral-950 shadow-2xl z-50 p-6 overflow-y-auto lg:hidden"
             >
               <div className="flex justify-between items-center pb-4 border-b border-gray-100 dark:border-zinc-800 mb-6">
-                <h3 className="font-serif text-lg text-neutral-900 dark:text-white uppercase tracking-wider">Filters</h3>
+                <h3 className="font-sans text-lg text-neutral-900 dark:text-white uppercase tracking-wider">Filters</h3>
                 <button onClick={() => setShowMobileFilters(false)} className="text-gray-400">
                   <X className="w-5 h-5" />
                 </button>
@@ -501,7 +501,7 @@ function ShopContent() {
               <div className="space-y-6">
                 {/* Category Filter */}
                 <div>
-                  <h4 className="font-serif text-sm text-neutral-900 dark:text-white pb-2 mb-3 uppercase tracking-wider border-b border-gray-50 dark:border-zinc-800">
+                  <h4 className="font-sans text-sm text-neutral-900 dark:text-white pb-2 mb-3 uppercase tracking-wider border-b border-gray-50 dark:border-zinc-800">
                     Category
                   </h4>
                   <div className="space-y-1.5">
@@ -529,7 +529,7 @@ function ShopContent() {
 
                 {/* Price Filter */}
                 <div>
-                  <h4 className="font-serif text-sm text-neutral-900 dark:text-white pb-2 mb-3 uppercase tracking-wider border-b border-gray-50 dark:border-zinc-800">
+                  <h4 className="font-sans text-sm text-neutral-900 dark:text-white pb-2 mb-3 uppercase tracking-wider border-b border-gray-50 dark:border-zinc-800">
                     Price Limit (Up to)
                   </h4>
                   <input
@@ -550,7 +550,7 @@ function ShopContent() {
 
                 {/* Material Filter */}
                 <div>
-                  <h4 className="font-serif text-sm text-neutral-900 dark:text-white pb-2 mb-3 uppercase tracking-wider border-b border-gray-50 dark:border-zinc-800">
+                  <h4 className="font-sans text-sm text-neutral-900 dark:text-white pb-2 mb-3 uppercase tracking-wider border-b border-gray-50 dark:border-zinc-800">
                     Material
                   </h4>
                   <div className="space-y-1">
@@ -570,7 +570,7 @@ function ShopContent() {
 
                 {/* Color Filter */}
                 <div>
-                  <h4 className="font-serif text-sm text-neutral-900 dark:text-white pb-2 mb-3 uppercase tracking-wider border-b border-gray-50 dark:border-zinc-800">
+                  <h4 className="font-sans text-sm text-neutral-900 dark:text-white pb-2 mb-3 uppercase tracking-wider border-b border-gray-50 dark:border-zinc-800">
                     Finish / Color
                   </h4>
                   <div className="space-y-1">

@@ -90,7 +90,7 @@ export default function CartDrawer() {
             <div className="px-6 py-5 border-b border-black/10 dark:border-white/10 flex justify-between items-center bg-white/40 dark:bg-white/[0.035] backdrop-blur">
               <div className="flex items-center space-x-2">
                 <ShoppingBag className="w-5 h-5 text-neutral-600" />
-                <h3 className="font-serif text-2xl text-neutral-900 dark:text-neutral-100">Private Cart</h3>
+                <h3 className="font-sans text-2xl text-neutral-900 dark:text-neutral-100">Private Cart</h3>
               </div>
               <button
                 onClick={() => setCartOpen(false)}
@@ -123,7 +123,7 @@ export default function CartDrawer() {
                     </div>
                     <div className="flex-1 ml-4 flex flex-col justify-between">
                       <div>
-                        <h4 className="font-serif text-sm text-neutral-900 dark:text-white line-clamp-1">
+                        <h4 className="font-sans text-sm text-neutral-900 dark:text-white line-clamp-1">
                           {item.name}
                         </h4>
                         {item.variant && (

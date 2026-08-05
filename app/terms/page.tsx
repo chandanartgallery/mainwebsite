@@ -54,7 +54,7 @@ export default function TermsPage() {
           {terms.map(({ icon: Icon, title, body }) => (
             <section key={title} className="lux-card rounded-[22px] p-7">
               <Icon className="h-6 w-6 text-neutral-600" />
-              <h2 className="mt-5 font-serif text-3xl text-neutral-800 dark:text-neutral-100">{title}</h2>
+              <h2 className="mt-5 font-sans text-3xl text-neutral-800 dark:text-neutral-100">{title}</h2>
               <p className="mt-3 text-sm leading-8 text-stone-700 dark:text-stone-400">{body}</p>
             </section>
           ))}

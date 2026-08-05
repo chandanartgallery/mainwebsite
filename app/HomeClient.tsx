@@ -216,7 +216,7 @@ export default function HomeClient({
             threshold={0}
             rootMargin="0px"
             textAlign="left"
-            className="!block max-w-[10.5ch] font-serif text-[clamp(2.35rem,5.8vw,4.75rem)] font-normal leading-[1.12] tracking-[-0.01em] text-white"
+          className="!block max-w-[12ch] font-sans text-[clamp(2.35rem,5.8vw,4.75rem)] font-semibold leading-[1.12] tracking-[-0.02em] text-white"
           />
 
           <motion.p
@@ -274,7 +274,7 @@ export default function HomeClient({
             <p className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-neutral-400">
               01 — Collections
             </p>
-            <h2 className="mt-3 font-serif text-3xl tracking-tight sm:text-5xl">Browse the wall</h2>
+            <h2 className="mt-3 font-sans text-3xl tracking-tight sm:text-5xl">Browse the wall</h2>
             <p className="mt-3 max-w-lg text-sm leading-6 text-neutral-500">
               Image-first discovery. Hover a panel to expand a collection and open the shop from the
               picture — not a text list.
@@ -330,7 +330,7 @@ export default function HomeClient({
               <p className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-neutral-400">
                 02 — Featured
               </p>
-              <h2 className="mt-3 font-serif text-3xl tracking-tight sm:text-5xl">Selected pieces</h2>
+              <h2 className="mt-3 font-sans text-3xl tracking-tight sm:text-5xl">Selected pieces</h2>
             </div>
             <Link
               href="/shop"
@@ -374,7 +374,7 @@ export default function HomeClient({
             <p className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-neutral-400">
               03 — Lookbook
             </p>
-            <h2 className="mt-3 font-serif text-3xl tracking-tight sm:text-4xl">Drag the orbit</h2>
+            <h2 className="mt-3 font-sans text-3xl tracking-tight sm:text-4xl">Drag the orbit</h2>
           </AnimeReveal>
         </div>
         <div className="h-[420px] w-full sm:h-[520px]">
@@ -383,7 +383,7 @@ export default function HomeClient({
             bend={2.4}
             textColor="#171717"
             borderRadius={0.02}
-            font="500 22px Georgia, serif"
+            font="500 22px Poppins, ui-sans-serif, system-ui, sans-serif"
             scrollSpeed={1.8}
             scrollEase={0.06}
           />
@@ -397,7 +397,7 @@ export default function HomeClient({
             <p className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-white/40">
               04 — Start here
             </p>
-            <h2 className="mt-3 font-serif text-3xl text-white sm:text-4xl">Ways into the studio</h2>
+            <h2 className="mt-3 font-sans text-3xl text-white sm:text-4xl">Ways into the studio</h2>
             <p className="mt-3 max-w-lg text-sm leading-6 text-white/50">
               Not another category wall — these are next steps: shop, custom size, WhatsApp order, or
               a project quote. Hover for a preview, then go.
@@ -479,7 +479,7 @@ export default function HomeClient({
               baseRotation={2}
               blurStrength={5}
               containerClassName="mt-4"
-              textClassName="font-serif text-3xl leading-snug tracking-tight text-neutral-900 dark:text-white sm:text-4xl lg:text-[2.75rem]"
+              textClassName="font-sans text-3xl leading-snug tracking-tight text-neutral-900 dark:text-white sm:text-4xl lg:text-[2.75rem]"
             >
               Built to the wall, not the warehouse. Size, wood, and finish locked before anything
               leaves the bench.
@@ -508,7 +508,7 @@ export default function HomeClient({
               <p className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-white/55">
                 In the room
               </p>
-              <p className="mt-3 font-serif text-2xl leading-snug sm:text-3xl">
+              <p className="mt-3 font-sans text-2xl leading-snug sm:text-3xl">
                 Frames meant to settle into your wall — not compete with it.
               </p>
             </div>
@@ -523,18 +523,15 @@ export default function HomeClient({
             <p className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-neutral-400">
               06 — Process
             </p>
-            <div className="mt-8 flex justify-center">
+            <div className="mt-8 flex justify-center overflow-visible">
               <TrueFocus
                 sentence="Choose Confirm Receive"
                 manualMode={false}
                 blurAmount={5}
-                borderColor="#171717"
-                glowColor="rgba(23,23,23,0.2)"
                 animationDuration={0.5}
                 pauseBetweenAnimations={1.15}
               />
-            </div>
-            <p className="mx-auto mt-8 max-w-md text-sm leading-6 text-neutral-500">
+            </div>            <p className="mx-auto mt-8 max-w-md text-sm leading-6 text-neutral-500">
               Pick online, confirm on WhatsApp, receive made-to-order — packed for glass and acrylic.
             </p>
           </AnimeReveal>
@@ -546,7 +543,7 @@ export default function HomeClient({
               { to: 28, label: 'Cities shipped', suffix: '' },
             ].map((stat) => (
               <div key={stat.label} className="text-center">
-                <p className="font-serif text-3xl tracking-tight text-neutral-900 dark:text-white sm:text-4xl">
+                <p className="font-sans text-3xl tracking-tight text-neutral-900 dark:text-white sm:text-4xl">
                   <CountUp to={stat.to} duration={2.2} className="inline" />
                   {stat.suffix}
                 </p>
@@ -566,7 +563,7 @@ export default function HomeClient({
             <p className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-white/40">
               07 — Voices
             </p>
-            <h2 className="mt-3 font-serif text-3xl sm:text-5xl">From the wall</h2>
+            <h2 className="mt-3 font-sans text-3xl sm:text-5xl">From the wall</h2>
             <p className="mt-4 max-w-md text-sm leading-6 text-white/50">
               Clients on finish, packing, and WhatsApp ordering — cards cycle on their own.
             </p>
@@ -589,7 +586,7 @@ export default function HomeClient({
                   customClass="!rounded-none !border-white/15 !bg-neutral-900 flex flex-col overflow-hidden p-7 sm:p-8"
                 >
                   <Quote className="h-5 w-5 text-white/35" />
-                  <p className="mt-5 flex-1 font-serif text-lg leading-snug text-white/90 sm:text-xl">
+                  <p className="mt-5 flex-1 font-sans text-lg leading-snug text-white/90 sm:text-xl">
                     &ldquo;{t.comment}&rdquo;
                   </p>
                   <p className="mt-6 text-sm text-white/45">
@@ -610,7 +607,7 @@ export default function HomeClient({
             <p className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-neutral-400">
               08 — FAQ
             </p>
-            <h2 className="mt-3 font-serif text-3xl leading-tight sm:text-5xl">
+            <h2 className="mt-3 font-sans text-3xl leading-tight sm:text-5xl">
               Before you
               <br />
               order
@@ -641,7 +638,7 @@ export default function HomeClient({
                     </span>
                     <span className="flex-1">
                       <span
-                        className={`block font-serif text-xl leading-snug transition sm:text-2xl ${
+                        className={`block font-sans text-xl leading-snug transition sm:text-2xl ${
                           open
                             ? 'text-neutral-950 dark:text-white'
                             : 'text-neutral-700 group-hover:text-neutral-950 dark:text-neutral-300 dark:group-hover:text-white'
@@ -684,7 +681,7 @@ export default function HomeClient({
       <section className="relative overflow-hidden bg-neutral-950 py-16 text-white sm:py-20">
         <div className="relative z-10 mx-auto flex max-w-[1400px] flex-col gap-8 px-5 sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:px-12">
           <AnimeReveal>
-            <h2 className="font-serif text-3xl sm:text-4xl">New work, occasionally.</h2>
+            <h2 className="font-sans text-3xl sm:text-4xl">New work, occasionally.</h2>
             <p className="mt-2 text-sm text-white/50">No spam. Studio notes and releases.</p>
           </AnimeReveal>
           <AnimeReveal delay={100}>

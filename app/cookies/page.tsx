@@ -41,7 +41,7 @@ export default function CookiePolicyPage() {
           <p className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-neutral-400">
             Legal
           </p>
-          <h1 className="mt-3 font-serif text-3xl text-neutral-900 dark:text-neutral-50 sm:text-4xl">
+          <h1 className="mt-3 font-sans text-3xl text-neutral-900 dark:text-neutral-50 sm:text-4xl">
             Cookie Policy
           </h1>
           <p className="mt-3 text-sm leading-7 text-neutral-500">
@@ -72,7 +72,7 @@ export default function CookiePolicyPage() {
                 key={section.title}
                 className="border border-neutral-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900"
               >
-                <h2 className="font-serif text-xl text-neutral-900 dark:text-white">{section.title}</h2>
+                <h2 className="font-sans text-xl text-neutral-900 dark:text-white">{section.title}</h2>
                 <p className="mt-3 text-sm leading-7 text-neutral-500">{section.body}</p>
               </section>
             ))}

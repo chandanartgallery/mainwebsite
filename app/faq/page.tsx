@@ -48,7 +48,7 @@ export default function FAQPage() {
         <div className="mt-10 grid gap-5 lg:grid-cols-[0.65fr_1fr]">
           <aside className="lux-card rounded-[22px] p-7 lg:sticky lg:top-28 lg:self-start">
             <HelpCircle className="h-7 w-7 text-neutral-600" />
-            <h2 className="mt-5 font-serif text-3xl text-neutral-800 dark:text-neutral-100">Need a precise answer?</h2>
+            <h2 className="mt-5 font-sans text-3xl text-neutral-800 dark:text-neutral-100">Need a precise answer?</h2>
             <p className="mt-3 text-sm leading-7 text-stone-700 dark:text-stone-400">
               Custom framing is personal. For exact dimensions, finishes, and delivery timelines, message our studio directly.
             </p>
@@ -61,7 +61,7 @@ export default function FAQPage() {
           <div className="space-y-3">
             {faqs.map((item) => (
               <details key={item.question} className="lux-card group rounded-[18px] p-6">
-                <summary className="cursor-pointer list-none font-serif text-2xl text-neutral-800 dark:text-neutral-100">
+                <summary className="cursor-pointer list-none font-sans text-2xl text-neutral-800 dark:text-neutral-100">
                   {item.question}
                 </summary>
                 <p className="mt-4 border-t border-black/10 pt-4 text-sm leading-8 text-stone-700 dark:border-white/10 dark:text-stone-400">

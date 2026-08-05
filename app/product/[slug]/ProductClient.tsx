@@ -475,7 +475,7 @@ export default function ProductClient({ product, initialReviews, initialComments
             </div>
 
             {/* Product Title */}
-            <h1 className="font-serif text-4xl leading-tight text-neutral-900 dark:text-white sm:text-5xl">
+            <h1 className="font-sans text-4xl leading-tight text-neutral-900 dark:text-white sm:text-5xl">
               {product.name}
             </h1>
 
@@ -648,7 +648,7 @@ export default function ProductClient({ product, initialReviews, initialComments
 
       {/* Extra Technical Specs / Details */}
       <div className="border-b border-black/10 dark:border-white/10 pb-16 mb-16">
-        <h3 className="font-serif text-4xl text-neutral-900 dark:text-white mb-6">{pageConfig.storyTitle}</h3>
+        <h3 className="font-sans text-4xl text-neutral-900 dark:text-white mb-6">{pageConfig.storyTitle}</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-stone-700 dark:text-stone-400 leading-relaxed">
           <p>
             {product.description || 'Every piece at Chandan Art Gallery is crafted on a custom, order-by-order basis. By sourcing natural teak and pine woods, our frames represent the absolute apex of home decor art. The anti-glare museum acrylic shields your photos from UV rays and details are finalized in real time on WhatsApp with our design team.'}
@@ -684,9 +684,9 @@ export default function ProductClient({ product, initialReviews, initialComments
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 border-b border-black/10 dark:border-white/10 pb-16 mb-16" id="reviews">
         {/* Rating Summaries */}
         <div>
-          <h3 className="font-serif text-2xl text-neutral-900 dark:text-white mb-3">Client Reviews</h3>
+          <h3 className="font-sans text-2xl text-neutral-900 dark:text-white mb-3">Client Reviews</h3>
           <div className="flex items-baseline space-x-2.5 mb-5">
-            <span className="text-5xl font-bold font-serif text-neutral-900 dark:text-neutral-100">{averageRating}</span>
+            <span className="text-5xl font-bold font-sans text-neutral-900 dark:text-neutral-100">{averageRating}</span>
             <span className="text-xs text-gray-400 uppercase font-semibold">Out of 5.0</span>
           </div>
 
@@ -751,7 +751,7 @@ export default function ProductClient({ product, initialReviews, initialComments
                 {/* Rating stars */}
                 <div className="flex justify-between items-start mb-2.5">
                   <div>
-                    <h4 className="text-sm font-serif text-neutral-900 dark:text-white font-bold">{rev.title || 'Verified Buyer'}</h4>
+                    <h4 className="text-sm font-sans text-neutral-900 dark:text-white font-bold">{rev.title || 'Verified Buyer'}</h4>
                     <span className="text-[10px] text-gray-400 block mt-0.5">By {rev.user_name} | {new Date(rev.created_at).toLocaleDateString()}</span>
                   </div>
                   <div className="flex items-center text-amber-400">
@@ -769,7 +769,7 @@ export default function ProductClient({ product, initialReviews, initialComments
 
       {/* Discussion / Comments Section */}
       <div className="max-w-4xl">
-        <h3 className="font-serif text-2xl text-neutral-900 dark:text-white mb-2">Curator Discussions & Q&A</h3>
+        <h3 className="font-sans text-2xl text-neutral-900 dark:text-white mb-2">Curator Discussions & Q&A</h3>
         <p className="text-xs text-gray-400 uppercase tracking-widest mb-8">
           Logged-in members can leave inquiries. Approved comments and replies will display below.
         </p>
@@ -929,7 +929,7 @@ export default function ProductClient({ product, initialReviews, initialComments
               exit={{ opacity: 0, scale: 0.95, y: 15 }}
               className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800/80 rounded-[18px] shadow-2xl z-50 p-6 sm:p-8 overflow-y-auto max-h-[90vh]"
             >
-              <h3 className="font-serif text-2xl text-neutral-900 dark:text-white mb-1">Write your Review</h3>
+              <h3 className="font-sans text-2xl text-neutral-900 dark:text-white mb-1">Write your Review</h3>
               <p className="text-xs text-gray-400 uppercase tracking-widest mb-6">
                 Your experience helps our local framing artisans.
               </p>

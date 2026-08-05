@@ -94,7 +94,7 @@ export default function ProductCard3D({
             {meta}
           </p>
         )}
-        <h3 className="mt-1 line-clamp-2 font-serif text-lg leading-snug text-neutral-900 transition group-hover:opacity-70 dark:text-neutral-50">
+        <h3 className="mt-1 line-clamp-2 font-sans text-lg leading-snug text-neutral-900 transition group-hover:opacity-70 dark:text-neutral-50">
           {name}
         </h3>
         <p className="mt-auto pt-2 text-sm font-medium tabular-nums text-neutral-700 dark:text-neutral-300">

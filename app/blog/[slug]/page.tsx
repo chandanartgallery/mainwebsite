@@ -141,7 +141,7 @@ export default async function BlogPostPage({ params }: BlogPostProps) {
               {/* Table of Contents */}
               {headings.length > 0 && (
                 <div className="lux-card p-5 rounded-[18px] space-y-4">
-                  <h4 className="font-serif text-xs text-neutral-900 dark:text-white uppercase tracking-widest border-b border-gray-50 dark:border-zinc-800 pb-2">
+                  <h4 className="font-sans text-xs text-neutral-900 dark:text-white uppercase tracking-widest border-b border-gray-50 dark:border-zinc-800 pb-2">
                     In this Article
                   </h4>
                   <ul className="space-y-2.5 text-xs text-stone-600 dark:text-stone-400 font-sans">
@@ -157,7 +157,7 @@ export default async function BlogPostPage({ params }: BlogPostProps) {
 
               {/* Curator Shares */}
               <div className="lux-card p-5 rounded-[18px] space-y-4">
-                <h4 className="font-serif text-xs text-neutral-900 dark:text-white uppercase tracking-widest border-b border-gray-50 dark:border-zinc-800 pb-2">
+                <h4 className="font-sans text-xs text-neutral-900 dark:text-white uppercase tracking-widest border-b border-gray-50 dark:border-zinc-800 pb-2">
                   Share Chronicle
                 </h4>
                 <div className="flex space-x-3 text-gray-400">
@@ -181,7 +181,7 @@ export default async function BlogPostPage({ params }: BlogPostProps) {
 
                   if (isSubheader) {
                     return (
-                      <h3 key={idx} className="font-serif text-3xl text-neutral-900 dark:text-white pt-6 pb-2 border-b border-black/10 dark:border-white/10">
+                      <h3 key={idx} className="font-sans text-3xl text-neutral-900 dark:text-white pt-6 pb-2 border-b border-black/10 dark:border-white/10">
                         {para}
                       </h3>
                     );
@@ -190,7 +190,7 @@ export default async function BlogPostPage({ params }: BlogPostProps) {
                   return (
                     <p 
                       key={idx} 
-                      className={isLead ? 'text-2xl font-serif italic text-neutral-800 dark:text-neutral-100 border-l-2 border-neutral-300 pl-5 py-2 leading-relaxed' : ''}
+                      className={isLead ? 'text-2xl font-sans italic text-neutral-800 dark:text-neutral-100 border-l-2 border-neutral-300 pl-5 py-2 leading-relaxed' : ''}
                     >
                       {para}
                     </p>
@@ -219,7 +219,7 @@ export default async function BlogPostPage({ params }: BlogPostProps) {
         {/* Dynamic Related chronicles */}
         {related && related.length > 0 && (
           <section className="mt-24 border-t border-black/10 dark:border-white/10 pt-16">
-            <h3 className="font-serif text-4xl text-neutral-900 dark:text-white mb-10 text-center select-none">
+            <h3 className="font-sans text-4xl text-neutral-900 dark:text-white mb-10 text-center select-none">
               Chronicles Continues
             </h3>
             
@@ -231,7 +231,7 @@ export default async function BlogPostPage({ params }: BlogPostProps) {
                   </Link>
                   <div className="p-5">
                     <Link href={`/blog/${item.slug}`} className="block">
-                      <h4 className="font-serif text-sm text-neutral-900 dark:text-white group-hover:text-neutral-600 duration-200 line-clamp-1">
+                      <h4 className="font-sans text-sm text-neutral-900 dark:text-white group-hover:text-neutral-600 duration-200 line-clamp-1">
                         {item.title}
                       </h4>
                     </Link>

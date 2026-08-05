@@ -52,7 +52,7 @@ export default function PrivacyPage() {
         <div className="mt-10 grid gap-5 lg:grid-cols-[0.7fr_1fr]">
           <aside className="lux-card rounded-[22px] p-7 lg:sticky lg:top-28 lg:self-start">
             <ShieldCheck className="h-7 w-7 text-neutral-600" />
-            <h2 className="mt-5 font-serif text-3xl text-neutral-800 dark:text-neutral-100">Built for trust.</h2>
+            <h2 className="mt-5 font-sans text-3xl text-neutral-800 dark:text-neutral-100">Built for trust.</h2>
             <p className="mt-3 text-sm leading-7 text-stone-700 dark:text-stone-400">
               Our shopping model is consultation-led, so we only ask for details that help us quote, customize, pack, ship, and support your order.
             </p>
@@ -66,7 +66,7 @@ export default function PrivacyPage() {
           <div className="space-y-4">
             {sections.map((section) => (
               <section key={section.title} className="lux-card rounded-[22px] p-7">
-                <h2 className="font-serif text-2xl text-neutral-800 dark:text-neutral-100">{section.title}</h2>
+                <h2 className="font-sans text-2xl text-neutral-800 dark:text-neutral-100">{section.title}</h2>
                 <p className="mt-3 text-sm leading-8 text-stone-700 dark:text-stone-400">
                   {section.body}
                   {section.title === 'Cookies' && (

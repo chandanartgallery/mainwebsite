@@ -22,7 +22,7 @@ export default function BlogIndexClient({ posts }: { posts: BlogPost[] }) {
   if (!posts.length) {
     return (
       <div>
-        <h1 className="font-serif text-3xl text-neutral-900 dark:text-neutral-50 sm:text-4xl">Journal</h1>
+        <h1 className="font-sans text-3xl text-neutral-900 dark:text-neutral-50 sm:text-4xl">Journal</h1>
         <p className="mt-8 text-sm text-neutral-500">No posts published yet.</p>
       </div>
     );
@@ -44,7 +44,7 @@ export default function BlogIndexClient({ posts }: { posts: BlogPost[] }) {
           to={{ opacity: 1, y: 0 }}
           threshold={0}
           textAlign="left"
-          className="!block font-serif text-3xl text-neutral-900 dark:text-neutral-50 sm:text-4xl"
+          className="!block font-sans text-3xl text-neutral-900 dark:text-neutral-50 sm:text-4xl"
         />
         <p className="mt-2 max-w-xl text-sm text-neutral-500">
           Framing guides, material notes, and studio updates.
@@ -68,7 +68,7 @@ export default function BlogIndexClient({ posts }: { posts: BlogPost[] }) {
               <p className="text-xs font-medium uppercase tracking-wider text-neutral-400">
                 {featured.category?.name || 'Journal'}
               </p>
-              <h2 className="mt-2 font-serif text-2xl leading-tight text-neutral-900 dark:text-neutral-50 sm:text-3xl">
+              <h2 className="mt-2 font-sans text-2xl leading-tight text-neutral-900 dark:text-neutral-50 sm:text-3xl">
                 {featured.title}
               </h2>
               <p className="mt-3 line-clamp-3 text-sm leading-7 text-neutral-500">
@@ -106,7 +106,7 @@ export default function BlogIndexClient({ posts }: { posts: BlogPost[] }) {
                     {post.category?.name || 'Journal'}
                     {post.reading_time ? ` · ${post.reading_time} min` : ''}
                   </p>
-                  <h3 className="mt-2 line-clamp-2 font-serif text-xl leading-snug text-neutral-900 group-hover:underline dark:text-neutral-50">
+                  <h3 className="mt-2 line-clamp-2 font-sans text-xl leading-snug text-neutral-900 group-hover:underline dark:text-neutral-50">
                     {post.title}
                   </h3>
                   {(post.seo_description || post.content) && (

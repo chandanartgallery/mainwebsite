@@ -55,7 +55,7 @@ export default function ResetPasswordPage() {
         <Link href="/login" className="inline-flex items-center text-xs tracking-wider text-stone-600 hover:text-neutral-600 transition-colors duration-200 mb-6 uppercase">
           <ArrowLeft className="w-3.5 h-3.5 mr-1" /> Back to Sign In
         </Link>
-        <h1 className="text-center text-4xl font-serif tracking-tight text-neutral-900 dark:text-neutral-100">Reset password</h1>
+        <h1 className="text-center text-4xl font-sans tracking-tight text-neutral-900 dark:text-neutral-100">Reset password</h1>
         <p className="mt-2 text-center text-xs tracking-widest text-stone-600 dark:text-stone-400 uppercase">Account security</p>
       </div>
 

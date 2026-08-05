@@ -57,7 +57,7 @@ export default function ForgotPasswordPage() {
         >
           <ArrowLeft className="w-3.5 h-3.5 mr-1" /> Back to Sign In
         </Link>
-        <h1 className="text-center text-4xl font-serif tracking-tight text-neutral-900 dark:text-neutral-100">
+        <h1 className="text-center text-4xl font-sans tracking-tight text-neutral-900 dark:text-neutral-100">
           Chandan Art Gallery
         </h1>
         <p className="mt-2 text-center text-xs tracking-widest text-stone-600 dark:text-stone-400 uppercase">

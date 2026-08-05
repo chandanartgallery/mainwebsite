@@ -34,7 +34,7 @@ export default function ReturnsPage() {
               <span className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-neutral-900 text-sm font-black text-neutral-100 dark:bg-neutral-100 dark:text-neutral-900">
                 {number}
               </span>
-              <h2 className="mt-6 font-serif text-3xl text-neutral-800 dark:text-neutral-100">{title}</h2>
+              <h2 className="mt-6 font-sans text-3xl text-neutral-800 dark:text-neutral-100">{title}</h2>
               <p className="mt-3 text-sm leading-8 text-stone-700 dark:text-stone-400">{body}</p>
             </section>
           ))}
@@ -43,14 +43,14 @@ export default function ReturnsPage() {
         <div className="mt-5 grid gap-5 md:grid-cols-2">
           <section className="lux-panel rounded-[22px] p-7">
             <PackageOpen className="h-6 w-6 text-neutral-600" />
-            <h2 className="mt-5 font-serif text-3xl text-neutral-800 dark:text-neutral-100">Returns</h2>
+            <h2 className="mt-5 font-sans text-3xl text-neutral-800 dark:text-neutral-100">Returns</h2>
             <p className="mt-3 text-sm leading-8 text-stone-700 dark:text-stone-400">
               Because many products are customized, returns are reviewed individually. If there is a manufacturing issue or transit damage, we work with you toward a fair resolution.
             </p>
           </section>
           <section className="lux-panel rounded-[22px] p-7">
             <ClipboardCheck className="h-6 w-6 text-neutral-600" />
-            <h2 className="mt-5 font-serif text-3xl text-neutral-800 dark:text-neutral-100">Custom Work</h2>
+            <h2 className="mt-5 font-sans text-3xl text-neutral-800 dark:text-neutral-100">Custom Work</h2>
             <p className="mt-3 text-sm leading-8 text-stone-700 dark:text-stone-400">
               Size, finish, frame style, and artwork details are confirmed via WhatsApp before production, keeping your final order precise and documented.
             </p>

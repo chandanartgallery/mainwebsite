@@ -33,7 +33,7 @@ export default function NotFound() {
                 <div className="flex justify-center text-neutral-600">
                   <Sparkles className="w-5 h-5 animate-pulse" />
                 </div>
-                <h1 className="text-6xl sm:text-7xl font-serif text-neutral-900 dark:text-neutral-100 tracking-widest font-extralight select-none leading-none">
+                <h1 className="text-6xl sm:text-7xl font-sans text-neutral-900 dark:text-neutral-100 tracking-widest font-extralight select-none leading-none">
                   404
                 </h1>
                 <div className="w-16 h-[1px] bg-neutral-900/60 mx-auto" />
@@ -45,7 +45,7 @@ export default function NotFound() {
             
             {/* Context branding text */}
             <div className="space-y-3 px-4">
-              <h3 className="text-3xl sm:text-4xl font-serif text-neutral-900 dark:text-white">
+              <h3 className="text-3xl sm:text-4xl font-sans text-neutral-900 dark:text-white">
                 Slipped Past the Curator's Touch
               </h3>
               <p className="text-sm text-stone-700 dark:text-stone-400 leading-relaxed max-w-md mx-auto font-sans">

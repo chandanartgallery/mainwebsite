@@ -32,9 +32,9 @@ export default async function AdminDashboardPage() {
         <div className="min-h-screen flex flex-col items-center justify-center bg-[#0f1117] px-4 text-center">
           <div className="max-w-md w-full border border-[rgba(255,255,255,0.08)] bg-[rgba(22,25,34,0.98)] rounded-2xl p-10 shadow-2xl">
             <div className="w-12 h-12 rounded-full bg-[rgba(185,154,100,0.12)] flex items-center justify-center mx-auto mb-5">
-              <span className="text-[#b99a64] text-xl font-serif">✦</span>
+              <span className="text-[#b99a64] text-xl font-sans">✦</span>
             </div>
-            <h1 className="font-serif text-2xl text-white uppercase tracking-wider mb-2">Access Restricted</h1>
+            <h1 className="font-sans text-2xl text-white uppercase tracking-wider mb-2">Access Restricted</h1>
             <p className="text-xs text-[#7a6a56] leading-relaxed mb-7">
               This control panel is reserved for authorized Chandan Art Gallery administrators only. Please sign in with an admin account.
             </p>

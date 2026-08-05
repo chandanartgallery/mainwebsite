@@ -191,7 +191,7 @@ export default function Navbar() {
                     <p className="text-[0.65rem] font-medium uppercase tracking-[0.18em] text-neutral-400">
                       Browse
                     </p>
-                    <p className="mt-1 font-serif text-[1.05rem] tracking-[-0.02em] text-neutral-950 dark:text-white">
+                    <p className="mt-1 font-sans text-[1.05rem] tracking-[-0.02em] text-neutral-950 dark:text-white">
                       Collections
                     </p>
                   </div>
@@ -203,7 +203,7 @@ export default function Navbar() {
                         role="menuitem"
                         className="group/item flex items-start gap-3 rounded-xl px-3 py-2.5 transition hover:bg-neutral-100 dark:hover:bg-white/10"
                       >
-                        <span className="mt-0.5 w-5 shrink-0 font-serif text-[0.7rem] tabular-nums text-neutral-400 transition group-hover/item:text-neutral-600 dark:text-neutral-500 dark:group-hover/item:text-neutral-300">
+                        <span className="mt-0.5 w-5 shrink-0 font-sans text-[0.7rem] tabular-nums text-neutral-400 transition group-hover/item:text-neutral-600 dark:text-neutral-500 dark:group-hover/item:text-neutral-300">
                           {String(i + 1).padStart(2, "0")}
                         </span>
                         <span className="min-w-0 flex-1">
@@ -419,7 +419,7 @@ export default function Navbar() {
                   <Link
                     href="/shop"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="px-2 py-3 font-serif text-xl text-neutral-900 dark:text-neutral-100"
+                    className="px-2 py-3 font-sans text-xl text-neutral-900 dark:text-neutral-100"
                   >
                     Shop all
                   </Link>

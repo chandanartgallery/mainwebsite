@@ -89,7 +89,7 @@ export default function SignupPage() {
         <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-[12px] bg-neutral-900 text-neutral-100 dark:bg-neutral-100 dark:text-neutral-900">
           <UserPlus className="h-5 w-5" />
         </div>
-        <h1 className="text-center text-4xl font-serif tracking-tight text-neutral-900 dark:text-neutral-100">Create your account</h1>
+        <h1 className="text-center text-4xl font-sans tracking-tight text-neutral-900 dark:text-neutral-100">Create your account</h1>
         <p className="mt-2 text-center text-xs tracking-widest text-stone-600 dark:text-stone-400 uppercase">
           Save wishlist, inquiries, and order context
         </p>

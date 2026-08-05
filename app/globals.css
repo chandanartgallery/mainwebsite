@@ -13,13 +13,14 @@
   --color-luxury-offwhite: #fafafa;
   --color-luxury-walnut: #404040;
 
-  --font-serif: var(--font-poppins), Poppins, ui-sans-serif, system-ui, sans-serif;
-  --font-sans: var(--font-poppins), Poppins, ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-poppins), "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-poppins), "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 :root {
-  --font-serif: var(--font-poppins);
-  --font-sans: var(--font-poppins);
+  --font-sans: var(--font-poppins), "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-poppins), "Poppins", ui-sans-serif, system-ui, sans-serif;
   --text-primary: #141414;
   --text-secondary: #4a4a4a;
   --text-muted: #737373;
@@ -310,15 +311,16 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.2;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+  font-family: var(--font-sans), sans-serif;
   color: var(--text-muted);
   font-weight: 600;
 }
 
 .lux-title {
-  font-family: var(--font-serif), serif;
+  font-family: var(--font-sans), sans-serif;
   font-size: clamp(2.5rem, 5vw, 4.5rem);
   line-height: 1.05;
-  font-weight: 500;
+  font-weight: 600;
   color: inherit;
   text-wrap: balance;
 }
@@ -363,7 +365,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .lux-section-title {
-  font-family: var(--font-serif), serif;
+  font-family: var(--font-sans), sans-serif;
   font-size: clamp(1.75rem, 2.8vw, 2.75rem);
   line-height: 1.15;
   font-weight: 500;

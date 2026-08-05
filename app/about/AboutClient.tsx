@@ -70,7 +70,7 @@ export default function AboutClient() {
           to={{ opacity: 1, y: 0 }}
           threshold={0.05}
           textAlign="left"
-          className="mt-5 max-w-4xl !block font-serif text-[clamp(2.4rem,5.5vw,4.5rem)] font-medium leading-[1.02] tracking-[-0.02em] text-neutral-900 dark:text-white"
+          className="mt-5 max-w-4xl !block font-sans text-[clamp(2.4rem,5.5vw,4.5rem)] font-medium leading-[1.02] tracking-[-0.02em] text-neutral-900 dark:text-white"
         />
         <FadeContent delay={150} className="mt-6 max-w-xl">
           <p className="text-base leading-7 text-neutral-500">
@@ -86,7 +86,7 @@ export default function AboutClient() {
           bend={2.2}
           textColor="#171717"
           borderRadius={0.02}
-          font="500 20px Georgia, serif"
+          font="500 20px Poppins, ui-sans-serif, system-ui, sans-serif"
           scrollSpeed={1.6}
         />
       </section>
@@ -108,7 +108,7 @@ export default function AboutClient() {
             enableBlur
             baseRotation={2}
             blurStrength={4}
-            textClassName="font-serif text-3xl leading-snug text-neutral-900 dark:text-white sm:text-4xl"
+            textClassName="font-sans text-3xl leading-snug text-neutral-900 dark:text-white sm:text-4xl"
           >
             From desk portraits to wall-scale compositions, every piece is sized to your space — not
             a warehouse default.
@@ -134,7 +134,7 @@ export default function AboutClient() {
             { to: 5, label: 'Collections', suffix: '' },
           ].map((s) => (
             <div key={s.label} className="text-center">
-              <p className="font-serif text-3xl text-neutral-900 dark:text-white sm:text-5xl">
+              <p className="font-sans text-3xl text-neutral-900 dark:text-white sm:text-5xl">
                 <CountUp to={s.to} duration={2} className="inline" />
                 {s.suffix}
               </p>
@@ -168,7 +168,7 @@ export default function AboutClient() {
             }
             secondContent={
               <div className="flex h-full w-full items-center justify-center bg-neutral-950 p-8 text-center">
-                <p className="font-serif text-2xl text-white">What we make</p>
+                <p className="font-sans text-2xl text-white">What we make</p>
               </div>
             }
             gridSize={8}
@@ -180,7 +180,7 @@ export default function AboutClient() {
         </GlareHover>
 
         <FadeContent className="flex flex-col justify-center space-y-4 text-sm leading-7 text-neutral-600 dark:text-neutral-400">
-          <h3 className="font-serif text-2xl text-neutral-900 dark:text-white">How ordering works</h3>
+          <h3 className="font-sans text-2xl text-neutral-900 dark:text-white">How ordering works</h3>
           <p>
             Pick a piece in the shop, choose options, and send the order note on WhatsApp. A
             specialist reviews size, finish, and shipping before production.
