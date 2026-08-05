@@ -140,7 +140,7 @@ const CurvedLoop: FC<CurvedLoopProps> = ({
           <text
             xmlSpace="preserve"
             className={className ?? 'fill-neutral-800'}
-            style={{ fontFamily: 'var(--font-instrument), Georgia, serif' }}
+            style={{ fontFamily: 'var(--font-poppins), Poppins, sans-serif' }}
           >
             <textPath ref={textPathRef} href={`#${pathId}`} startOffset={offset + 'px'} xmlSpace="preserve">
               {totalText}

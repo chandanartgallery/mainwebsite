@@ -364,18 +364,19 @@ export default function Navbar() {
             {user ? (
               <Link href="/profile" className={iconButton} title="Profile">
                 {user.user_metadata?.avatar_url ? (
-                  <SmartImage
-                    src={user.user_metadata.avatar_url}
-                    alt="Profile"
-                    className="h-7 w-7 rounded-full object-cover"
-                    containerClassName="h-7 w-7 rounded-full"
-                    referrerPolicy="no-referrer"
-                    fallbackLabel="User"
-                  />
+                  <span className="relative block h-7 w-7 overflow-hidden rounded-full ring-1 ring-white/30">
+                    <SmartImage
+                      src={user.user_metadata.avatar_url}
+                      alt="Profile"
+                      className="object-cover"
+                      containerClassName="absolute inset-0 h-full w-full overflow-hidden rounded-full"
+                      referrerPolicy="no-referrer"
+                      fallbackLabel="User"
+                    />
+                  </span>
                 ) : (
                   <User className="h-4 w-4" />
-                )}
-              </Link>
+                )}              </Link>
             ) : (
               <Link href="/login" className={iconButton} title="Sign In">
                 <LogIn className="h-4 w-4" />

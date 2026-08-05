@@ -2,13 +2,23 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { supabase } from '@/lib/supabase/client';
 import { useAuthStore } from '@/store/authStore';
 import { useUIStore } from '@/store/uiStore';
-import { 
-  User, Heart, MessageSquare, LogOut, ArrowRight, 
-  Trash2, Mail, Phone, Calendar, Loader, Sparkles
+import {
+  User,
+  Heart,
+  MessageSquare,
+  LogOut,
+  ArrowLeft,
+  Trash2,
+  Mail,
+  Phone,
+  Calendar,
+  Loader,
+  Sparkles,
+  Camera,
 } from 'lucide-react';
 import Link from 'next/link';
 import Navbar from '@/components/layout/Navbar';
@@ -137,23 +147,21 @@ function ProfileContent() {
 
     try {
       setSaving(true);
-      
-      // Update in Supabase profiles
+
       const { error: profileError } = await supabase
         .from('profiles')
         .update({
           full_name: fullName,
           phone: phone,
           avatar_url: avatarUrl,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('id', user.id);
 
       if (profileError) throw profileError;
 
-      // Update in Auth user metadata
       const { error: authError } = await supabase.auth.updateUser({
-        data: { full_name: fullName, avatar_url: avatarUrl }
+        data: { full_name: fullName, avatar_url: avatarUrl },
       });
 
       if (authError) throw authError;
@@ -169,13 +177,9 @@ function ProfileContent() {
 
   const handleRemoveFromWishlist = async (wishlistId: string) => {
     try {
-      const { error } = await supabase
-        .from('wishlist')
-        .delete()
-        .eq('id', wishlistId);
-
+      const { error } = await supabase.from('wishlist').delete().eq('id', wishlistId);
       if (error) throw error;
-      setWishlist(wishlist.filter(item => item.id !== wishlistId));
+      setWishlist(wishlist.filter((item) => item.id !== wishlistId));
       addToast('Removed from wishlist.', 'success');
     } catch (err: any) {
       addToast(err.message || 'Failed to remove item', 'error');
@@ -188,343 +192,430 @@ function ProfileContent() {
     router.refresh();
   };
 
+  const displayAvatar = avatarUrl || user?.user_metadata?.avatar_url;
+
+  const navBtn = (id: typeof activeTab, label: string, icon: React.ReactNode, count?: number) => (
+    <button
+      type="button"
+      onClick={() => setActiveTab(id)}
+      className={`flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-left text-sm font-medium transition ${
+        activeTab === id
+          ? 'bg-neutral-950 text-white dark:bg-white dark:text-neutral-950'
+          : 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-white/5'
+      }`}
+    >
+      {icon}
+      <span className="flex-1">{label}</span>
+      {typeof count === 'number' && (
+        <span
+          className={`min-w-5 rounded-full px-1.5 text-center text-[0.65rem] font-semibold ${
+            activeTab === id
+              ? 'bg-white/20 text-white dark:bg-neutral-950/10 dark:text-neutral-950'
+              : 'bg-neutral-100 text-neutral-500 dark:bg-white/10 dark:text-neutral-400'
+          }`}
+        >
+          {count}
+        </span>
+      )}
+    </button>
+  );
+
   if (loading || !user) {
     return (
-      <div className="flex-1 flex flex-col justify-center items-center min-h-[60vh] bg-neutral-50 dark:bg-neutral-950 text-gray-500">
-        <Loader className="w-8 h-8 animate-spin text-neutral-600 mb-2" />
-        <span className="text-sm tracking-widest uppercase">Loading Profile...</span>
+      <div className="flex min-h-[60vh] flex-1 flex-col items-center justify-center bg-[#f7f7f5] text-neutral-500 dark:bg-neutral-950">
+        <Loader className="mb-3 h-6 w-6 animate-spin" />
+        <span className="text-xs font-medium uppercase tracking-[0.16em]">Loading profile</span>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-neutral-50 dark:bg-neutral-950">
+    <div className="flex min-h-screen flex-col bg-[#f7f7f5] dark:bg-neutral-950">
       <Navbar />
 
-      <main className="lux-container flex-grow pt-24 pb-20 w-full">
-        <Link 
-        href="/" 
-        className="inline-flex items-center text-xs tracking-wider text-stone-600 hover:text-neutral-600 transition-colors duration-200 mb-8 uppercase"
-      >
-        <ArrowRight className="w-3.5 h-3.5 mr-1 rotate-180" /> Back to Home
-      </Link>
+      <main className="mx-auto w-full max-w-[1280px] flex-grow px-5 pb-20 pt-28 sm:px-8 lg:px-12">
+        <Link
+          href="/"
+          className="mb-8 inline-flex items-center gap-1.5 text-[0.72rem] font-medium uppercase tracking-[0.12em] text-neutral-500 transition hover:text-neutral-950 dark:hover:text-white"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" /> Back to home
+        </Link>
 
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* Sidebar */}
-        <div className="w-full lg:w-1/4">
-          <div className="lux-card rounded-[22px] p-6">
-            <div className="flex flex-col items-center text-center">
-              {(avatarUrl || user.user_metadata?.avatar_url) ? (
-                <div className="w-20 h-20 rounded-[12px] overflow-hidden mb-4 border border-neutral-300/30 hover:border-neutral-300 transition-colors duration-300">
-                  <img 
-                    src={avatarUrl || user.user_metadata.avatar_url} 
-                    alt="Profile" 
-                    className="w-full h-full object-cover"
+        <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-8">
+          {/* Sidebar */}
+          <aside className="h-fit border border-neutral-200/80 bg-white/80 p-5 backdrop-blur-xl dark:border-neutral-800 dark:bg-neutral-900/70">
+            <div className="flex items-center gap-3 border-b border-neutral-100 pb-5 dark:border-neutral-800">
+              <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl bg-neutral-100 ring-1 ring-neutral-200 dark:bg-neutral-800 dark:ring-neutral-700">
+                {displayAvatar ? (
+                  <img
+                    src={displayAvatar}
+                    alt=""
+                    className="h-full w-full object-cover"
                     referrerPolicy="no-referrer"
                   />
-                </div>
-              ) : (
-                <div className="w-20 h-20 rounded-[12px] bg-neutral-100 dark:bg-zinc-800 flex items-center justify-center text-neutral-800 dark:text-neutral-100 text-2xl font-semibold mb-4 border border-neutral-300/30">
-                  {fullName ? fullName.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase()}
-                </div>
-              )}
-              <h3 className="font-serif text-lg text-neutral-900 dark:text-neutral-100">{fullName || 'User'}</h3>
-              <p className="text-xs text-gray-400 mt-1 mb-2">{user.email}</p>
-              {role === 'admin' && (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-[12px] text-xs font-semibold bg-neutral-900/20 text-neutral-700 border border-neutral-300/30 uppercase tracking-widest">
-                  Admin
-                </span>
-              )}
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center text-lg font-semibold text-neutral-500">
+                    {(fullName || user.email || 'U').charAt(0).toUpperCase()}
+                  </div>
+                )}
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-[0.95rem] font-semibold tracking-tight text-neutral-950 dark:text-white">
+                  {fullName || 'User'}
+                </p>
+                <p className="mt-0.5 truncate text-[0.7rem] text-neutral-500">{user.email}</p>
+                {role === 'admin' && (
+                  <span className="mt-2 inline-flex rounded-md bg-neutral-950 px-1.5 py-0.5 text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-white dark:bg-white dark:text-neutral-950">
+                    Admin
+                  </span>
+                )}
+              </div>
             </div>
 
-            <div className="mt-8 space-y-2">
-              <button
-                onClick={() => setActiveTab('profile')}
-                className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-[12px] transition-all duration-200 cursor-pointer ${
-                  activeTab === 'profile'
-                    ? 'bg-luxury-black text-white dark:bg-neutral-900 dark:text-neutral-900'
-                    : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-zinc-800/40'
-                }`}
-              >
-                <User className="w-4 h-4 mr-3" />
-                Profile Details
-              </button>
-              <button
-                onClick={() => setActiveTab('wishlist')}
-                className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-[12px] transition-all duration-200 cursor-pointer ${
-                  activeTab === 'wishlist'
-                    ? 'bg-luxury-black text-white dark:bg-neutral-900 dark:text-neutral-900'
-                    : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-zinc-800/40'
-                }`}
-              >
-                <Heart className="w-4 h-4 mr-3" />
-                Wishlist ({wishlist.length})
-              </button>
-              <button
-                onClick={() => setActiveTab('inquiries')}
-                className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-[12px] transition-all duration-200 cursor-pointer ${
-                  activeTab === 'inquiries'
-                    ? 'bg-luxury-black text-white dark:bg-neutral-900 dark:text-neutral-900'
-                    : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-zinc-800/40'
-                }`}
-              >
-                <MessageSquare className="w-4 h-4 mr-3" />
-                Inquiries ({inquiries.length})
-              </button>
+            <nav className="mt-4 space-y-1">
+              {navBtn('profile', 'Profile details', <User className="h-4 w-4 shrink-0" />)}
+              {navBtn('wishlist', 'Wishlist', <Heart className="h-4 w-4 shrink-0" />, wishlist.length)}
+              {navBtn(
+                'inquiries',
+                'Inquiries',
+                <MessageSquare className="h-4 w-4 shrink-0" />,
+                inquiries.length,
+              )}
+            </nav>
 
-              {role === 'admin' && (
-                <Link
-                  href="/admin"
-                  className="w-full flex items-center px-4 py-3 text-sm font-medium rounded-[12px] text-neutral-600 hover:bg-neutral-900/10 transition-all duration-200 mt-4 border border-dashed border-neutral-300/50"
+            {role === 'admin' && (
+              <Link
+                href="/admin"
+                className="mt-4 flex w-full items-center gap-3 rounded-xl border border-dashed border-neutral-300 px-3.5 py-2.5 text-sm font-medium text-neutral-600 transition hover:border-neutral-400 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-white/5"
+              >
+                <Sparkles className="h-4 w-4 shrink-0" />
+                Admin dashboard
+              </Link>
+            )}
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="mt-3 flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
+            >
+              <LogOut className="h-4 w-4 shrink-0" />
+              Sign out
+            </button>
+          </aside>
+
+          {/* Main */}
+          <section className="min-h-[28rem] border border-neutral-200/80 bg-white/80 p-5 backdrop-blur-xl dark:border-neutral-800 dark:bg-neutral-900/70 sm:p-8">
+            <AnimatePresence mode="wait">
+              {activeTab === 'profile' && (
+                <motion.div
+                  key="profile"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.2 }}
                 >
-                  <Sparkles className="w-4 h-4 mr-3" />
-                  Admin Dashboard
-                </Link>
-              )}
-
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center px-4 py-3 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-[12px] transition-all duration-200 mt-8 cursor-pointer"
-              >
-                <LogOut className="w-4 h-4 mr-3" />
-                Sign Out
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Content Area */}
-        <div className="w-full lg:w-3/4">
-          <div className="lux-card rounded-[22px] p-5 sm:p-8 min-h-[50vh]">
-            
-            {activeTab === 'profile' && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-                <div className="flex justify-between items-center pb-4 border-b border-gray-100 dark:border-zinc-800">
-                  <h2 className="text-2xl font-serif text-neutral-900 dark:text-neutral-100">Profile Details</h2>
-                  {!editingProfile && (
-                    <button 
-                      onClick={() => setEditingProfile(true)}
-                      className="text-xs font-semibold text-neutral-600 hover:text-neutral-700 transition-colors duration-200 cursor-pointer uppercase tracking-wider"
-                    >
-                      Edit Profile
-                    </button>
-                  )}
-                </div>
-
-                {editingProfile ? (
-                  <form onSubmit={handleUpdateProfile} className="space-y-4 max-w-md">
-                    <div className="pb-2">
-                      <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Profile Photo</label>
-                      <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 rounded-[12px] overflow-hidden border border-neutral-300/30 bg-zinc-100 dark:bg-zinc-800 flex-shrink-0 relative">
-                          {avatarUrl ? (
-                            <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-neutral-900/20 text-neutral-600 font-bold uppercase text-xs">
-                              {fullName ? fullName.charAt(0).toUpperCase() : 'U'}
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleAvatarUpload}
-                            disabled={uploadingAvatar}
-                            className="text-xs text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-[8px] file:border-0 file:text-xs file:font-semibold file:bg-neutral-900/15 file:text-neutral-600 hover:file:bg-neutral-900/20 file:cursor-pointer"
-                          />
-                          {uploadingAvatar && <Loader className="w-4 h-4 animate-spin text-neutral-600" />}
-                        </div>
-                      </div>
-                    </div>
+                  <div className="mb-6 flex items-center justify-between border-b border-neutral-100 pb-4 dark:border-neutral-800">
                     <div>
-                      <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider">Full Name</label>
-                      <input
-                        type="text"
-                        required
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        className="lux-input mt-1 block w-full px-4 py-3 rounded-[12px] text-sm"
-                      />
+                      <p className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-neutral-400">
+                        Account
+                      </p>
+                      <h1 className="mt-1 text-2xl font-semibold tracking-tight text-neutral-950 dark:text-white">
+                        Profile details
+                      </h1>
                     </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider">Phone Number</label>
-                      <input
-                        type="text"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        className="lux-input mt-1 block w-full px-4 py-3 rounded-[12px] text-sm"
-                        placeholder="+91 XXXXX XXXXX"
-                      />
-                    </div>
-                    <div className="flex space-x-2 pt-2">
-                      <button
-                        type="submit"
-                        disabled={saving}
-                        className="lux-button lux-button-primary disabled:opacity-50"
-                      >
-                        {saving ? 'Saving...' : 'Save Changes'}
-                      </button>
+                    {!editingProfile && (
                       <button
                         type="button"
-                        onClick={() => setEditingProfile(false)}
-                        className="lux-button lux-button-secondary"
+                        onClick={() => setEditingProfile(true)}
+                        className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-neutral-500 transition hover:text-neutral-950 dark:hover:text-white"
                       >
-                        Cancel
+                        Edit profile
                       </button>
-                    </div>
-                  </form>
-                ) : (
-                  <div className="space-y-4 max-w-md">
-                    <div className="flex items-center space-x-4">
-                      <User className="w-5 h-5 text-neutral-600 flex-shrink-0" />
-                      <div>
-                        <p className="text-[10px] text-gray-400 uppercase tracking-wider">Full Name</p>
-                        <p className="text-sm font-medium text-neutral-900 dark:text-white">{fullName || 'Not specified'}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                      <Mail className="w-5 h-5 text-neutral-600 flex-shrink-0" />
-                      <div>
-                        <p className="text-[10px] text-gray-400 uppercase tracking-wider">Email Address</p>
-                        <p className="text-sm font-medium text-neutral-900 dark:text-white">{user.email}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                      <Phone className="w-5 h-5 text-neutral-600 flex-shrink-0" />
-                      <div>
-                        <p className="text-[10px] text-gray-400 uppercase tracking-wider">Phone Number</p>
-                        <p className="text-sm font-medium text-neutral-900 dark:text-white">{phone || 'Not specified'}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                      <Calendar className="w-5 h-5 text-neutral-600 flex-shrink-0" />
-                      <div>
-                        <p className="text-[10px] text-gray-400 uppercase tracking-wider">Member Since</p>
-                        <p className="text-sm font-medium text-neutral-900 dark:text-white">
-                          {new Date(user.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
-                        </p>
-                      </div>
-                    </div>
+                    )}
                   </div>
-                )}
-              </motion.div>
-            )}
 
-            {activeTab === 'wishlist' && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-                <h2 className="text-2xl font-serif text-neutral-900 dark:text-neutral-100 pb-4 border-b border-gray-100 dark:border-zinc-800">Your Wishlist</h2>
-                
-                {wishlist.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-12 text-center">
-                    <Heart className="w-10 h-10 text-gray-300 mb-3" />
-                    <p className="text-sm text-gray-500 font-medium">Your wishlist is empty</p>
-                    <Link href="/shop" className="mt-4 text-xs font-semibold text-neutral-600 hover:text-neutral-700 uppercase tracking-wider">
-                      Explore Products
-                    </Link>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {wishlist.map((item) => {
-                      const product = item.products;
-                      const image = product?.product_images?.[0]?.image_url || 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=300';
-                      return (
-                        <div key={item.id} className="lux-panel flex overflow-hidden rounded-[18px] group transition-all duration-300">
-                          <div className="w-24 h-24 flex-shrink-0 bg-gray-50 relative overflow-hidden">
-                            <SmartImage
-                              src={image}
-                              fallbackSrc="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=300"
-                              alt={product?.name || 'Wishlist item'}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                              containerClassName="w-full h-full"
-                              fallbackLabel="No image available"
-                            />
+                  {editingProfile ? (
+                    <form onSubmit={handleUpdateProfile} className="max-w-md space-y-5">
+                      <div>
+                        <label className="mb-2 block text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-neutral-400">
+                          Profile photo
+                        </label>
+                        <div className="flex items-center gap-4">
+                          <div className="relative h-14 w-14 overflow-hidden rounded-2xl bg-neutral-100 ring-1 ring-neutral-200 dark:bg-neutral-800 dark:ring-neutral-700">
+                            {avatarUrl ? (
+                              <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
+                            ) : (
+                              <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-neutral-500">
+                                {(fullName || 'U').charAt(0).toUpperCase()}
+                              </div>
+                            )}
+                            {uploadingAvatar && (
+                              <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                                <Loader className="h-4 w-4 animate-spin text-white" />
+                              </div>
+                            )}
                           </div>
-                          <div className="flex-1 p-3 flex flex-col justify-between">
-                            <div>
-                              <h4 className="font-serif text-sm text-neutral-900 dark:text-white line-clamp-1">{product?.name}</h4>
-                              <p className="text-xs font-semibold text-neutral-600 mt-1">₹{product?.price ? product.price.toLocaleString() : 'Price on request'}</p>
-                            </div>
-                            <div className="flex justify-between items-center mt-2">
-                              <Link 
-                                href={`/product/${product?.slug}`}
-                                className="text-[10px] font-semibold text-neutral-900 dark:text-neutral-100 uppercase tracking-wider hover:underline"
-                              >
-                                View Details
-                              </Link>
-                              <button 
-                                onClick={() => handleRemoveFromWishlist(item.id)}
-                                className="text-red-400 hover:text-red-600 p-1 cursor-pointer"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
+                          <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-2 text-xs font-medium text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200 dark:hover:bg-neutral-800">
+                            <Camera className="h-3.5 w-3.5" />
+                            Upload
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleAvatarUpload}
+                              disabled={uploadingAvatar}
+                              className="hidden"
+                            />
+                          </label>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="mb-1.5 block text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-neutral-400">
+                          Full name
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={fullName}
+                          onChange={(e) => setFullName(e.target.value)}
+                          className="h-11 w-full border border-neutral-200 bg-transparent px-3.5 text-sm outline-none transition focus:border-neutral-400 dark:border-neutral-700 dark:focus:border-neutral-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="mb-1.5 block text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-neutral-400">
+                          Phone number
+                        </label>
+                        <input
+                          type="text"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          placeholder="+91 XXXXX XXXXX"
+                          className="h-11 w-full border border-neutral-200 bg-transparent px-3.5 text-sm outline-none transition focus:border-neutral-400 dark:border-neutral-700 dark:focus:border-neutral-500"
+                        />
+                      </div>
+
+                      <div className="flex gap-2 pt-1">
+                        <button
+                          type="submit"
+                          disabled={saving}
+                          className="inline-flex h-11 items-center justify-center bg-neutral-950 px-5 text-xs font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-neutral-800 disabled:opacity-50 dark:bg-white dark:text-neutral-950"
+                        >
+                          {saving ? 'Saving…' : 'Save changes'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setEditingProfile(false)}
+                          className="inline-flex h-11 items-center justify-center border border-neutral-200 px-5 text-xs font-semibold uppercase tracking-[0.12em] text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-200 dark:hover:bg-white/5"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </form>
+                  ) : (
+                    <div className="grid max-w-xl gap-3 sm:grid-cols-2">
+                      {[
+                        { icon: User, label: 'Full name', value: fullName || 'Not specified' },
+                        { icon: Mail, label: 'Email address', value: user.email || '—' },
+                        { icon: Phone, label: 'Phone number', value: phone || 'Not specified' },
+                        {
+                          icon: Calendar,
+                          label: 'Member since',
+                          value: new Date(user.created_at).toLocaleDateString(undefined, {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                          }),
+                        },
+                      ].map((row) => (
+                        <div
+                          key={row.label}
+                          className="flex items-start gap-3 border border-neutral-100 bg-neutral-50/70 p-4 dark:border-neutral-800 dark:bg-neutral-950/40"
+                        >
+                          <row.icon className="mt-0.5 h-4 w-4 shrink-0 text-neutral-400" />
+                          <div className="min-w-0">
+                            <p className="text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-neutral-400">
+                              {row.label}
+                            </p>
+                            <p className="mt-1 truncate text-sm font-medium text-neutral-900 dark:text-neutral-100">
+                              {row.value}
+                            </p>
                           </div>
                         </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </motion.div>
-            )}
+                      ))}
+                    </div>
+                  )}
+                </motion.div>
+              )}
 
-            {activeTab === 'inquiries' && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-                <h2 className="text-2xl font-serif text-neutral-900 dark:text-neutral-100 pb-4 border-b border-gray-100 dark:border-zinc-800">Inquiry History</h2>
-                
-                {inquiries.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-12 text-center">
-                    <MessageSquare className="w-10 h-10 text-gray-300 mb-3" />
-                    <p className="text-sm text-gray-500 font-medium">You haven't made any inquiries yet</p>
-                    <p className="text-xs text-gray-400 mt-1">Products you inquire about via WhatsApp or form will show up here.</p>
+              {activeTab === 'wishlist' && (
+                <motion.div
+                  key="wishlist"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <div className="mb-6 border-b border-neutral-100 pb-4 dark:border-neutral-800">
+                    <p className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-neutral-400">
+                      Saved
+                    </p>
+                    <h1 className="mt-1 text-2xl font-semibold tracking-tight text-neutral-950 dark:text-white">
+                      Wishlist
+                    </h1>
                   </div>
-                ) : (
-                  <div className="space-y-4">
-                    {inquiries.map((inquiry) => (
-                      <div key={inquiry.id} className="lux-panel rounded-[18px] p-4 space-y-2">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <span className={`inline-flex items-center px-2 py-0.5 rounded-[12px] text-[10px] font-semibold uppercase tracking-wider ${
-                              inquiry.type === 'whatsapp' 
-                                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400' 
-                                : 'bg-blue-50 text-blue-700 dark:bg-blue-950/20 dark:text-blue-400'
-                            }`}>
+
+                  {wishlist.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-16 text-center">
+                      <Heart className="mb-3 h-8 w-8 text-neutral-300" />
+                      <p className="text-sm font-medium text-neutral-600 dark:text-neutral-300">
+                        Your wishlist is empty
+                      </p>
+                      <Link
+                        href="/shop"
+                        className="mt-4 text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-neutral-950 underline-offset-4 hover:underline dark:text-white"
+                      >
+                        Explore products
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {wishlist.map((item) => {
+                        const product = item.products;
+                        const image =
+                          product?.product_images?.[0]?.image_url ||
+                          'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=300';
+                        return (
+                          <div
+                            key={item.id}
+                            className="group flex overflow-hidden border border-neutral-200 bg-white transition hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-950"
+                          >
+                            <div className="relative h-28 w-24 shrink-0 overflow-hidden bg-neutral-100 dark:bg-neutral-900">
+                              <SmartImage
+                                src={image}
+                                fallbackSrc="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=300"
+                                alt={product?.name || 'Wishlist item'}
+                                className="object-cover transition duration-500 group-hover:scale-105"
+                                containerClassName="absolute inset-0 h-full w-full"
+                                fallbackLabel="No image"
+                              />
+                            </div>
+                            <div className="flex flex-1 flex-col justify-between p-3.5">
+                              <div>
+                                <h3 className="line-clamp-1 text-sm font-semibold text-neutral-950 dark:text-white">
+                                  {product?.name}
+                                </h3>
+                                <p className="mt-1 text-xs text-neutral-500">
+                                  {product?.price
+                                    ? `₹${product.price.toLocaleString()}`
+                                    : 'Price on request'}
+                                </p>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <Link
+                                  href={`/product/${product?.slug}`}
+                                  className="text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-neutral-700 hover:text-neutral-950 dark:text-neutral-300 dark:hover:text-white"
+                                >
+                                  View
+                                </Link>
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveFromWishlist(item.id)}
+                                  className="p-1 text-neutral-400 transition hover:text-red-500"
+                                  aria-label="Remove from wishlist"
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </motion.div>
+              )}
+
+              {activeTab === 'inquiries' && (
+                <motion.div
+                  key="inquiries"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <div className="mb-6 border-b border-neutral-100 pb-4 dark:border-neutral-800">
+                    <p className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-neutral-400">
+                      History
+                    </p>
+                    <h1 className="mt-1 text-2xl font-semibold tracking-tight text-neutral-950 dark:text-white">
+                      Inquiries
+                    </h1>
+                  </div>
+
+                  {inquiries.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-16 text-center">
+                      <MessageSquare className="mb-3 h-8 w-8 text-neutral-300" />
+                      <p className="text-sm font-medium text-neutral-600 dark:text-neutral-300">
+                        No inquiries yet
+                      </p>
+                      <p className="mt-1 max-w-sm text-xs text-neutral-400">
+                        WhatsApp and contact form requests will appear here.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {inquiries.map((inquiry) => (
+                        <div
+                          key={inquiry.id}
+                          className="border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-950"
+                        >
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <span className="rounded-md bg-neutral-100 px-2 py-0.5 text-[0.62rem] font-semibold uppercase tracking-[0.1em] text-neutral-600 dark:bg-white/10 dark:text-neutral-300">
                               {inquiry.type}
                             </span>
+                            <span
+                              className={`rounded-md px-2 py-0.5 text-[0.62rem] font-semibold uppercase tracking-[0.1em] ${
+                                inquiry.status === 'pending'
+                                  ? 'bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300'
+                                  : inquiry.status === 'replied'
+                                    ? 'bg-sky-50 text-sky-800 dark:bg-sky-950/40 dark:text-sky-300'
+                                    : 'bg-neutral-100 text-neutral-600 dark:bg-white/10 dark:text-neutral-400'
+                              }`}
+                            >
+                              {inquiry.status}
+                            </span>
                           </div>
-                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-[12px] uppercase ${
-                            inquiry.status === 'pending'
-                              ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/20 dark:text-amber-400'
-                              : inquiry.status === 'replied'
-                              ? 'bg-blue-100 text-blue-800 dark:bg-blue-950/20 dark:text-blue-400'
-                              : 'bg-gray-100 text-gray-800 dark:bg-zinc-800 dark:text-gray-400'
-                          }`}>
-                            {inquiry.status}
-                          </span>
-                        </div>
-                        
-                        {inquiry.products && (
-                          <div className="text-xs font-semibold text-gray-400">
-                            Product: <Link href={`/product/${inquiry.products.slug}`} className="text-neutral-600 hover:underline">{inquiry.products.name}</Link>
-                          </div>
-                        )}
-                        
-                        <p className="text-sm text-gray-600 dark:text-gray-300 italic">"{inquiry.message}"</p>
-                        
-                        <div className="text-[10px] text-gray-400 pt-2 border-t border-gray-50 dark:border-zinc-800 flex justify-between">
-                          <span>Inquiry ID: {inquiry.id.slice(0, 8)}...</span>
-                          <span>{new Date(inquiry.created_at).toLocaleDateString()}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </motion.div>
-            )}
 
-          </div>
+                          {inquiry.products && (
+                            <p className="mt-3 text-xs text-neutral-500">
+                              Product:{' '}
+                              <Link
+                                href={`/product/${inquiry.products.slug}`}
+                                className="font-medium text-neutral-800 hover:underline dark:text-neutral-200"
+                              >
+                                {inquiry.products.name}
+                              </Link>
+                            </p>
+                          )}
+
+                          <p className="mt-2 text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
+                            {inquiry.message}
+                          </p>
+
+                          <div className="mt-3 flex justify-between border-t border-neutral-100 pt-2 text-[0.65rem] text-neutral-400 dark:border-neutral-800">
+                            <span>ID {inquiry.id.slice(0, 8)}</span>
+                            <span>{new Date(inquiry.created_at).toLocaleDateString()}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </section>
         </div>
-      </div>
       </main>
 
       <Footer />
@@ -534,12 +625,14 @@ function ProfileContent() {
 
 export default function ProfilePage() {
   return (
-    <Suspense fallback={
-      <div className="flex-1 flex flex-col justify-center items-center min-h-[60vh] bg-neutral-50 dark:bg-neutral-950 text-gray-500">
-        <Loader className="w-8 h-8 animate-spin text-neutral-600 mb-2" />
-        <span className="text-sm tracking-widest uppercase">Loading Profile...</span>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="flex min-h-[60vh] flex-1 flex-col items-center justify-center bg-[#f7f7f5] text-neutral-500 dark:bg-neutral-950">
+          <Loader className="mb-3 h-6 w-6 animate-spin" />
+          <span className="text-xs font-medium uppercase tracking-[0.16em]">Loading profile</span>
+        </div>
+      }
+    >
       <ProfileContent />
     </Suspense>
   );

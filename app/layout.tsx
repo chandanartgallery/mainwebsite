@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Manrope, Instrument_Serif, Geist } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 import "lenis/dist/lenis.css";
 import AuthProvider from "@/components/providers/AuthProvider";
@@ -8,19 +8,10 @@ import ToastContainer from "@/components/ui/Toast";
 import DevAdminButton from "@/components/DevAdminButton";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
-
-const instrument = Instrument_Serif({
+const poppins = Poppins({
   subsets: ["latin"],
-  variable: "--font-instrument",
-  weight: "400",
-  display: "swap",
-});
-
-const manrope = Manrope({
-  subsets: ["latin"],
-  variable: "--font-manrope",
-  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-poppins",
+  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -43,7 +34,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn("h-full", "antialiased", instrument.variable, manrope.variable, "font-sans", geist.variable)}
+      className={cn("h-full", "antialiased", poppins.variable, "font-sans")}
       suppressHydrationWarning
     >
       <head>

@@ -13,13 +13,13 @@
   --color-luxury-offwhite: #fafafa;
   --color-luxury-walnut: #404040;
 
-  --font-serif: var(--font-instrument), "Instrument Serif", Georgia, serif;
-  --font-sans: var(--font-manrope), Manrope, ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-poppins), Poppins, ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-poppins), Poppins, ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
-  --font-serif: var(--font-instrument);
-  --font-sans: var(--font-manrope);
+  --font-serif: var(--font-poppins);
+  --font-sans: var(--font-poppins);
   --text-primary: #141414;
   --text-secondary: #4a4a4a;
   --text-muted: #737373;
@@ -164,9 +164,9 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-serif), serif;
-  font-weight: 500;
-  letter-spacing: -0.01em;
+  font-family: var(--font-sans), sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
 ::selection {
@@ -295,7 +295,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .brand-logotype {
-  font-family: var(--font-serif), serif;
+  font-family: var(--font-sans), sans-serif;
   font-weight: 600;
   letter-spacing: -0.02em;
 }
