@@ -60,6 +60,10 @@ export default async function BlogPostPage({ params }: BlogPostProps) {
     notFound();
   }
 
+  const category = Array.isArray(post.category)
+    ? post.category[0] ?? null
+    : post.category;
+
   // Fetch related articles (same category or latest, except this one)
   const { data: related } = await supabase
     .from('blog_posts')
@@ -97,7 +101,7 @@ export default async function BlogPostPage({ params }: BlogPostProps) {
           {/* Header Metadata */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2 text-xs text-neutral-600 font-bold uppercase tracking-widest">
-              <span>{post.category?.name || 'decor inspiration'}</span>
+              <span>{category?.name || 'decor inspiration'}</span>
             </div>
             <h1 className="lux-section-title max-w-5xl">
               {post.title}
