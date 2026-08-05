@@ -138,6 +138,27 @@ export default function Stack({
     }
   });
 
+  // Stable per-card jitter — set only after mount to avoid SSR/client Math.random mismatch
+  const [rotateJitter, setRotateJitter] = useState<Record<number, number>>({});
+
+  useEffect(() => {
+    if (!randomRotation) {
+      setRotateJitter({});
+      return;
+    }
+    setRotateJitter(prev => {
+      const next = { ...prev };
+      let changed = false;
+      for (const card of stack) {
+        if (next[card.id] === undefined) {
+          next[card.id] = Math.random() * 10 - 5;
+          changed = true;
+        }
+      }
+      return changed ? next : prev;
+    });
+  }, [randomRotation, stack]);
+
   useEffect(() => {
     if (cards.length) {
       setStack(cards.map((content, index) => ({ id: index + 1, content })));
@@ -175,7 +196,7 @@ export default function Stack({
       onMouseLeave={() => pauseOnHover && setIsPaused(false)}
     >
       {stack.map((card, index) => {
-        const randomRotate = randomRotation ? Math.random() * 10 - 5 : 0;
+        const randomRotate = rotateJitter[card.id] ?? 0;
         return (
           <CardRotate
             key={card.id}

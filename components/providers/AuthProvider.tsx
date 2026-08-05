@@ -4,31 +4,47 @@ import { useEffect } from 'react';
 import { supabase } from '@/lib/supabase/client';
 import { useAuthStore } from '@/store/authStore';
 
+async function syncSessionCookies(accessToken: string, refreshToken: string) {
+  try {
+    await fetch('/api/auth/session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      }),
+      credentials: 'same-origin',
+    });
+  } catch {
+    // Non-fatal: client session still works via Supabase storage
+  }
+}
+
+async function clearSessionCookies() {
+  try {
+    await fetch('/api/auth/session', {
+      method: 'DELETE',
+      credentials: 'same-origin',
+    });
+  } catch {
+    // ignore
+  }
+}
+
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
   const setAuth = useAuthStore((state) => state.setAuth);
   const setLoading = useAuthStore((state) => state.setLoading);
 
   useEffect(() => {
-    const secureAttr = window.location.protocol === 'https:' ? '; Secure' : '';
-    const setSessionCookies = (accessToken: string, refreshToken: string) => {
-      const commonAttrs = `path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax${secureAttr}`;
-      document.cookie = `sb-access-token=${accessToken}; ${commonAttrs}`;
-      document.cookie = `sb-refresh-token=${refreshToken}; ${commonAttrs}`;
-    };
-    const clearSessionCookies = () => {
-      const commonAttrs = `path=/; max-age=0; SameSite=Lax${secureAttr}`;
-      document.cookie = `sb-access-token=; ${commonAttrs}`;
-      document.cookie = `sb-refresh-token=; ${commonAttrs}`;
-    };
-    // Initial load
     const loadSession = async () => {
       try {
         setLoading(true);
-        const { data: { session } } = await supabase.auth.getSession();
-        
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
         if (session?.user) {
-          setSessionCookies(session.access_token, session.refresh_token);
-          // Fetch role from profile table
+          await syncSessionCookies(session.access_token, session.refresh_token);
           const { data: profile } = await supabase
             .from('profiles')
             .select('role')
@@ -37,12 +53,12 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
           setAuth(session.user, (profile?.role as 'user' | 'admin') || 'user');
         } else {
-          clearSessionCookies();
+          await clearSessionCookies();
           setAuth(null, null);
         }
       } catch (error) {
         console.error('Error loading session:', error);
-        clearSessionCookies();
+        await clearSessionCookies();
         setAuth(null, null);
       } finally {
         setLoading(false);
@@ -51,12 +67,12 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
     loadSession();
 
-    // Listen to changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
-        setSessionCookies(session.access_token, session.refresh_token);
+        await syncSessionCookies(session.access_token, session.refresh_token);
 
-        // Fetch user profile role
         const { data: profile } = await supabase
           .from('profiles')
           .select('role')
@@ -65,8 +81,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
         setAuth(session.user, (profile?.role as 'user' | 'admin') || 'user');
       } else if (event === 'SIGNED_OUT' || event === 'INITIAL_SESSION') {
-        // Clear cookies only on explicit sign out or if initial load has no session
-        clearSessionCookies();
+        await clearSessionCookies();
         setAuth(null, null);
       }
     });

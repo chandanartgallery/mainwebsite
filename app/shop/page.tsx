@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 import { useCartStore } from '@/store/cartStore';
@@ -18,135 +18,171 @@ import { parseMaterials, parseColors, DEFAULT_MATERIALS, DEFAULT_COLORS } from '
 import SmartImage from '@/components/ui/SmartImage';
 import SplitText from '@/components/SplitText';
 
+type ShopProduct = {
+  id: string;
+  name: string;
+  slug: string;
+  price: number | null;
+  short_description: string | null;
+  dimensions: string | null;
+  material: string | null;
+  color: string | null;
+  is_customizable?: boolean;
+  is_featured?: boolean;
+  is_trending?: boolean;
+  is_best_seller?: boolean;
+  category_id: string | null;
+  created_at?: string;
+  product_images?: { image_url: string; is_primary?: boolean; display_order?: number }[];
+};
+
 function ShopContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuthStore();
   const addItem = useCartStore((state) => state.addItem);
 
-  // States
-  const [products, setProducts] = useState<any[]>([]);
-  const [catalogProducts, setCatalogProducts] = useState<any[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
+  const [catalogProducts, setCatalogProducts] = useState<ShopProduct[]>([]);
+  const [categories, setCategories] = useState<{ id: string; name: string; slug: string }[]>([]);
   const [wishlistIds, setWishlistIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
-  // Filter States
   const [selectedCategory, setSelectedCategory] = useState<string>(searchParams.get('category') || 'all');
   const [searchQuery, setSearchQuery] = useState<string>(searchParams.get('search') || '');
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [priceRange, setPriceRange] = useState<number>(10000);
   const [selectedMaterial, setSelectedMaterial] = useState<string>('all');
   const [selectedColor, setSelectedColor] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('featured');
 
-  // Load categories and wishlist
+  // Debounce search so we don't thrash the UI on every keystroke
   useEffect(() => {
-    fetchCategories();
+    const t = window.setTimeout(() => setDebouncedSearch(searchQuery.trim()), 200);
+    return () => window.clearTimeout(t);
+  }, [searchQuery]);
+
+  // One-shot catalog load (categories + products) — filters run client-side after this
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadCatalog = async () => {
+      try {
+        setLoading(true);
+        const [catsRes, prodsRes] = await Promise.all([
+          supabase.from('categories').select('id, name, slug').order('name', { ascending: true }),
+          supabase
+            .from('products')
+            .select(
+              `
+              id,
+              name,
+              slug,
+              price,
+              short_description,
+              dimensions,
+              material,
+              color,
+              is_customizable,
+              is_featured,
+              is_trending,
+              is_best_seller,
+              category_id,
+              created_at,
+              product_images (
+                image_url,
+                is_primary,
+                display_order
+              )
+            `
+            )
+            .order('is_featured', { ascending: false })
+            .limit(120),
+        ]);
+
+        if (cancelled) return;
+        if (catsRes.error) throw catsRes.error;
+        if (prodsRes.error) throw prodsRes.error;
+
+        setCategories(catsRes.data || []);
+        setCatalogProducts((prodsRes.data as ShopProduct[]) || []);
+      } catch (error) {
+        console.error('Error fetching shop catalog:', error);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    loadCatalog();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
     if (user) {
-      fetchWishlist();
+      supabase
+        .from('wishlist')
+        .select('product_id')
+        .eq('user_id', user.id)
+        .then(({ data }) => {
+          if (data) setWishlistIds(data.map((item) => item.product_id));
+        });
+    } else {
+      setWishlistIds([]);
     }
   }, [user]);
 
-  // Sync state with URL params
   useEffect(() => {
     setSelectedCategory(searchParams.get('category') || 'all');
     setSearchQuery(searchParams.get('search') || '');
   }, [searchParams]);
 
-  // Load products when filters change
-  useEffect(() => {
-    fetchProducts();
-  }, [selectedCategory, searchQuery, priceRange, selectedMaterial, selectedColor, sortBy]);
+  const categoryIdBySlug = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const cat of categories) map.set(cat.slug, cat.id);
+    return map;
+  }, [categories]);
 
-  const fetchCategories = async () => {
-    const { data } = await supabase.from('categories').select('*');
-    setCategories(data || []);
-  };
+  const products = useMemo(() => {
+    const q = debouncedSearch.toLowerCase();
+    const categoryId =
+      selectedCategory !== 'all' ? categoryIdBySlug.get(selectedCategory) : undefined;
 
-  const fetchWishlist = async () => {
-    if (!user) return;
-    const { data } = await supabase.from('wishlist').select('product_id').eq('user_id', user.id);
-    if (data) {
-      setWishlistIds(data.map((item) => item.product_id));
-    }
-  };
+    let list = catalogProducts.filter((prod) => {
+      if (categoryId && prod.category_id !== categoryId) return false;
+      if (prod.price != null && Number(prod.price) > priceRange) return false;
+      if (q && !(prod.name || '').toLowerCase().includes(q)) return false;
 
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      let query = supabase
-        .from('products')
-        .select(`
-          id,
-          name,
-          slug,
-          price,
-          short_description,
-          dimensions,
-          material,
-          color,
-          is_customizable,
-          is_featured,
-          is_trending,
-          is_best_seller,
-          product_images (
-            image_url,
-            is_primary
-          )
-        `);
+      const productMaterials = parseMaterials(prod.material).map((m) => m.value);
+      const productColors = parseColors(prod.color).map((c) => c.label);
+      if (selectedMaterial !== 'all' && !productMaterials.includes(selectedMaterial)) return false;
+      if (selectedColor !== 'all' && !productColors.includes(selectedColor)) return false;
+      return true;
+    });
 
-      // Category filter
-      if (selectedCategory !== 'all') {
-        // Resolve category ID first or query direct slug
-        const { data: catData } = await supabase
-          .from('categories')
-          .select('id')
-          .eq('slug', selectedCategory)
-          .single();
-        if (catData) {
-          query = query.eq('category_id', catData.id);
-        }
+    list = [...list].sort((a, b) => {
+      if (sortBy === 'price-low') return Number(a.price || 0) - Number(b.price || 0);
+      if (sortBy === 'price-high') return Number(b.price || 0) - Number(a.price || 0);
+      if (sortBy === 'latest') {
+        return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
       }
+      const af = a.is_featured ? 1 : 0;
+      const bf = b.is_featured ? 1 : 0;
+      return bf - af;
+    });
 
-      // Search query filter
-      if (searchQuery) {
-        query = query.ilike('name', `%${searchQuery}%`);
-      }
-
-      // Price filter
-      query = query.lte('price', priceRange);
-
-      // Sort
-      if (sortBy === 'price-low') {
-        query = query.order('price', { ascending: true });
-      } else if (sortBy === 'price-high') {
-        query = query.order('price', { ascending: false });
-      } else if (sortBy === 'latest') {
-        query = query.order('created_at', { ascending: false });
-      } else {
-        // Default featured sorting
-        query = query.order('is_featured', { ascending: false });
-      }
-
-      const { data, error } = await query;
-      if (error) throw error;
-      const fetchedProducts = data || [];
-      setCatalogProducts(fetchedProducts);
-      const filteredByOptions = fetchedProducts.filter((prod: any) => {
-        const productMaterials = parseMaterials(prod.material).map((m) => m.value);
-        const productColors = parseColors(prod.color).map((c) => c.label);
-        const matchesMaterial = selectedMaterial === 'all' || productMaterials.includes(selectedMaterial);
-        const matchesColor = selectedColor === 'all' || productColors.includes(selectedColor);
-        return matchesMaterial && matchesColor;
-      });
-      setProducts(filteredByOptions);
-    } catch (error) {
-      console.error('Error fetching products:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    return list;
+  }, [
+    catalogProducts,
+    categoryIdBySlug,
+    selectedCategory,
+    debouncedSearch,
+    priceRange,
+    selectedMaterial,
+    selectedColor,
+    sortBy,
+  ]);
 
   const toggleWishlist = async (productId: string) => {
     if (!user) {
@@ -162,11 +198,9 @@ function ShopContent() {
           .delete()
           .eq('user_id', user.id)
           .eq('product_id', productId);
-        setWishlistIds(wishlistIds.filter(id => id !== productId));
+        setWishlistIds(wishlistIds.filter((id) => id !== productId));
       } else {
-        await supabase
-          .from('wishlist')
-          .insert({ user_id: user.id, product_id: productId });
+        await supabase.from('wishlist').insert({ user_id: user.id, product_id: productId });
         setWishlistIds([...wishlistIds, productId]);
       }
     } catch (error) {
@@ -185,13 +219,19 @@ function ShopContent() {
   };
 
   const materialOptions = Array.from(
-    new Set(catalogProducts.flatMap((prod: any) => parseMaterials(prod.material).map((m) => m.value)))
+    new Set(catalogProducts.flatMap((prod) => parseMaterials(prod.material).map((m) => m.value)))
   );
   const colorOptions = Array.from(
-    new Set(catalogProducts.flatMap((prod: any) => parseColors(prod.color).map((c) => c.label)))
+    new Set(catalogProducts.flatMap((prod) => parseColors(prod.color).map((c) => c.label)))
   );
   const availableMaterials = materialOptions.length > 0 ? materialOptions : DEFAULT_MATERIALS.map((m) => m.value);
   const availableColors = colorOptions.length > 0 ? colorOptions : DEFAULT_COLORS.map((c) => c.label);
+
+  const displayCategories = categories.map((cat) =>
+    cat.slug === 'decorative-trays' || cat.slug === 'household'
+      ? { ...cat, name: 'Household' }
+      : cat
+  );
 
   return (
     <div className="min-h-screen flex flex-col bg-neutral-50 dark:bg-neutral-950">
@@ -213,7 +253,7 @@ function ShopContent() {
             className="lux-section-title !block text-neutral-900 dark:text-neutral-50"
           />
           <p className="mt-2 max-w-xl text-sm text-neutral-500">
-            Custom frames, acrylic pieces, canvas prints, and religious art.
+            Custom frames, acrylic, religious art, and household trays.
           </p>
         </div>
 
@@ -285,7 +325,7 @@ function ShopContent() {
                     <span>All</span>
                     {selectedCategory === 'all' && <Check className="w-3 h-3" />}
                   </button>
-                  {categories.map((cat) => (
+                  {displayCategories.map((cat) => (
                     <button
                       key={cat.id}
                       onClick={() => setSelectedCategory(cat.slug)}
@@ -410,7 +450,11 @@ function ShopContent() {
             ) : (
               <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 xl:grid-cols-3">
                 {products.map((prod) => {
-                  const image = prod.product_images?.[0]?.image_url || 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=400';
+                  const image =
+                    [...(prod.product_images || [])]
+                      .sort((a, b) => Number(b.is_primary) - Number(a.is_primary) || (a.display_order || 0) - (b.display_order || 0))
+                      [0]?.image_url ||
+                    'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=400';
                   const isWishlisted = wishlistIds.includes(prod.id);
                   
                   return (
@@ -513,7 +557,7 @@ function ShopContent() {
                     >
                       All Collections
                     </button>
-                    {categories.map((cat) => (
+                    {displayCategories.map((cat) => (
                       <button
                         key={cat.id}
                         onClick={() => { setSelectedCategory(cat.slug); setShowMobileFilters(false); }}

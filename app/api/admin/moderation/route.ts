@@ -1,5 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdmin } from '@/lib/adminAuth';
+import { isUuid } from '@/lib/sanitizeProduct';
+
+const REVIEW_ACTIONS = new Set(['approve', 'reject']);
+const COMMENT_ACTIONS = new Set(['approve', 'reject', 'reply']);
+
+function sanitizeReply(value: unknown): string {
+  if (typeof value !== 'string') return '';
+  return value.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '').trim().slice(0, 2000);
+}
 
 export async function PATCH(request: NextRequest) {
   const auth = await verifyAdmin();
@@ -9,9 +18,17 @@ export async function PATCH(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { type, id, action, reply } = body;
+    const { type, action } = body;
+
+    if (!isUuid(body.id)) {
+      return NextResponse.json({ error: 'Invalid id' }, { status: 400 });
+    }
+    const id = body.id as string;
 
     if (type === 'review') {
+      if (!REVIEW_ACTIONS.has(action)) {
+        return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
+      }
       if (action === 'approve') {
         const { error } = await auth.admin
           .from('reviews')
@@ -26,6 +43,9 @@ export async function PATCH(request: NextRequest) {
     }
 
     if (type === 'comment') {
+      if (!COMMENT_ACTIONS.has(action)) {
+        return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
+      }
       if (action === 'approve') {
         const { error } = await auth.admin
           .from('product_comments')
@@ -35,14 +55,20 @@ export async function PATCH(request: NextRequest) {
       } else if (action === 'reject') {
         const { error } = await auth.admin.from('product_comments').delete().eq('id', id);
         if (error) throw error;
-      } else if (action === 'reply' && reply) {
+      } else if (action === 'reply') {
+        const reply = sanitizeReply(body.reply);
+        if (reply.length < 2) {
+          return NextResponse.json({ error: 'Reply is required' }, { status: 400 });
+        }
         const { data: comment } = await auth.admin
           .from('product_comments')
           .select('product_id')
           .eq('id', id)
           .single();
 
-        if (!comment) throw new Error('Comment not found');
+        if (!comment) {
+          return NextResponse.json({ error: 'Comment not found' }, { status: 404 });
+        }
 
         const { error: replyErr } = await auth.admin.from('product_comments').insert({
           product_id: comment.product_id,
@@ -63,17 +89,20 @@ export async function PATCH(request: NextRequest) {
     }
 
     if (type === 'feature') {
-      const { featured } = body;
+      if (typeof body.featured !== 'boolean') {
+        return NextResponse.json({ error: 'Invalid featured flag' }, { status: 400 });
+      }
       const { error } = await auth.admin
         .from('products')
-        .update({ is_featured: featured })
+        .update({ is_featured: body.featured })
         .eq('id', id);
       if (error) throw error;
       return NextResponse.json({ success: true });
     }
 
     return NextResponse.json({ error: 'Invalid moderation type' }, { status: 400 });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+  } catch (error) {
+    console.error('Moderation error:', error);
+    return NextResponse.json({ error: 'Moderation action failed.' }, { status: 400 });
   }
 }

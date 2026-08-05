@@ -26,7 +26,7 @@ import CardSwap, { Card } from '@/components/CardSwap';
 import CountUp from '@/components/CountUp';
 import GradualBlur from '@/components/GradualBlur';
 import FlowingMenu from '@/components/FlowingMenu';
-import { useMediaQuery } from '@/lib/useMediaQuery';
+import { useMediaQuery, useIsDarkTheme } from '@/lib/useMediaQuery';
 
 interface HomeClientProps {
   banners: any[];
@@ -41,6 +41,10 @@ const fallbackCategoryMedia: Record<string, string> = {
   'acrylic-frames': 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1400',
   'canvas-prints': 'https://images.unsplash.com/photo-1577083552431-6e5fd01988f1?q=80&w=1400',
   'religious-frames': 'https://images.unsplash.com/photo-1518998053901-5348d3961a04?q=80&w=1400',
+  'decorative-trays':
+    'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/2/1.png',
+  household:
+    'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/2/1.png',
 };
 
 const fallbackArt = 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=900';
@@ -99,6 +103,7 @@ export default function HomeClient({
   const { addToast } = useUIStore();
   const reduce = useReducedMotion();
   const isMobile = useMediaQuery('(max-width: 640px)');
+  const isDark = useIsDarkTheme();
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const heroRef = useRef<HTMLElement>(null);
   const quotes = testimonials.length > 0 ? testimonials : fallbackTestimonials;
@@ -112,16 +117,36 @@ export default function HomeClient({
   const heroFade = useTransform(scrollYProgress, [0, 0.85], [1, 0.4]);
   const heroTextY = useTransform(scrollYProgress, [0, 1], ['0%', '12%']);
 
-  const accordionItems = useMemo(
-    () =>
-      categories.slice(0, 6).map((cat) => ({
-        image: cat.image_url || fallbackCategoryMedia[cat.slug] || fallbackArt,
-        label: cat.name,
+  const accordionItems = useMemo(() => {
+    const trayImage =
+      'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/2/1.png';
+
+    const mapped = categories.map((cat) => {
+      const isHousehold =
+        cat.slug === 'decorative-trays' ||
+        cat.slug === 'household' ||
+        cat.name?.toLowerCase().includes('tray') ||
+        cat.name?.toLowerCase() === 'household';
+
+      return {
+        image: isHousehold
+          ? cat.image_url || trayImage
+          : cat.image_url || fallbackCategoryMedia[cat.slug] || fallbackArt,
+        label: isHousehold ? 'Household' : cat.name,
         link: `/shop?category=${cat.slug}`,
-        alt: cat.name,
-      })),
-    [categories],
-  );
+        alt: isHousehold ? 'Household' : cat.name,
+        slug: cat.slug,
+        priority: isHousehold ? 0 : cat.slug === 'canvas-prints' ? 99 : 1,
+      };
+    });
+
+    // Prefer Household; drop Canvas Prints from the browse wall
+    return mapped
+      .filter((item) => item.slug !== 'canvas-prints')
+      .sort((a, b) => a.priority - b.priority)
+      .slice(0, 6)
+      .map(({ image, label, link, alt }) => ({ image, label, link, alt }));
+  }, [categories]);
 
   const flowingItems = useMemo(
     () => [
@@ -281,7 +306,7 @@ export default function HomeClient({
             <p className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-neutral-400">
               01 — Collections
             </p>
-            <h2 className="mt-3 font-sans text-3xl tracking-tight sm:text-5xl">Browse the wall</h2>
+            <h2 className="mt-3 font-sans text-3xl tracking-tight sm:text-5xl">Browse</h2>
             <p className="mt-3 max-w-lg text-sm leading-6 text-neutral-500">
               Image-first discovery. Select a panel to expand a collection and open the shop from the
               picture — not a text list.
@@ -386,9 +411,10 @@ export default function HomeClient({
         </div>
         <div className="h-[300px] w-full sm:h-[420px] md:h-[520px]">
           <CircularGallery
+            key={isDark ? 'lookbook-dark' : 'lookbook-light'}
             items={circularItems}
             bend={isMobile ? 1.4 : 2.4}
-            textColor="#171717"
+            textColor={isDark ? '#ffffff' : '#171717'}
             borderRadius={0.02}
             font={isMobile ? '500 16px Poppins, ui-sans-serif, system-ui, sans-serif' : '500 22px Poppins, ui-sans-serif, system-ui, sans-serif'}
             scrollSpeed={1.8}

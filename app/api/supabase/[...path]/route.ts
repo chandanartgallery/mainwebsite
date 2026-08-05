@@ -1,32 +1,61 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { rateLimit, clientKey } from '@/lib/rateLimit';
 
-// Forwarding helper for proxying requests to Supabase
+const ALLOWED_PREFIXES = [
+  '/auth/v1/',
+  '/rest/v1/',
+  '/storage/v1/',
+  '/realtime/v1/',
+];
+
+function isAllowedSubpath(subpath: string): boolean {
+  if (!subpath.startsWith('/')) return false;
+  if (subpath.includes('..')) return false;
+  return ALLOWED_PREFIXES.some((prefix) => subpath.startsWith(prefix));
+}
+
 async function handleProxy(request: NextRequest) {
   try {
+    const limited = rateLimit(clientKey(request, 'supabase-proxy'), 120, 60_000);
+    if (!limited.ok) {
+      return NextResponse.json(
+        { error: 'Too many requests' },
+        { status: 429, headers: { 'Retry-After': String(limited.retryAfterSec) } }
+      );
+    }
+
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     if (!supabaseUrl) {
-      return NextResponse.json({ error: 'Supabase URL is not configured' }, { status: 500 });
+      return NextResponse.json({ error: 'Service unavailable' }, { status: 500 });
     }
 
     const url = new URL(request.url);
-    // Extract everything after /api/supabase
     const subpath = url.pathname.replace(/^\/api\/supabase/, '');
-    const targetUrl = new URL(`${supabaseUrl}${subpath}${url.search}`);
 
-    // Verify reCAPTCHA for sensitive auth endpoints
+    if (!isAllowedSubpath(subpath)) {
+      return NextResponse.json({ error: 'Forbidden path' }, { status: 403 });
+    }
+
+    const targetUrl = new URL(`${supabaseUrl}${subpath}${url.search}`);
+    if (!targetUrl.href.startsWith(supabaseUrl)) {
+      return NextResponse.json({ error: 'Invalid target' }, { status: 400 });
+    }
+
     const isAuth = subpath.startsWith('/auth/v1/');
-    const isSensitiveAuth = isAuth && (
-      subpath.includes('/signup') ||
-      subpath.includes('/token') ||
-      subpath.includes('/recover') ||
-      subpath.includes('/otp')
-    );
+    const isSensitiveAuth =
+      isAuth &&
+      (subpath.includes('/signup') ||
+        subpath.includes('/token') ||
+        subpath.includes('/recover') ||
+        subpath.includes('/otp'));
 
     if (isSensitiveAuth) {
       const captchaToken = request.headers.get('x-recaptcha-token');
-      // For local testing, allow fallback if no secret is configured
       if (!captchaToken && process.env.RECAPTCHA_SECRET_KEY) {
-        return NextResponse.json({ error: 'reCAPTCHA verification token is missing' }, { status: 400 });
+        return NextResponse.json(
+          { error: 'reCAPTCHA verification token is missing' },
+          { status: 400 }
+        );
       }
 
       if (captchaToken && process.env.RECAPTCHA_SECRET_KEY) {
@@ -38,33 +67,26 @@ async function handleProxy(request: NextRequest) {
       }
     }
 
-    // Clone headers to forward
     const headers = new Headers();
-    
-    // List of headers to forward from the client
     const headersToForward = [
       'content-type',
       'accept',
       'prefer',
       'range',
       'authorization',
-      'x-client-info'
+      'x-client-info',
     ];
 
     for (const headerName of headersToForward) {
       const headerValue = request.headers.get(headerName);
-      if (headerValue) {
-        headers.set(headerName, headerValue);
-      }
+      if (headerValue) headers.set(headerName, headerValue);
     }
 
-    // Always inject the Supabase Anon Key to identify requests
     headers.set('apikey', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '');
 
-    // Get body if request has one
-    let body: any = null;
+    let body: BodyInit | null = null;
     const method = request.method;
-    
+
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
       const contentType = request.headers.get('content-type') || '';
       if (contentType.includes('application/json')) {
@@ -76,45 +98,29 @@ async function handleProxy(request: NextRequest) {
       }
     }
 
-    // Perform the backend fetch to Supabase
     const response = await fetch(targetUrl.toString(), {
       method,
       headers,
       body,
-      duplex: body ? 'half' : undefined
-    } as any);
+      duplex: body ? 'half' : undefined,
+    } as RequestInit);
 
-    // Get response headers
     const responseHeaders = new Headers();
-    const responseHeadersToForward = [
-      'content-type',
-      'content-range',
-      'prefer-applied',
-      'location',
-      'cache-control'
-    ];
-
-    for (const headerName of responseHeadersToForward) {
+    for (const headerName of ['content-type', 'content-range', 'prefer-applied', 'cache-control']) {
       const headerValue = response.headers.get(headerName);
-      if (headerValue) {
-        responseHeaders.set(headerName, headerValue);
-      }
+      if (headerValue) responseHeaders.set(headerName, headerValue);
     }
 
-    // Read response text/json
     const responseData = await response.text();
 
     return new NextResponse(responseData, {
       status: response.status,
       statusText: response.statusText,
-      headers: responseHeaders
+      headers: responseHeaders,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Supabase Proxy Error:', error);
-    return NextResponse.json(
-      { error: 'Supabase Proxy Error', details: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Upstream request failed' }, { status: 502 });
   }
 }
 
@@ -138,13 +144,15 @@ export async function DELETE(request: NextRequest) {
   return handleProxy(request);
 }
 
-export async function OPTIONS(request: NextRequest) {
+export async function OPTIONS() {
   return new NextResponse(null, {
-    status: 200,
+    status: 204,
     headers: {
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': 'null',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization, apikey, prefer, range'
-    }
+      'Access-Control-Allow-Headers':
+        'Content-Type, Authorization, apikey, prefer, range, x-client-info, x-recaptcha-token',
+      'Access-Control-Max-Age': '86400',
+    },
   });
 }

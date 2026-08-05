@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminClient, getServerClient } from '@/lib/supabase/server';
 import { verifyRecaptcha } from '@/lib/recaptcha';
+import { rateLimit, clientKey } from '@/lib/rateLimit';
+import { isUuid } from '@/lib/sanitizeProduct';
 
 const MAX_COMMENT = 2000;
 const MAX_TITLE = 120;
@@ -13,6 +15,14 @@ function sanitizeText(value: unknown, max: number): string {
 
 export async function POST(request: NextRequest) {
   try {
+    const limited = rateLimit(clientKey(request, 'review'), 5, 60_000);
+    if (!limited.ok) {
+      return NextResponse.json(
+        { error: 'Too many review submissions. Please wait and try again.' },
+        { status: 429, headers: { 'Retry-After': String(limited.retryAfterSec) } }
+      );
+    }
+
     const userClient = await getServerClient();
     const {
       data: { user },
@@ -28,7 +38,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { productId, rating, title, comment, recaptchaToken } = body;
 
-    if (!productId || rating == null) {
+    if (!isUuid(productId) || rating == null) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
@@ -70,7 +80,6 @@ export async function POST(request: NextRequest) {
 
     const supabase = getAdminClient();
 
-    // Confirm product exists
     const { data: product, error: productError } = await supabase
       .from('products')
       .select('id')
@@ -81,7 +90,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
-    // One pending/approved review per user per product
     const { data: existing } = await supabase
       .from('reviews')
       .select('id')
@@ -116,7 +124,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ success: true, data });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Reviews submission crash:', error);
     return NextResponse.json({ error: 'Something went wrong.' }, { status: 500 });
   }

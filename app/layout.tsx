@@ -6,6 +6,7 @@ import AuthProvider from "@/components/providers/AuthProvider";
 import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
 import ToastContainer from "@/components/ui/Toast";
 import DevAdminButton from "@/components/DevAdminButton";
+import CookieNotice from "@/components/CookieNotice";
 import { cn } from "@/lib/utils";
 
 const poppins = Poppins({
@@ -16,9 +17,23 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Chandan Art Gallery | Luxury Custom Framing & Indian Wall Decor",
+  title: {
+    default: "Chandan Art Gallery | Luxury Custom Framing & Indian Wall Decor",
+    template: "%s | Chandan Art Gallery",
+  },
   description: "Curated collection of handcrafted wood photo frames, acrylic stands, canvas prints, religious art pieces, and custom home framing in India. Order directly on WhatsApp.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    siteName: "Chandan Art Gallery",
+    title: "Chandan Art Gallery | Luxury Custom Framing & Indian Wall Decor",
+    description: "Handcrafted frames, canvas prints, and custom framing in India. Order on WhatsApp.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export const viewport = {
@@ -48,6 +63,7 @@ export default function RootLayout({
           <AuthProvider>
             {children}
             <ToastContainer />
+            <CookieNotice />
             <DevAdminButton />
           </AuthProvider>
         </SmoothScrollProvider>

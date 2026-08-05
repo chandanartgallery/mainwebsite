@@ -3,7 +3,7 @@ import HomeClient from './HomeClient';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 
-export const revalidate = 3600; // revalidate every hour
+export const revalidate = 60;
 
 export default async function HomePage() {
   const supabase = getAdminClient();

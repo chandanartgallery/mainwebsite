@@ -134,11 +134,12 @@ const CurvedLoop: FC<CurvedLoopProps> = ({
       onPointerLeave={endDrag}
     >
       <svg
-        className={`block w-full select-none font-semibold leading-none ${
-          isMobile ? 'h-[96px] text-[1.85rem]' : 'h-[90px] text-[clamp(1.25rem,2.6vw,1.7rem)]'
+        className={`block w-full h-auto select-none font-semibold leading-none ${
+          isMobile ? 'text-[1.85rem]' : 'text-[clamp(1.25rem,2.6vw,1.7rem)]'
         }`}
         viewBox={`0 0 ${viewWidth} 100`}
-        preserveAspectRatio="none"
+        preserveAspectRatio="xMidYMid meet"
+        style={{ aspectRatio: `${viewWidth} / 100` }}
         aria-hidden={!ready}
       >
         <text

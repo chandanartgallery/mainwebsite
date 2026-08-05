@@ -779,9 +779,9 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
             <motion.div key="users" variants={PAGE} initial="hidden" animate="visible" exit="exit" className="space-y-4">
               <div className="flex items-start justify-between gap-3 flex-wrap">
                 <SectionHead title="User Management" sub={`${profiles.length} profiles · ${profiles.filter(p=>p.role==='admin').length} admins`} />
-                <div className="relative">
-                  <input value={userSearch} onChange={e=>setUserSearch(e.target.value)} placeholder="Search name, email, ID…" className={`${INP} w-64 pl-8`} />
-                  <Users className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2" style={{color:'var(--adm-text3)'}} />
+                <div className="relative w-64">
+                  <Users className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none z-[1]" style={{color:'var(--adm-text3)'}} aria-hidden />
+                  <input value={userSearch} onChange={e=>setUserSearch(e.target.value)} placeholder="Search name, email, ID…" className={`${INP} adm-input--icon`} />
                 </div>
               </div>
               <motion.div variants={FADE} initial="hidden" animate="visible" className="adm-card overflow-hidden">
@@ -934,8 +934,8 @@ export default function AdminClient({ adminEmail, adminName, adminAvatar, catego
               </div>
               {/* Search */}
               <div className="relative w-64">
-                <input value={voucherSearch} onChange={e=>setVoucherSearch(e.target.value)} placeholder="Search code or description…" className={`${INP} pl-8`} />
-                <Tag className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2" style={{color:'var(--adm-text3)'}} />
+                <Tag className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none z-[1]" style={{color:'var(--adm-text3)'}} aria-hidden />
+                <input value={voucherSearch} onChange={e=>setVoucherSearch(e.target.value)} placeholder="Search code or description…" className={`${INP} adm-input--icon`} />
               </div>
               <motion.div variants={FADE} initial="hidden" animate="visible" className="adm-card overflow-hidden">
                 <div className="overflow-x-auto">

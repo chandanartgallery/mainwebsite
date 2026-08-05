@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminClient, getServerClient } from '@/lib/supabase/server';
 import { verifyRecaptcha } from '@/lib/recaptcha';
+import { rateLimit, clientKey } from '@/lib/rateLimit';
+import { isUuid } from '@/lib/sanitizeProduct';
 
 const ALLOWED_TYPES = new Set(['whatsapp', 'contact_form']);
 const MAX_MESSAGE = 4000;
@@ -26,13 +28,19 @@ function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-// Create a new inquiry (WhatsApp / Form)
 export async function POST(request: NextRequest) {
   try {
+    const limited = rateLimit(clientKey(request, 'inquiry'), 8, 60_000);
+    if (!limited.ok) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please wait a minute and try again.' },
+        { status: 429, headers: { 'Retry-After': String(limited.retryAfterSec) } }
+      );
+    }
+
     const body = await request.json();
     let { userId, productId, type } = body;
 
-    // Normalize legacy client value
     if (type === 'form') type = 'contact_form';
     if (!ALLOWED_TYPES.has(type)) type = 'whatsapp';
 
@@ -44,6 +52,10 @@ export async function POST(request: NextRequest) {
 
     if (!message || message.length < 3) {
       return NextResponse.json({ error: 'A message is required.' }, { status: 400 });
+    }
+
+    if (productId != null && productId !== '' && !isUuid(productId)) {
+      return NextResponse.json({ error: 'Invalid product reference.' }, { status: 400 });
     }
 
     if (type === 'contact_form') {
@@ -65,7 +77,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Prefer authenticated user id when present
     const userClient = await getServerClient();
     const {
       data: { user },
@@ -146,7 +157,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ success: true, data });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Inquiry log crash:', error);
     return NextResponse.json({ error: 'Something went wrong.' }, { status: 500 });
   }
@@ -183,11 +194,11 @@ export async function GET() {
       .order('created_at', { ascending: false });
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      return NextResponse.json({ error: 'Could not load inquiries.' }, { status: 400 });
     }
 
     return NextResponse.json({ success: true, data: inquiries });
-  } catch (error: any) {
+  } catch {
     return NextResponse.json({ error: 'Something went wrong.' }, { status: 500 });
   }
 }
@@ -217,7 +228,7 @@ export async function PATCH(request: NextRequest) {
     const body = await request.json();
     const { id, status } = body;
     const allowed = ['pending', 'replied', 'closed'];
-    if (!id || !allowed.includes(status)) {
+    if (!isUuid(id) || !allowed.includes(status)) {
       return NextResponse.json({ error: 'Invalid status update' }, { status: 400 });
     }
 
@@ -225,15 +236,15 @@ export async function PATCH(request: NextRequest) {
       .from('inquiries')
       .update({ status })
       .eq('id', id)
-      .select()
+      .select('id, status')
       .single();
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      return NextResponse.json({ error: 'Could not update inquiry.' }, { status: 400 });
     }
 
     return NextResponse.json({ success: true, data });
-  } catch (error: any) {
+  } catch {
     return NextResponse.json({ error: 'Something went wrong.' }, { status: 500 });
   }
 }

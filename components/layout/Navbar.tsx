@@ -26,7 +26,7 @@ const categories = [
   { name: "Photo Frames", href: "/shop?category=photo-frames", note: "Classic timber borders" },
   { name: "Custom Frames", href: "/shop?category=custom-photo-frames", note: "Made to your dimensions" },
   { name: "Acrylic Prints", href: "/shop?category=acrylic-frames", note: "Clean gallery depth" },
-  { name: "Canvas Prints", href: "/shop?category=canvas-prints", note: "Wall-scale editions" },
+  { name: "Household", href: "/shop?category=decorative-trays", note: "Trays & tabletop pieces" },
   { name: "Religious Art", href: "/shop?category=religious-frames", note: "Mandir-ready pieces" },
 ];
 

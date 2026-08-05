@@ -27,27 +27,35 @@ export const useCartStore = create<CartState>()(
     (set, get) => ({
       items: [],
       addItem: (item, quantity = 1) => {
+        const qty = Math.min(99, Math.max(1, Math.floor(Number(quantity) || 1)));
+        const safePrice = Number.isFinite(item.price) ? Math.max(0, item.price) : 0;
+        const safeItem = { ...item, price: safePrice };
         const currentItems = get().items;
-        const existingItemIndex = currentItems.findIndex((i) => i.id === item.id);
+        const existingItemIndex = currentItems.findIndex((i) => i.id === safeItem.id);
 
         if (existingItemIndex > -1) {
           const updatedItems = [...currentItems];
-          updatedItems[existingItemIndex].quantity += quantity;
+          updatedItems[existingItemIndex] = {
+            ...updatedItems[existingItemIndex],
+            quantity: Math.min(99, updatedItems[existingItemIndex].quantity + qty),
+          };
           set({ items: updatedItems });
         } else {
-          set({ items: [...currentItems, { ...item, quantity }] });
+          set({ items: [...currentItems, { ...safeItem, quantity: qty }] });
         }
       },
       removeItem: (id) => {
         set({ items: get().items.filter((item) => item.id !== id) });
       },
       updateQuantity: (id, quantity) => {
-        if (quantity <= 0) {
+        const qty = Math.floor(Number(quantity) || 0);
+        if (qty <= 0) {
           get().removeItem(id);
           return;
         }
-        const updatedItems = get().items.map((item) => 
-          item.id === id ? { ...item, quantity } : item
+        const clamped = Math.min(99, qty);
+        const updatedItems = get().items.map((item) =>
+          item.id === id ? { ...item, quantity: clamped } : item
         );
         set({ items: updatedItems });
       },

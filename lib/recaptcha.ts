@@ -9,7 +9,12 @@ export async function verifyRecaptcha(token: string): Promise<boolean> {
   try {
     const secret = process.env.RECAPTCHA_SECRET_KEY;
     if (!secret) {
-      console.warn('reCAPTCHA secret key is not set. Allowing request in dev.');
+      // Never open captcha in production without a secret
+      if (process.env.NODE_ENV === 'production') {
+        console.error('RECAPTCHA_SECRET_KEY is not set in production.');
+        return false;
+      }
+      console.warn('reCAPTCHA secret key is not set. Allowing request in development only.');
       return true;
     }
 

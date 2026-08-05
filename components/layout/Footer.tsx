@@ -23,7 +23,7 @@ export default function Footer() {
         ['Photo Frames', '/shop?category=photo-frames'],
         ['Custom Frames', '/shop?category=custom-photo-frames'],
         ['Acrylic Frames', '/shop?category=acrylic-frames'],
-        ['Canvas Prints', '/shop?category=canvas-prints'],
+        ['Household', '/shop?category=decorative-trays'],
         ['Religious Frames', '/shop?category=religious-frames'],
       ],
     },
@@ -44,6 +44,7 @@ export default function Footer() {
         ['Terms', '/terms'],
         ['Cookies', '/cookies'],
         ['Returns', '/returns'],
+        ['Shipping', '/shipping'],
       ],
     },
   ];

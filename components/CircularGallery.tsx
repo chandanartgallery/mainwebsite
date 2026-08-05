@@ -136,8 +136,11 @@ function createTextTexture(
   const context = canvas.getContext('2d');
   if (!context) throw new Error('Could not get 2d context');
 
+  // Soft-ellipsis long titles so gallery labels stay readable
+  const displayText = text.length > 28 ? `${text.slice(0, 26).trimEnd()}…` : text;
+
   context.font = font;
-  const metrics = context.measureText(text);
+  const metrics = context.measureText(displayText);
   const textWidth = Math.ceil(metrics.width);
   const fontSize = getFontSize(font);
   const textHeight = Math.ceil(fontSize * 1.2);
@@ -150,7 +153,7 @@ function createTextTexture(
   context.textBaseline = 'middle';
   context.textAlign = 'center';
   context.clearRect(0, 0, canvas.width, canvas.height);
-  context.fillText(text, canvas.width / 2, canvas.height / 2);
+  context.fillText(displayText, canvas.width / 2, canvas.height / 2);
 
   const texture = new Texture(gl, { generateMipmaps: false });
   texture.image = canvas;
@@ -215,9 +218,16 @@ class Title {
       transparent: true
     });
     this.mesh = new Mesh(this.gl, { geometry, program });
-    const aspect = width / height;
-    const textHeightScaled = this.plane.scale.y * 0.15;
-    const textWidthScaled = textHeightScaled * aspect;
+    const aspect = width / Math.max(height, 1);
+    // Keep labels inside the card width so neighbouring titles don't overlap
+    let textHeightScaled = this.plane.scale.y * 0.12;
+    let textWidthScaled = textHeightScaled * aspect;
+    const maxWidth = this.plane.scale.x * 0.88;
+    if (textWidthScaled > maxWidth) {
+      const factor = maxWidth / textWidthScaled;
+      textWidthScaled *= factor;
+      textHeightScaled *= factor;
+    }
     this.mesh.scale.set(textWidthScaled, textHeightScaled, 1);
     this.mesh.position.y = -this.plane.scale.y * 0.5 - textHeightScaled * 0.5 - 0.05;
     this.mesh.setParent(this.plane);
@@ -463,7 +473,7 @@ class Media {
     this.plane.scale.y = (this.viewport.height * (900 * this.scale)) / this.screen.height;
     this.plane.scale.x = (this.viewport.width * (700 * this.scale)) / this.screen.width;
     this.plane.program.uniforms.uPlaneSizes.value = [this.plane.scale.x, this.plane.scale.y];
-    this.padding = 2;
+    this.padding = 2.6;
     this.width = this.plane.scale.x + this.padding;
     this.widthTotal = this.width * this.length;
     this.x = this.width * this.index;
@@ -798,9 +808,10 @@ export default function CircularGallery({
   useEffect(() => {
     if (!containerRef.current) return;
     let app: App | undefined;
-    let isMounted = true;
+    let cancelled = false;
+
     resolveFont(font, fontUrl).then(resolvedFont => {
-      if (!isMounted || !containerRef.current) return;
+      if (cancelled || !containerRef.current) return;
       app = new App(containerRef.current, {
         items,
         bend,
@@ -811,9 +822,13 @@ export default function CircularGallery({
         scrollEase
       });
     });
+
     return () => {
-      isMounted = false;
-      if (app) app.destroy();
+      cancelled = true;
+      if (app) {
+        app.destroy();
+        app = undefined;
+      }
     };
   }, [items, bend, textColor, borderRadius, font, fontUrl, scrollSpeed, scrollEase]);
   return (

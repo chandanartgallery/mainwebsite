@@ -10,6 +10,7 @@ import CircularGallery from '@/components/CircularGallery';
 import Stack from '@/components/Stack';
 import PixelTransition from '@/components/PixelTransition';
 import GlareHover from '@/components/GlareHover';
+import { useIsDarkTheme } from '@/lib/useMediaQuery';
 
 const galleryItems = [
   {
@@ -53,6 +54,8 @@ const stackCards = [
 ));
 
 export default function AboutClient() {
+  const isDark = useIsDarkTheme();
+
   return (
     <div className="bg-[#f7f7f5] dark:bg-neutral-950">
       <section className="mx-auto max-w-[1400px] px-5 pb-10 pt-28 sm:px-8 lg:px-12">
@@ -73,7 +76,7 @@ export default function AboutClient() {
           className="mt-5 max-w-4xl !block font-sans text-[clamp(2.4rem,5.5vw,4.5rem)] font-medium leading-[1.02] tracking-[-0.02em] text-neutral-900 dark:text-white"
         />
         <FadeContent delay={150} className="mt-6 max-w-xl">
-          <p className="text-base leading-7 text-neutral-500">
+          <p className="text-base leading-7 text-neutral-500 dark:text-neutral-400">
             Custom wood frames, acrylic, canvas, and religious art — confirmed on WhatsApp before
             anything leaves the bench.
           </p>
@@ -82,9 +85,10 @@ export default function AboutClient() {
 
       <section className="h-[380px] w-full sm:h-[460px]">
         <CircularGallery
+          key={isDark ? 'gallery-dark' : 'gallery-light'}
           items={galleryItems}
           bend={2.2}
-          textColor="#171717"
+          textColor={isDark ? '#ffffff' : '#171717'}
           borderRadius={0.02}
           font="500 20px Poppins, ui-sans-serif, system-ui, sans-serif"
           scrollSpeed={1.6}
@@ -113,7 +117,7 @@ export default function AboutClient() {
             From desk portraits to wall-scale compositions, every piece is sized to your space — not
             a warehouse default.
           </ScrollReveal>
-          <FadeContent className="mt-8 space-y-4 text-sm leading-7 text-neutral-500">
+          <FadeContent className="mt-8 space-y-4 text-sm leading-7 text-neutral-500 dark:text-neutral-400">
             <p>
               Materials include seasoned pine, teak, mango wood, and selected hardwoods. Finishes
               are confirmed with you before production starts.

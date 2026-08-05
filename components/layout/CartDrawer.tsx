@@ -21,7 +21,6 @@ export default function CartDrawer() {
       const siteUrl = window.location.origin;
       const totalVal = getTotalPrice();
       
-      // Build WhatsApp message content
       let msg = `Hello Chandan Art Gallery,\n\nI want to buy the following products:\n\n`;
       items.forEach((item, index) => {
         msg += `${index + 1}. ${item.name} (Qty: ${item.quantity})${item.variant ? ` - Style: ${item.variant}` : ''}\n`;
@@ -31,31 +30,32 @@ export default function CartDrawer() {
       msg += `Subtotal: ₹${totalVal.toLocaleString()}\n\n`;
       msg += `Please let me know price, availability, and how to make payment.`;
 
-      // Log inquiry in database first
-      await fetch('/api/inquiries', {
+      const res = await fetch('/api/inquiries', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           userId: user?.id,
-          productId: items[0]?.productId, // first product for ref
+          productId: items[0]?.productId,
           name: user?.user_metadata?.full_name || 'Guest User',
           email: user?.email || '',
-          message: msg.slice(0, 1000), // slice just in case
+          message: msg.slice(0, 1000),
           type: 'whatsapp'
         })
       });
 
-      // Clear cart
+      const result = await res.json().catch(() => ({}));
+      if (!res.ok || !result.success) {
+        throw new Error(result.error || 'Could not log inquiry');
+      }
+
       clearCart();
       setCartOpen(false);
 
-      // Open WhatsApp
       const waNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '8468845759';
-      // Append country code 91 as required by PRD
       const waUrl = `https://wa.me/91${waNumber}?text=${encodeURIComponent(msg)}`;
-      window.open(waUrl, '_blank');
+      window.open(waUrl, '_blank', 'noopener,noreferrer');
       addToast('Opening WhatsApp to complete checkout.', 'success');
     } catch (error) {
       console.error('Checkout error:', error);
@@ -93,7 +93,9 @@ export default function CartDrawer() {
                 <h3 className="font-sans text-2xl text-neutral-900 dark:text-neutral-100">Private Cart</h3>
               </div>
               <button
+                type="button"
                 onClick={() => setCartOpen(false)}
+                aria-label="Close cart"
                 className="text-gray-400 hover:text-neutral-900 dark:hover:text-neutral-100 cursor-pointer"
               >
                 <X className="w-5 h-5" />
@@ -138,7 +140,9 @@ export default function CartDrawer() {
                       <div className="flex justify-between items-center mt-2">
                         <div className="flex items-center border border-gray-200 dark:border-zinc-800 rounded-[12px] bg-gray-50/50 dark:bg-zinc-950/20">
                           <button
+                            type="button"
                             onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            aria-label={`Decrease quantity of ${item.name}`}
                             className="p-1.5 hover:text-neutral-600 cursor-pointer"
                           >
                             <Minus className="w-3 h-3" />
@@ -147,14 +151,18 @@ export default function CartDrawer() {
                             {item.quantity}
                           </span>
                           <button
+                            type="button"
                             onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            aria-label={`Increase quantity of ${item.name}`}
                             className="p-1.5 hover:text-neutral-600 cursor-pointer"
                           >
                             <Plus className="w-3 h-3" />
                           </button>
                         </div>
                         <button
+                          type="button"
                           onClick={() => removeItem(item.id)}
+                          aria-label={`Remove ${item.name} from cart`}
                           className="text-red-400 hover:text-red-600 p-1.5 cursor-pointer"
                         >
                           <Trash2 className="w-3.5 h-3.5" />

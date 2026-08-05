@@ -44,15 +44,17 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL('/login?error=oauth_failed', request.url))
   }
 
-  // Mirror tokens into the cookies our API routes read
+  // Mirror tokens into HttpOnly cookies for server API auth (not readable by JS)
   const response = NextResponse.redirect(new URL(next, request.url))
   if (data.session) {
-    const secure = requestUrl.protocol === 'https:'
+    const secure =
+      requestUrl.protocol === 'https:' || process.env.NODE_ENV === 'production'
     const common = {
       path: '/',
       maxAge: 60 * 60 * 24 * 7,
       sameSite: 'lax' as const,
       secure,
+      httpOnly: true,
     }
     response.cookies.set('sb-access-token', data.session.access_token, common)
     response.cookies.set('sb-refresh-token', data.session.refresh_token, common)
