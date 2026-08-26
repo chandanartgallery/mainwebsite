@@ -19,7 +19,8 @@ export default async function HomePage() {
   const { data: categories } = await supabase
     .from('categories')
     .select('*')
-    .order('created_at', { ascending: true });
+    .order('created_at', { ascending: true })
+    .order('id', { ascending: true });
 
   // Fetch Featured Products
   const { data: products } = await supabase

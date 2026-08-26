@@ -449,12 +449,12 @@ function ShopContent() {
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 xl:grid-cols-3">
-                {products.map((prod) => {
+                {products.map((prod, idx) => {
                   const image =
                     [...(prod.product_images || [])]
                       .sort((a, b) => Number(b.is_primary) - Number(a.is_primary) || (a.display_order || 0) - (b.display_order || 0))
                       [0]?.image_url ||
-                    'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=400';
+                    'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/2/1.png';
                   const isWishlisted = wishlistIds.includes(prod.id);
                   
                   return (
@@ -479,8 +479,9 @@ function ShopContent() {
                         <div className="absolute inset-0 origin-center will-change-transform transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.07]">
                           <SmartImage
                             src={image}
-                            fallbackSrc="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=900"
+                            fallbackSrc="https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/2/1.png"
                             alt={prod.name}
+                            priority={idx < 6}
                             className="object-cover"
                             containerClassName="h-full w-full"
                             fallbackLabel="Artwork preview unavailable"

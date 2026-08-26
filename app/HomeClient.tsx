@@ -34,25 +34,33 @@ interface HomeClientProps {
 }
 
 const fallbackCategoryMedia: Record<string, string> = {
-  'photo-frames': 'https://images.unsplash.com/photo-1591129841117-3adfd313a6dd?q=80&w=1400',
-  'custom-photo-frames': 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=1400',
-  'acrylic-frames': 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1400',
-  'canvas-prints': 'https://images.unsplash.com/photo-1577083552431-6e5fd01988f1?q=80&w=1400',
-  'religious-frames': 'https://images.unsplash.com/photo-1518998053901-5348d3961a04?q=80&w=1400',
+  'photo-frames': 'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/16/1.jpg',
+  'custom-photo-frames': 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=1400',
+  'acrylic-frames': 'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/12/1.png',
+  'canvas-prints': 'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/13/1.png',
+  'religious-frames': 'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/18/1.png',
   'decorative-trays':
     'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/2/1.png',
+  'home-decor':
+    'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/19/1.png',
+  'personalized-gifts':
+    'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/17/1.png',
   household:
     'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/2/1.png',
 };
 
-const fallbackArt = 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=900';
+const fallbackArt = 'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/10/1.png';
+
+function resolveCategoryImage(slug: string): string {
+  return fallbackCategoryMedia[slug] ?? fallbackArt;
+}
 
 const studioImages = [
-  'https://images.unsplash.com/photo-1600210491369-e753d80a41f3?q=80&w=800',
-  'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=800',
-  'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=800',
-  'https://images.unsplash.com/photo-1577083552431-6e5fd01988f1?q=80&w=800',
-  'https://images.unsplash.com/photo-1591129841117-3adfd313a6dd?q=80&w=800',
+  'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/10/1.png',
+  'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/2/1.png',
+  'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/18/1.png',
+  'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/11/1.png',
+  'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/19/1.png',
 ];
 
 const fallbackTestimonials = [
@@ -115,9 +123,6 @@ export default function HomeClient({
   const heroTextY = useTransform(scrollYProgress, [0, 1], ['0%', '12%']);
 
   const accordionItems = useMemo(() => {
-    const trayImage =
-      'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/2/1.png';
-
     const mapped = categories.map((cat) => {
       const isHousehold =
         cat.slug === 'decorative-trays' ||
@@ -126,9 +131,7 @@ export default function HomeClient({
         cat.name?.toLowerCase() === 'household';
 
       return {
-        image: isHousehold
-          ? cat.image_url || trayImage
-          : cat.image_url || fallbackCategoryMedia[cat.slug] || fallbackArt,
+        image: resolveCategoryImage(cat.slug),
         label: isHousehold ? 'Household' : cat.name,
         link: `/shop?category=${cat.slug}`,
         alt: isHousehold ? 'Household' : cat.name,
@@ -150,27 +153,27 @@ export default function HomeClient({
       {
         link: '/shop',
         text: 'Shop bestsellers',
-        image: featuredProducts[0]?.product_images?.[0]?.image_url || fallbackArt,
+        image: featuredProducts[0]?.product_images?.[0]?.image_url || 'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/2/1.png',
       },
       {
         link: '/shop?category=custom-photo-frames',
         text: 'Request custom size',
-        image: fallbackCategoryMedia['custom-photo-frames'],
+        image: 'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/10/1.png',
       },
       {
         link: 'https://wa.me/918468845759',
         text: 'Order on WhatsApp',
-        image: fallbackCategoryMedia['photo-frames'],
+        image: '/whatsapp.svg',
       },
       {
-        link: '/contact',
-        text: 'Interior project quote',
-        image: 'https://images.unsplash.com/photo-1600210491369-e753d80a41f3?q=80&w=1400',
+        link: '/shop?category=home-decor',
+        text: 'Mandir & Home Decor',
+        image: 'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/19/1.png',
       },
       {
         link: '/shop?category=religious-frames',
         text: 'Devotional pieces',
-        image: fallbackCategoryMedia['religious-frames'],
+        image: 'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/18/1.png',
       },
     ],
     [featuredProducts],
@@ -304,10 +307,6 @@ export default function HomeClient({
               01 — Collections
             </p>
             <h2 className="mt-3 font-sans text-3xl tracking-tight sm:text-5xl">Browse</h2>
-            <p className="mt-3 max-w-lg text-sm leading-6 text-neutral-500">
-              Image-first discovery. Select a panel to expand a collection and open the shop from the
-              picture — not a text list.
-            </p>
           </AnimeReveal>
         </div>
 
@@ -342,7 +341,7 @@ export default function HomeClient({
       {/* MATERIALS — CurvedLoop */}
       <section className="overflow-hidden border-b border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-950">
         <CurvedLoop
-          marqueeText="Pine · Teak · Mango · Acrylic · Canvas · Glass · Hardwood ·"
+          marqueeText="Custom Framing · Photo Frames · Religious Art · Mandir Decor · Decorative Trays · Acrylic Frames · Canvas Prints · Sacred Idols · Wooden Art ·"
           speed={2.4}
           curveAmount={isMobile ? 24 : 48}
           direction="left"

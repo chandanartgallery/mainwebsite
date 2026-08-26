@@ -14,41 +14,41 @@ import { useIsDarkTheme } from '@/lib/useMediaQuery';
 
 const galleryItems = [
   {
-    image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=900',
+    image: 'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/10/1.png',
     text: 'Workshop',
   },
   {
-    image: 'https://images.unsplash.com/photo-1600210491369-e753d80a41f3?q=80&w=900',
+    image: 'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/2/1.png',
     text: 'Interiors',
   },
   {
-    image: 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=900',
+    image: 'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/11/1.png',
     text: 'Timber',
   },
   {
-    image: 'https://images.unsplash.com/photo-1577083552431-6e5fd01988f1?q=80&w=900',
+    image: 'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/13/1.png',
     text: 'Canvas',
   },
   {
-    image: 'https://images.unsplash.com/photo-1518998053901-5348d3961a04?q=80&w=900',
+    image: 'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/18/1.png',
     text: 'Devotion',
   },
   {
-    image: 'https://images.unsplash.com/photo-1591129841117-3adfd313a6dd?q=80&w=900',
+    image: 'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/16/1.jpg',
     text: 'Frames',
   },
 ];
 
 const stackCards = [
-  'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=700',
-  'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=700',
-  'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=700',
+  'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/10/1.png',
+  'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/2/1.png',
+  'https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/18/1.png',
 ].map((src, i) => (
   <img
     key={i}
     src={src}
     alt=""
-    className="pointer-events-none h-full w-full object-cover"
+    className="pointer-events-none h-full w-full object-cover rounded-xl"
     draggable={false}
   />
 ));
@@ -165,7 +165,7 @@ export default function AboutClient() {
           <PixelTransition
             firstContent={
               <img
-                src="https://images.unsplash.com/photo-1591129841117-3adfd313a6dd?q=80&w=900"
+                src="https://pykgahwdzqotbchvaviq.supabase.co/storage/v1/object/public/products/10/1.png"
                 alt="Frame detail"
                 className="h-full w-full object-cover"
               />
