@@ -243,10 +243,17 @@ const MenuItem: React.FC<MenuItemProps> = ({
               <span className="whitespace-nowrap uppercase font-normal text-[clamp(1.05rem,3.8vh,2.25rem)] sm:text-[4vh] leading-[1] px-[1vw]">
                 {text}
               </span>
-              <div
-                className="w-[140px] sm:w-[200px] h-[5.5vh] sm:h-[7vh] my-[2em] mx-[2vw] py-[1em] rounded-[50px] bg-cover bg-center"
-                style={{ backgroundImage: `url(${image})` }}
-              />
+              {image.endsWith('.svg') || image.includes('.svg') ? (
+                <div
+                  className="w-[3.5vh] sm:w-[4.5vh] h-[3.5vh] sm:h-[4.5vh] mx-[1.5vw] bg-contain bg-center bg-no-repeat flex-shrink-0"
+                  style={{ backgroundImage: `url(${image})` }}
+                />
+              ) : (
+                <div
+                  className="w-[140px] sm:w-[200px] h-[5.5vh] sm:h-[7vh] my-[2em] mx-[2vw] py-[1em] rounded-[50px] bg-cover bg-center"
+                  style={{ backgroundImage: `url(${image})` }}
+                />
+              )}
             </div>
           ))}
         </div>
