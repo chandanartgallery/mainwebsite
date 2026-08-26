@@ -21,19 +21,19 @@ export default function AppleIcon() {
           justifyContent: 'center',
           background: '#09090b',
           borderRadius: '36px',
-          border: '2px solid #d4af37',
         }}
       >
         <span
           style={{
-            color: '#d4af37',
-            fontSize: '130px',
-            fontFamily: 'Georgia, "Times New Roman", serif',
-            fontWeight: 600,
+            color: '#ffffff',
+            fontSize: '72px',
+            fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            fontWeight: 800,
+            letterSpacing: '0.05em',
             lineHeight: 1,
           }}
         >
-          C
+          CAG
         </span>
       </div>
     ),

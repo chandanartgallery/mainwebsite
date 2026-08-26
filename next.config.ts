@@ -35,6 +35,12 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      { source: "/favicon.ico", destination: "/favicon.svg" },
+      { source: "/favicon.png", destination: "/favicon.svg" },
+    ];
+  },
   async headers() {
     return [
       {

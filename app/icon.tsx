@@ -19,21 +19,21 @@ export default function Icon() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'transparent',
+          background: '#09090b',
+          borderRadius: '6px',
         }}
       >
         <span
           style={{
-            color: '#d4af37',
-            fontSize: '26px',
-            fontFamily: 'Georgia, "Times New Roman", serif',
-            fontStyle: 'normal',
-            fontWeight: 600,
+            color: '#ffffff',
+            fontSize: '14px',
+            fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            fontWeight: 800,
+            letterSpacing: '0.05em',
             lineHeight: 1,
-            marginTop: '-1px',
           }}
         >
-          C
+          CAG
         </span>
       </div>
     ),

@@ -26,12 +26,11 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: "/favicon.svg", type: "image/svg+xml" },
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/favicon.png", type: "image/png", sizes: "32x32" },
+      { url: "/icon", type: "image/png", sizes: "32x32" },
     ],
-    shortcut: "/favicon.ico",
+    shortcut: "/favicon.svg",
     apple: [
-      { url: "/favicon.png", sizes: "180x180", type: "image/png" },
+      { url: "/apple-icon", sizes: "180x180", type: "image/png" },
     ],
   },
   openGraph: {
@@ -67,9 +66,8 @@ export default function RootLayout({
     >
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" href="/favicon.png" type="image/png" sizes="32x32" />
-        <link rel="apple-touch-icon" href="/favicon.png" sizes="180x180" />
+        <link rel="icon" href="/icon" type="image/png" sizes="32x32" />
+        <link rel="apple-touch-icon" href="/apple-icon" sizes="180x180" />
         <link rel="preconnect" href="https://images.unsplash.com" />
         <link rel="preconnect" href={`https://${process.env.NEXT_PUBLIC_SUPABASE_URL ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname : 'pykgahwdzqotbchvaviq.supabase.co'}`} crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
