@@ -2,72 +2,76 @@ import { MetadataRoute } from 'next';
 import { getAdminClient } from '@/lib/supabase/server';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  // Ensure we use the correct base URL for production
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://chandanartgallery.in';
+  
+  // Make sure we're not using localhost in production
+  const productionUrl = baseUrl.includes('localhost') ? 'https://chandanartgallery.in' : baseUrl;
 
   // Base luxury site routes
   const staticRoutes: MetadataRoute.Sitemap = [
     {
-      url: `${baseUrl}`,
+      url: `${productionUrl}`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 1.0,
     },
     {
-      url: `${baseUrl}/shop`,
+      url: `${productionUrl}/shop`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/about`,
+      url: `${productionUrl}/about`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/contact`,
+      url: `${productionUrl}/contact`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/blog`,
+      url: `${productionUrl}/blog`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.7,
     },
     {
-      url: `${baseUrl}/faq`,
+      url: `${productionUrl}/faq`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.5,
     },
     {
-      url: `${baseUrl}/privacy`,
+      url: `${productionUrl}/privacy`,
       lastModified: new Date(),
       changeFrequency: 'yearly',
       priority: 0.3,
     },
     {
-      url: `${baseUrl}/terms`,
+      url: `${productionUrl}/terms`,
       lastModified: new Date(),
       changeFrequency: 'yearly',
       priority: 0.3,
     },
     {
-      url: `${baseUrl}/cookies`,
+      url: `${productionUrl}/cookies`,
       lastModified: new Date(),
       changeFrequency: 'yearly',
       priority: 0.3,
     },
     {
-      url: `${baseUrl}/returns`,
+      url: `${productionUrl}/returns`,
       lastModified: new Date(),
       changeFrequency: 'yearly',
       priority: 0.3,
     },
     {
-      url: `${baseUrl}/shipping`,
+      url: `${productionUrl}/shipping`,
       lastModified: new Date(),
       changeFrequency: 'yearly',
       priority: 0.3,
@@ -90,7 +94,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       productRoutes = products.map((product) => ({
         url: `${baseUrl}/product/${product.slug}`,
         lastModified: product.updated_at ? new Date(product.updated_at) : new Date(),
-        changeFrequency: 'weekly',
+        changeFrequency: 'weekly' as const,
         priority: 0.8,
       }));
     }
@@ -106,7 +110,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       blogRoutes = blogs.map((blog) => ({
         url: `${baseUrl}/blog/${blog.slug}`,
         lastModified: blog.updated_at ? new Date(blog.updated_at) : new Date(),
-        changeFrequency: 'weekly',
+        changeFrequency: 'weekly' as const,
         priority: 0.6,
       }));
     }

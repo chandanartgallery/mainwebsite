@@ -1,12 +1,40 @@
+import { Metadata } from 'next';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Truck } from 'lucide-react';
 import Link from 'next/link';
 
-export const metadata = {
-  title: 'Shipping Policy | Chandan Art Gallery',
-  description:
-    'Delivery timelines, packaging, and shipping information for custom frames and art from Chandan Art Gallery, New Delhi.',
+export const metadata: Metadata = {
+  title: 'Shipping Policy - Safe Delivery Across India | Chandan Art Gallery Delhi',
+  description: 'Learn about shipping timelines, packaging, and delivery options for handcrafted photo frames and wooden art from Delhi. Safe nationwide delivery with protective packaging for custom frames.',
+  keywords: [
+    "shipping policy",
+    "frame delivery India",
+    "custom frame shipping", 
+    "protective packaging",
+    "Delhi art gallery shipping",
+    "handcrafted frame delivery",
+    "nationwide shipping India",
+    "safe art delivery"
+  ],
+  openGraph: {
+    title: "Shipping Policy - Safe Delivery | Chandan Art Gallery Delhi",
+    description: "Safe nationwide delivery of handcrafted photo frames and wooden art with protective packaging.",
+    type: "website", 
+    url: "https://chandanartgallery.in/shipping",
+  },
+  twitter: {
+    card: "summary",
+    title: "Shipping Policy | Chandan Art Gallery Delhi",
+    description: "Safe nationwide delivery of custom frames with protective packaging.",
+  },
+  alternates: {
+    canonical: "https://chandanartgallery.in/shipping",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 const sections = [
@@ -33,8 +61,34 @@ const sections = [
 ];
 
 export default function ShippingPage() {
+  // WebPage JSON-LD Schema  
+  const webPageJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': 'https://chandanartgallery.in/shipping#webpage',
+    'name': 'Shipping Policy - Chandan Art Gallery Delhi',
+    'description': 'Safe nationwide delivery of handcrafted photo frames and wooden art with protective packaging and reliable shipping.',
+    'url': 'https://chandanartgallery.in/shipping',
+    'inLanguage': 'en-IN',
+    'isPartOf': {
+      '@type': 'WebSite', 
+      'name': 'Chandan Art Gallery',
+      'url': 'https://chandanartgallery.in'
+    },
+    'about': {
+      '@type': 'Thing',
+      'name': 'Shipping Policy and Delivery Information'
+    }
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-neutral-50 dark:bg-neutral-950">
+      {/* Shipping Policy JSON-LD Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }}
+      />
+      
       <Navbar />
       <main className="lux-container flex-grow pb-20 pt-28">
         <div className="max-w-2xl border-b border-neutral-200 pb-8 dark:border-neutral-800">

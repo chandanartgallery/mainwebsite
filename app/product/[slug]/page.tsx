@@ -25,7 +25,8 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
       seo_title,
       seo_description,
       seo_keywords,
-      opengraph_image
+      opengraph_image,
+      price
     `)
     .eq('slug', slug)
     .single();
@@ -36,21 +37,54 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     };
   }
 
+  const productTitle = product.seo_title || `${product.name} - Handcrafted Photo Frame | Chandan Art Gallery Delhi`;
+  const productDescription = product.seo_description || 
+    `${product.short_description || product.description} Premium handcrafted frame from Delhi's premier art gallery. Custom sizes available. Order on WhatsApp.`;
+
   return {
-    title: product.seo_title || `${product.name} | Chandan Art Gallery`,
-    description: product.seo_description || product.short_description,
-    keywords: product.seo_keywords || [],
+    title: productTitle,
+    description: productDescription,
+    keywords: [
+      ...(product.seo_keywords || []),
+      `${product.name}`,
+      "handcrafted frames",
+      "custom photo frames Delhi",
+      "wooden frames Delhi", 
+      "religious frames",
+      "handmade art Delhi",
+      "bespoke frames India",
+      "premium photo frames"
+    ],
     openGraph: {
-      title: product.seo_title || product.name,
-      description: product.seo_description || product.short_description,
+      title: productTitle,
+      description: productDescription,
+      type: "website",
+      url: `https://chandanartgallery.in/product/${slug}`,
       images: [
         {
-          url: product.opengraph_image || 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=1200',
+          url: product.opengraph_image || `https://chandanartgallery.in/og-image.jpg`,
           width: 1200,
           height: 630,
-          alt: product.name,
+          alt: `${product.name} - Handcrafted Photo Frame | Chandan Art Gallery`,
         },
       ],
+      siteName: "Chandan Art Gallery",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: productTitle,
+      description: productDescription,
+      images: [product.opengraph_image || `https://chandanartgallery.in/og-image.jpg`],
+    },
+    alternates: {
+      canonical: `https://chandanartgallery.in/product/${slug}`,
+    },
+    other: {
+      "product:price:amount": product.price?.toString() || "0",
+      "product:price:currency": "INR",
+      "product:availability": "in stock",
+      "product:condition": "new",
+      "product:retailer_item_id": slug,
     },
   };
 }
@@ -92,51 +126,113 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     .order('created_at', { ascending: true });
 
   // JSON-LD Schemas
+  // Enhanced Breadcrumb JSON-LD Schema
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
-    itemListElement: [
+    '@id': `https://chandanartgallery.in/product/${product.slug}#breadcrumb`,
+    'itemListElement': [
       {
         '@type': 'ListItem',
-        position: 1,
-        name: 'Home',
-        item: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}`,
+        'position': 1,
+        'name': 'Home',
+        'item': 'https://chandanartgallery.in',
       },
       {
         '@type': 'ListItem',
-        position: 2,
-        name: 'Shop',
-        item: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/shop`,
+        'position': 2,
+        'name': 'Shop',
+        'item': 'https://chandanartgallery.in/shop',
       },
       {
         '@type': 'ListItem',
-        position: 3,
-        name: product.category?.name || 'Category',
-        item: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/shop?category=${product.category?.slug}`,
-      },
-      {
-        '@type': 'ListItem',
-        position: 4,
-        name: product.name,
-        item: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/product/${product.slug}`,
+        'position': 3,
+        'name': product.name,
+        'item': `https://chandanartgallery.in/product/${product.slug}`,
       },
     ],
   };
 
+  // Enhanced Product JSON-LD Schema
   const productJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
-    name: product.name,
-    image: product.product_images?.map((img: any) => img.image_url) || [],
-    description: product.description || product.short_description,
-    sku: product.sku || '',
-    offers: {
-      '@type': 'Offer',
-      priceCurrency: 'INR',
-      price: product.price || 0,
-      availability: 'https://schema.org/InStock',
-      url: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/product/${product.slug}`,
+    '@id': `https://chandanartgallery.in/product/${product.slug}#product`,
+    'name': product.name,
+    'description': product.description || product.short_description,
+    'image': product.product_images?.map((img: any) => img.image_url) || [],
+    'sku': product.sku || product.slug,
+    'mpn': product.slug,
+    'brand': {
+      '@type': 'Brand',
+      'name': 'Chandan Art Gallery'
     },
+    'manufacturer': {
+      '@type': 'Organization',
+      'name': 'Chandan Art Gallery',
+      'address': {
+        '@type': 'PostalAddress',
+        'addressLocality': 'Delhi',
+        'addressRegion': 'Delhi',
+        'addressCountry': 'IN'
+      }
+    },
+    'category': 'Photo Frames',
+    'material': 'Wood',
+    'artMedium': 'Handcraft',
+    'artform': 'Traditional Indian Handicraft',
+    'offers': {
+      '@type': 'Offer',
+      '@id': `https://chandanartgallery.in/product/${product.slug}#offer`,
+      'priceCurrency': 'INR', 
+      'price': product.price || 0,
+      'priceValidUntil': new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
+      'availability': 'https://schema.org/InStock',
+      'itemCondition': 'https://schema.org/NewCondition',
+      'url': `https://chandanartgallery.in/product/${product.slug}`,
+      'seller': {
+        '@type': 'LocalBusiness',
+        'name': 'Chandan Art Gallery',
+        'address': {
+          '@type': 'PostalAddress',
+          'addressLocality': 'Delhi',
+          'addressRegion': 'Delhi', 
+          'addressCountry': 'IN'
+        }
+      },
+      'areaServed': {
+        '@type': 'Country',
+        'name': 'India'
+      },
+      'deliveryLeadTime': {
+        '@type': 'QuantitativeValue',
+        'minValue': 7,
+        'maxValue': 21,
+        'unitCode': 'DAY'
+      }
+    },
+    'aggregateRating': reviews && reviews.length > 0 ? {
+      '@type': 'AggregateRating',
+      'ratingValue': (reviews.reduce((sum: number, review: any) => sum + review.rating, 0) / reviews.length).toFixed(1),
+      'reviewCount': reviews.length,
+      'bestRating': 5,
+      'worstRating': 1
+    } : undefined,
+    'review': reviews?.slice(0, 5).map((review: any) => ({
+      '@type': 'Review',
+      'reviewRating': {
+        '@type': 'Rating',
+        'ratingValue': review.rating,
+        'bestRating': 5,
+        'worstRating': 1
+      },
+      'author': {
+        '@type': 'Person',
+        'name': review.reviewer_name || 'Anonymous'
+      },
+      'reviewBody': review.comment,
+      'datePublished': review.created_at
+    })) || []
   };
 
   return (

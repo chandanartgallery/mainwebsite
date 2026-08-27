@@ -1,10 +1,38 @@
+import { Metadata } from 'next';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Lock, Mail, MessageSquare, ShieldCheck } from 'lucide-react';
 
-export const metadata = {
-  title: 'Privacy Policy | Chandan Art Gallery',
-  description: 'Read our privacy policy to understand how we protect your personal information when you shop with Chandan Art Gallery.',
+export const metadata: Metadata = {
+  title: 'Privacy Policy - Data Protection | Chandan Art Gallery Delhi',
+  description: 'Learn how Chandan Art Gallery protects your personal information, handles customer data, and ensures privacy when ordering handcrafted photo frames and wooden art in Delhi.',
+  keywords: [
+    "privacy policy",
+    "data protection",
+    "customer information security",
+    "Chandan Art Gallery privacy",
+    "personal data handling",
+    "WhatsApp order privacy",
+    "secure shopping Delhi"
+  ],
+  openGraph: {
+    title: "Privacy Policy - Data Protection | Chandan Art Gallery Delhi",
+    description: "Learn how we protect your personal information when ordering handcrafted photo frames and wooden art.",
+    type: "website",
+    url: "https://chandanartgallery.in/privacy",
+  },
+  twitter: {
+    card: "summary",
+    title: "Privacy Policy | Chandan Art Gallery Delhi",
+    description: "Learn how we protect your personal information when shopping with us.",
+  },
+  alternates: {
+    canonical: "https://chandanartgallery.in/privacy",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 const sections = [
@@ -35,8 +63,39 @@ const sections = [
 ];
 
 export default function PrivacyPage() {
+  // WebPage JSON-LD Schema
+  const webPageJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': 'https://chandanartgallery.in/privacy#webpage',
+    'name': 'Privacy Policy - Chandan Art Gallery Delhi',
+    'description': 'Learn how Chandan Art Gallery protects your personal information when ordering handcrafted photo frames and wooden art.',
+    'url': 'https://chandanartgallery.in/privacy',
+    'inLanguage': 'en-IN',
+    'isPartOf': {
+      '@type': 'WebSite',
+      'name': 'Chandan Art Gallery',
+      'url': 'https://chandanartgallery.in'
+    },
+    'about': {
+      '@type': 'Thing',
+      'name': 'Privacy Policy and Data Protection'
+    },
+    'mainEntity': {
+      '@type': 'Article',
+      'name': 'Privacy Policy',
+      'description': 'How we protect customer data and handle personal information'
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-neutral-50 dark:bg-neutral-950">
+      {/* Privacy Policy JSON-LD Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }}
+      />
+      
       <Navbar />
       <main className="lux-container flex-grow pt-24 pb-20">
         <div className="page-hero">

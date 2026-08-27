@@ -41,7 +41,16 @@ export default function SmartImage({
   const currentState = imageState[imageKey] || { loaded: false, failed: false, usingFallback: false };
   const hasSrc = (normalizedSrc || normalizedFallbackSrc).length > 0;
   const imageSrc = (!currentState.failed && (normalizedSrc || normalizedFallbackSrc)) || '';
-  const safeAlt = useMemo(() => alt || 'Image', [alt]);
+  
+  // Enhanced alt text for SEO - ensure it's descriptive and not empty
+  const safeAlt = useMemo(() => {
+    if (alt && alt.trim()) return alt.trim();
+    if (imageSrc.includes('tissue')) return 'Handcrafted tissue box holder - Chandan Art Gallery';
+    if (imageSrc.includes('frame')) return 'Handcrafted photo frame - Chandan Art Gallery Delhi';
+    if (imageSrc.includes('religious')) return 'Religious art frame - Chandan Art Gallery';
+    if (imageSrc.includes('tray')) return 'Decorative wooden tray - Chandan Art Gallery';
+    return 'Handcrafted art piece - Chandan Art Gallery Delhi';
+  }, [alt, imageSrc]);
 
   return (
     <div className={`image-shell ${containerClassName} relative`}>
@@ -59,7 +68,7 @@ export default function SmartImage({
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               priority={priority}
               draggable={draggable}
-              onLoadingComplete={() => {
+              onLoad={() => {
                 setImageState((prev) => ({
                   ...prev,
                   [imageKey]: { loaded: true, failed: false, usingFallback: currentState.usingFallback },

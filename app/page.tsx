@@ -43,27 +43,95 @@ export default async function HomePage() {
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
-  // Organization JSON-LD
-  const orgJsonLd = {
+  // Enhanced LocalBusiness schema for Delhi location
+  const localBusinessJsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'Organization',
+    '@type': 'LocalBusiness',
+    '@id': 'https://chandanartgallery.in/#business',
     'name': 'Chandan Art Gallery',
+    'image': `${siteUrl}/og-image.jpg`,
+    'description': 'Premium handcrafted wooden photo frames, religious frames, and traditional Indian handicrafts in Delhi. Custom photo frames made by skilled artisans.',
     'url': siteUrl,
-    'logo': `${siteUrl}/favicon.ico`,
+    'telephone': '+918468845759',
+    'email': 'chandanartgallery919@gmail.com',
+    'address': {
+      '@type': 'PostalAddress',
+      'addressLocality': 'Delhi',
+      'addressRegion': 'Delhi',
+      'addressCountry': 'IN'
+    },
+    'geo': {
+      '@type': 'GeoCoordinates',
+      'latitude': 28.6139,
+      'longitude': 77.2090
+    },
+    'openingHours': 'Mo-Sa 09:00-19:00',
+    'priceRange': '₹₹',
+    'currenciesAccepted': 'INR',
+    'paymentAccepted': 'WhatsApp Order, Cash on Delivery',
+    'areaServed': {
+      '@type': 'City',
+      'name': 'Delhi'
+    },
+    'serviceArea': {
+      '@type': 'Country',
+      'name': 'India'
+    },
     'sameAs': [
-      'https://instagram.com',
-      'https://facebook.com'
+      'https://wa.me/918468845759'
     ],
-    'contactPoint': {
-      '@type': 'ContactPoint',
-      'telephone': '+918468845759',
-      'contactType': 'customer support',
-      'areaServed': 'IN',
-      'availableLanguage': ['en', 'hi']
-    }
+    'makesOffer': [
+      {
+        '@type': 'Offer',
+        'itemOffered': {
+          '@type': 'Product',
+          'name': 'Handcrafted Photo Frames',
+          'category': 'Home Decor'
+        }
+      },
+      {
+        '@type': 'Offer',
+        'itemOffered': {
+          '@type': 'Product',
+          'name': 'Religious Frames',
+          'category': 'Religious Art'
+        }
+      },
+      {
+        '@type': 'Offer',
+        'itemOffered': {
+          '@type': 'Product',
+          'name': 'Custom Wooden Frames',
+          'category': 'Custom Art'
+        }
+      }
+    ]
   };
 
-  // FAQPage JSON-LD
+  // WebSite schema for search box
+  const websiteJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    'name': 'Chandan Art Gallery',
+    'alternateName': 'Chandan Art Gallery Delhi',
+    'url': siteUrl,
+    'description': 'Handcrafted photo frames and religious art in Delhi',
+    'inLanguage': 'en-IN',
+    'about': {
+      '@type': 'Thing',
+      'name': 'Handcrafted Photo Frames'
+    },
+    'keywords': 'handcrafted photo frames, religious frames, wooden frames Delhi, custom photo frames, traditional handicrafts',
+    'potentialAction': {
+      '@type': 'SearchAction',
+      'target': {
+        '@type': 'EntryPoint',
+        'urlTemplate': `${siteUrl}/shop?search={search_term_string}`
+      },
+      'query-input': 'required name=search_term_string'
+    }
+  };
+  // FAQPage JSON-LD with enhanced content
   const faqJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -105,10 +173,14 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-neutral-50 dark:bg-neutral-950">
-      {/* Insert JSON-LD schemas */}
+      {/* Enhanced JSON-LD schemas for SEO */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
       <script
         type="application/ld+json"

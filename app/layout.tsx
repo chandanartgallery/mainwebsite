@@ -18,17 +18,36 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: {
-    default: "Chandan Art Gallery | Luxury Custom Framing & Indian Wall Decor",
-    template: "%s | Chandan Art Gallery",
+    default: "Handcrafted Photo Frames & Religious Art - Chandan Art Gallery Delhi",
+    template: "%s | Chandan Art Gallery Delhi",
   },
-  description: "Curated collection of handcrafted wood photo frames, acrylic stands, canvas prints, religious art pieces, and custom home framing in India. Order directly on WhatsApp.",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
+  description: "Premium handcrafted wooden photo frames, religious frames, and traditional Indian handicrafts in Delhi. Custom photo frames, wooden art, and decorative trays made by skilled artisans. WhatsApp ordering available.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://chandanartgallery.in'),
+  keywords: [
+    "handcrafted photo frames",
+    "religious photo frames", 
+    "wooden photo frames Delhi",
+    "custom photo frames",
+    "handmade wooden art",
+    "traditional Indian handicrafts",
+    "religious frames Delhi",
+    "wooden handicrafts",
+    "photo frames in Delhi",
+    "custom wooden frames",
+    "decorative frames",
+    "artisan crafted frames"
+  ],
+  authors: [{ name: "Chandan Art Gallery" }],
+  creator: "Chandan Art Gallery",
+  publisher: "Chandan Art Gallery",
+  category: "Art & Handicrafts",
+  classification: "Handcrafted Photo Frames and Religious Art",
   icons: {
     icon: [
-      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "16x16 32x32" },
       { url: "/icon", type: "image/png", sizes: "32x32" },
     ],
-    shortcut: "/favicon.svg",
+    shortcut: "/favicon.ico",
     apple: [
       { url: "/apple-icon", sizes: "180x180", type: "image/png" },
     ],
@@ -37,12 +56,44 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_IN",
     siteName: "Chandan Art Gallery",
-    title: "Chandan Art Gallery | Luxury Custom Framing & Indian Wall Decor",
-    description: "Handcrafted frames, canvas prints, and custom framing in India. Order on WhatsApp.",
+    title: "Handcrafted Photo Frames & Religious Art - Chandan Art Gallery Delhi",
+    description: "Premium handcrafted wooden photo frames and religious art in Delhi. Custom frames, traditional handicrafts, and decorative pieces by skilled artisans.",
+    url: "https://chandanartgallery.in",
+    countryName: "India",
+    images: [
+      {
+        url: "https://chandanartgallery.in/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Chandan Art Gallery - Handcrafted Photo Frames Delhi",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Handcrafted Photo Frames & Religious Art - Chandan Art Gallery Delhi",
+    description: "Premium handcrafted wooden photo frames and religious art in Delhi. Custom frames made by skilled artisans.",
+    images: ["https://chandanartgallery.in/og-image.jpg"],
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  alternates: {
+    canonical: "https://chandanartgallery.in",
+  },
+  other: {
+    "geo.region": "IN-DL",
+    "geo.placename": "Delhi",
+    "geo.position": "28.6139;77.2090",
+    "ICBM": "28.6139, 77.2090",
   },
 };
 
@@ -60,12 +111,12 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="en-IN"
       className={cn("h-full", "antialiased", poppins.variable, "font-sans")}
       suppressHydrationWarning
     >
       <head>
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/favicon.ico" sizes="16x16 32x32" />
         <link rel="icon" href="/icon" type="image/png" sizes="32x32" />
         <link rel="apple-touch-icon" href="/apple-icon" sizes="180x180" />
         <link rel="preconnect" href="https://images.unsplash.com" />
