@@ -80,32 +80,27 @@ export default async function HomePage() {
     'sameAs': [
       'https://wa.me/918468845759'
     ],
-    'makesOffer': [
-      {
-        '@type': 'Offer',
-        'itemOffered': {
-          '@type': 'Product',
+    'hasOfferCatalog': {
+      '@type': 'OfferCatalog',
+      'name': 'Handcrafted Frame Collections',
+      'itemListElement': [
+        {
+          '@type': 'OfferCatalog',
           'name': 'Handcrafted Photo Frames',
-          'category': 'Home Decor'
-        }
-      },
-      {
-        '@type': 'Offer',
-        'itemOffered': {
-          '@type': 'Product',
+          'description': 'Premium wooden photo frames crafted by skilled artisans'
+        },
+        {
+          '@type': 'OfferCatalog', 
           'name': 'Religious Frames',
-          'category': 'Religious Art'
-        }
-      },
-      {
-        '@type': 'Offer',
-        'itemOffered': {
-          '@type': 'Product',
+          'description': 'Traditional religious art frames and spiritual decor'
+        },
+        {
+          '@type': 'OfferCatalog',
           'name': 'Custom Wooden Frames',
-          'category': 'Custom Art'
+          'description': 'Bespoke wooden frames made to your specifications'
         }
-      }
-    ]
+      ]
+    }
   };
 
   // WebSite schema for search box
