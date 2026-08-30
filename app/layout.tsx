@@ -44,10 +44,8 @@ export const metadata: Metadata = {
   classification: "Handcrafted Photo Frames and Religious Art",
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "16x16 32x32" },
       { url: "/icon", type: "image/png", sizes: "32x32" },
     ],
-    shortcut: "/favicon.ico",
     apple: [
       { url: "/apple-icon", sizes: "180x180", type: "image/png" },
     ],
@@ -116,11 +114,10 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <link rel="icon" href="/favicon.ico" sizes="16x16 32x32" />
         <link rel="icon" href="/icon" type="image/png" sizes="32x32" />
         <link rel="apple-touch-icon" href="/apple-icon" sizes="180x180" />
         <link rel="preconnect" href="https://images.unsplash.com" />
-        <link rel="preconnect" href={`https://${process.env.NEXT_PUBLIC_SUPABASE_URL ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname : 'pykgahwdzqotbchvaviq.supabase.co'}`} crossOrigin="anonymous" />
+        <link rel="preconnect" href={`https://${process.env.NEXT_PUBLIC_SITE_URL ? new URL(process.env.NEXT_PUBLIC_SITE_URL).hostname : 'pykgahwdzqotbchvaviq.supabase.co'}`} crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
