@@ -209,6 +209,52 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         'minValue': 7,
         'maxValue': 21,
         'unitCode': 'DAY'
+      },
+      'shippingDetails': {
+        '@type': 'OfferShippingDetails',
+        'shippingRate': {
+          '@type': 'MonetaryAmount',
+          'currency': 'INR',
+          'value': '0'
+        },
+        'shippingDestination': {
+          '@type': 'DefinedRegion',
+          'addressCountry': 'IN'
+        },
+        'deliveryTime': {
+          '@type': 'ShippingDeliveryTime',
+          'businessDays': {
+            '@type': 'OpeningHoursSpecification',
+            'dayOfWeek': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+          },
+          'cutoffTime': '18:00',
+          'handlingTime': {
+            '@type': 'QuantitativeValue',
+            'minValue': 2,
+            'maxValue': 7,
+            'unitCode': 'DAY'
+          },
+          'transitTime': {
+            '@type': 'QuantitativeValue', 
+            'minValue': 3,
+            'maxValue': 14,
+            'unitCode': 'DAY'
+          }
+        }
+      },
+      'hasMerchantReturnPolicy': {
+        '@type': 'MerchantReturnPolicy',
+        '@id': 'https://chandanartgallery.in/returns#policy',
+        'applicableCountry': 'IN',
+        'returnPolicyCategory': 'https://schema.org/MerchantReturnFiniteReturnWindow',
+        'merchantReturnDays': 7,
+        'returnMethod': 'https://schema.org/ReturnByMail',
+        'returnFees': 'https://schema.org/CustomerResponsible',
+        'additionalProperty': {
+          '@type': 'PropertyValue',
+          'name': 'Custom Product Note',
+          'value': 'Made-to-order products have limited return eligibility. Transit damage is covered with photo evidence.'
+        }
       }
     },
     'aggregateRating': reviews && reviews.length > 0 ? {
@@ -218,7 +264,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       'bestRating': 5,
       'worstRating': 1
     } : undefined,
-    'review': reviews?.slice(0, 5).map((review: any) => ({
+    'review': reviews && reviews.length > 0 ? reviews.slice(0, 5).map((review: any) => ({
       '@type': 'Review',
       'reviewRating': {
         '@type': 'Rating',
@@ -232,7 +278,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       },
       'reviewBody': review.comment,
       'datePublished': review.created_at
-    })) || []
+    })) : undefined
   };
 
   return (
