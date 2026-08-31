@@ -73,7 +73,7 @@ export default async function ShopPage() {
       console.log(`Fetched ${categories.length} categories`);
     }
 
-    // Fetch products with a simpler query first
+    // Fetch products with images included
     const productsResult = await fetchWithTimeout(
       supabase
         .from('products')
@@ -91,48 +91,19 @@ export default async function ShopPage() {
           is_trending,
           is_best_seller,
           category_id,
-          created_at
+          created_at,
+          product_images(image_url, is_primary, display_order)
         `)
         .order('created_at', { ascending: false })
-        .limit(30) // Further reduce limit
+        .limit(30)
     );
 
     if (productsResult.error) {
       console.error('Products error:', productsResult.error);
-      products = []; // Continue with empty products rather than failing
+      products = [];
     } else {
       console.log(`Fetched ${productsResult.data?.length || 0} products`);
-      
-      // Fetch images for the products we got
-      const productIds = (productsResult.data || []).map(p => p.id);
-      let imagesResult = { data: [] };
-      
-      if (productIds.length > 0) {
-        try {
-          imagesResult = await fetchWithTimeout(
-            supabase
-              .from('product_images')
-              .select('product_id, image_url, is_primary, display_order')
-              .in('product_id', productIds)
-              .order('is_primary', { ascending: false })
-              .order('display_order', { ascending: true })
-          );
-          
-          if (imagesResult.error) {
-            console.error('Images error:', imagesResult.error);
-            imagesResult = { data: [] };
-          }
-        } catch (err) {
-          console.error('Images timeout:', err);
-          imagesResult = { data: [] };
-        }
-      }
-
-      // Merge images with products
-      products = (productsResult.data || []).map(product => ({
-        ...product,
-        product_images: (imagesResult.data || []).filter(img => img.product_id === product.id)
-      }));
+      products = productsResult.data || [];
     }
 
     console.log(`Shop: Completed data fetch - ${products.length} products, ${categories.length} categories`);

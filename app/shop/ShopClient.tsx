@@ -28,7 +28,7 @@ interface Product {
   is_best_seller: boolean;
   category_id: number;
   created_at: string;
-  product_images: ProductImage[];
+  product_images?: ProductImage[]; // This is the correct structure from the database
 }
 
 interface Category {
@@ -110,9 +110,14 @@ export default function ShopClient({ initialProducts, initialCategories }: ShopC
   };
 
   const getPrimaryImage = (product: Product) => {
-    const primaryImage = product.product_images?.find(img => img.is_primary);
-    return primaryImage?.image_url || product.product_images?.[0]?.image_url || 
-           'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=800';
+    // Use the product_images relationship (correct structure)
+    if (product.product_images && product.product_images.length > 0) {
+      const primaryImage = product.product_images.find(img => img.is_primary);
+      return primaryImage?.image_url || product.product_images[0]?.image_url;
+    }
+    
+    // Fallback image
+    return 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=800';
   };
 
   return (
