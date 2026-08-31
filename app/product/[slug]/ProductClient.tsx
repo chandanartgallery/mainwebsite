@@ -8,7 +8,7 @@ import { supabase } from '@/lib/supabase/client';
 import { 
   Heart, ShoppingBag, MessageSquare, ChevronRight, 
   Sparkles, Star, Plus, Minus, ShieldCheck, 
-  Truck, ArrowLeftRight, HelpCircle, Loader2, Send 
+  Truck, ArrowLeftRight, HelpCircle, Loader2, Send, Trash2 
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
@@ -92,6 +92,7 @@ export default function ProductClient({ product, initialReviews, initialComments
   const [commentSubmitting, setCommentSubmitting] = useState(false);
   const [replyingToId, setReplyingToId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
+  const [deletingCommentId, setDeletingCommentId] = useState<string | null>(null);
 
   // Wishlist state
   const [isWishlisted, setIsWishlisted] = useState(false);
@@ -349,6 +350,57 @@ export default function ProductClient({ product, initialReviews, initialComments
       addToast('Failed to post comment.', 'error');
     } finally {
       setCommentSubmitting(false);
+    }
+  };
+
+  // Delete Comment Handler
+  const handleCommentDelete = async (commentId: string) => {
+    if (!user) return;
+    
+    setDeletingCommentId(commentId);
+    
+    try {
+      const { error } = await supabase
+        .from('product_comments')
+        .delete()
+        .eq('id', commentId)
+        .eq('user_id', user.id); // Can only delete own comments unless admin
+        
+      if (error) throw error;
+      
+      // Remove from local state
+      setComments(comments.filter(c => c.id !== commentId && c.parent_id !== commentId));
+      addToast('Comment deleted successfully.', 'success');
+    } catch (err: any) {
+      console.error(err);
+      addToast('Failed to delete comment.', 'error');
+    } finally {
+      setDeletingCommentId(null);
+    }
+  };
+
+  // Admin Delete Comment Handler (can delete any comment)
+  const handleAdminCommentDelete = async (commentId: string) => {
+    if (role !== 'admin') return;
+    
+    setDeletingCommentId(commentId);
+    
+    try {
+      const { error } = await supabase
+        .from('product_comments')
+        .delete()
+        .eq('id', commentId);
+        
+      if (error) throw error;
+      
+      // Remove from local state (including any replies)
+      setComments(comments.filter(c => c.id !== commentId && c.parent_id !== commentId));
+      addToast('Comment deleted by admin.', 'success');
+    } catch (err: any) {
+      console.error(err);
+      addToast('Failed to delete comment.', 'error');
+    } finally {
+      setDeletingCommentId(null);
     }
   };
 
@@ -844,7 +896,24 @@ export default function ProductClient({ product, initialReviews, initialComments
                   <div className="bg-white dark:bg-zinc-900/40 p-5 rounded-[12px] border border-gray-50 dark:border-zinc-800/40 relative">
                     <div className="flex justify-between items-baseline mb-2">
                       <span className="text-xs font-bold text-neutral-800 dark:text-white">{cmt.user_name}</span>
-                      <span className="text-[10px] text-gray-400">{new Date(cmt.created_at).toLocaleDateString()}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-gray-400">{new Date(cmt.created_at).toLocaleDateString()}</span>
+                        {/* Delete button - show for comment author or admin */}
+                        {user && (user.id === cmt.user_id || role === 'admin') && (
+                          <button
+                            onClick={() => role === 'admin' ? handleAdminCommentDelete(cmt.id) : handleCommentDelete(cmt.id)}
+                            disabled={deletingCommentId === cmt.id}
+                            className="text-red-400 hover:text-red-600 transition-colors disabled:opacity-50"
+                            title="Delete comment"
+                          >
+                            {deletingCommentId === cmt.id ? (
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                            ) : (
+                              <Trash2 className="w-3 h-3" />
+                            )}
+                          </button>
+                        )}
+                      </div>
                     </div>
                     <p className="text-xs text-gray-500 leading-relaxed mb-3">{cmt.comment}</p>
 
@@ -919,7 +988,24 @@ export default function ProductClient({ product, initialReviews, initialComments
                                   </span>
                                 )}
                               </div>
-                              <span className="text-[10px] text-gray-400">{new Date(reply.created_at).toLocaleDateString()}</span>
+                              <div className="flex items-center gap-2">
+                                <span className="text-[10px] text-gray-400">{new Date(reply.created_at).toLocaleDateString()}</span>
+                                {/* Delete button for replies - show for reply author or admin */}
+                                {user && (user.id === reply.user_id || role === 'admin') && (
+                                  <button
+                                    onClick={() => role === 'admin' ? handleAdminCommentDelete(reply.id) : handleCommentDelete(reply.id)}
+                                    disabled={deletingCommentId === reply.id}
+                                    className="text-red-400 hover:text-red-600 transition-colors disabled:opacity-50"
+                                    title="Delete reply"
+                                  >
+                                    {deletingCommentId === reply.id ? (
+                                      <Loader2 className="w-3 h-3 animate-spin" />
+                                    ) : (
+                                      <Trash2 className="w-3 h-3" />
+                                    )}
+                                  </button>
+                                )}
+                              </div>
                             </div>
                             <p className="text-xs text-gray-500 leading-relaxed">{reply.comment}</p>
                           </div>
