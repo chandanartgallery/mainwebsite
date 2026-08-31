@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Search, Filter, Grid3X3, List, Star, Heart } from 'lucide-react';
+import { Search, Filter, Grid3X3, List, Star, Heart, ChevronDown } from 'lucide-react';
 import SmartImage from '@/components/ui/SmartImage';
 
 interface ProductImage {
@@ -40,6 +40,69 @@ interface Category {
 interface ShopClientProps {
   initialProducts: Product[];
   initialCategories: Category[];
+}
+
+interface DropdownOption {
+  value: string;
+  label: string;
+}
+
+interface CustomDropdownProps {
+  value: string;
+  onChange: (value: string) => void;
+  options: DropdownOption[];
+  placeholder: string;
+}
+
+function CustomDropdown({ value, onChange, options, placeholder }: CustomDropdownProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  
+  const selectedOption = options.find(opt => opt.value === value);
+  const displayLabel = selectedOption ? selectedOption.label : placeholder;
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full sm:w-auto min-w-[180px] px-4 py-2 border border-neutral-200 rounded-lg bg-white dark:bg-neutral-900 dark:border-neutral-700 focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:focus:ring-neutral-100 flex items-center justify-between gap-2 transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-800"
+      >
+        <span className="text-left truncate">{displayLabel}</span>
+        <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+      
+      {isOpen && (
+        <>
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 z-10" 
+            onClick={() => setIsOpen(false)}
+          />
+          
+          {/* Dropdown Menu */}
+          <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg z-20 max-h-60 overflow-y-auto">
+            {options.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => {
+                  onChange(option.value);
+                  setIsOpen(false);
+                }}
+                className={`w-full px-4 py-2 text-left hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors first:rounded-t-lg last:rounded-b-lg ${
+                  value === option.value 
+                    ? 'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900' 
+                    : 'text-neutral-700 dark:text-neutral-300'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
 }
 
 export default function ShopClient({ initialProducts, initialCategories }: ShopClientProps) {
@@ -148,30 +211,31 @@ export default function ShopClient({ initialProducts, initialCategories }: ShopC
           </div>
 
           {/* Category Filter */}
-          <select
+          <CustomDropdown
             value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="px-4 py-2 border border-neutral-200 rounded-lg bg-white dark:bg-neutral-900 dark:border-neutral-700 focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:focus:ring-neutral-100"
-          >
-            <option value="">All Categories</option>
-            {categories.map(category => (
-              <option key={category.id} value={category.slug}>
-                {category.name}
-              </option>
-            ))}
-          </select>
+            onChange={setSelectedCategory}
+            options={[
+              { value: '', label: 'All Categories' },
+              ...categories.map(category => ({ 
+                value: category.slug, 
+                label: category.name 
+              }))
+            ]}
+            placeholder="All Categories"
+          />
 
           {/* Sort */}
-          <select
+          <CustomDropdown
             value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="px-4 py-2 border border-neutral-200 rounded-lg bg-white dark:bg-neutral-900 dark:border-neutral-700 focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:focus:ring-neutral-100"
-          >
-            <option value="newest">Newest First</option>
-            <option value="price-low">Price: Low to High</option>
-            <option value="price-high">Price: High to Low</option>
-            <option value="name">Name A-Z</option>
-          </select>
+            onChange={setSortBy}
+            options={[
+              { value: 'newest', label: 'Newest First' },
+              { value: 'price-low', label: 'Price: Low to High' },
+              { value: 'price-high', label: 'Price: High to Low' },
+              { value: 'name', label: 'Name A-Z' }
+            ]}
+            placeholder="Sort By"
+          />
         </div>
 
         {/* View Mode Toggle */}
@@ -234,10 +298,14 @@ export default function ShopClient({ initialProducts, initialCategories }: ShopC
               {/* Product Image */}
               <div className={`relative ${viewMode === 'list' ? 'w-48 flex-shrink-0' : 'aspect-square'}`}>
                 <Link href={`/product/${product.slug}`}>
-                  <SmartImage
+                  <img
                     src={getPrimaryImage(product)}
                     alt={`${product.name} - Handcrafted Photo Frame | Chandan Art Gallery Delhi`}
-                    className="group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                    onError={(e) => {
+                      e.currentTarget.src = 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=800';
+                    }}
                   />
                 </Link>
                 
