@@ -373,12 +373,26 @@ export default function ProductClient({ product, initialReviews, initialComments
     setDeleteModalOpen(false);
     setDeletingCommentId(commentToDelete.id);
     
+    // Add a timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      console.error('Delete operation timed out');
+      setDeletingCommentId(null);
+      setCommentToDelete(null);
+      addToast('Delete operation timed out. Please try again.', 'error');
+    }, 15000); // 15 second timeout
+    
     try {
+      console.log('Starting comment deletion process for:', commentToDelete.id);
+      console.log('Current user:', user.id);
+      
       const replies = comments.filter(c => c.parent_id === commentToDelete.id);
+      console.log('Found replies to delete:', replies.length);
       
       // Delete all replies first (if any)
       if (replies.length > 0) {
+        console.log('Deleting replies first...');
         for (const reply of replies) {
+          console.log(`Deleting reply ${reply.id}...`);
           const { error: replyError } = await supabase
             .from('product_comments')
             .delete()
@@ -387,21 +401,39 @@ export default function ProductClient({ product, initialReviews, initialComments
           if (replyError) {
             console.error(`Error deleting reply ${reply.id}:`, replyError);
             // Continue with other replies even if one fails
+          } else {
+            console.log(`Successfully deleted reply ${reply.id}`);
           }
         }
       }
       
       // Then delete the main comment
-      const { error } = await supabase
+      console.log(`Deleting main comment ${commentToDelete.id}...`);
+      const { error, data } = await supabase
         .from('product_comments')
         .delete()
         .eq('id', commentToDelete.id)
-        .eq('user_id', user.id); // Users can only delete their own comments
+        .eq('user_id', user.id) // Users can only delete their own comments
+        .select(); // Add select to see what was actually deleted
+        
+      console.log('Delete response:', { error, data });
         
       if (error) {
-        console.error('Delete error:', error);
+        console.error('Delete error details:', {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint
+        });
         throw error;
       }
+      
+      if (!data || data.length === 0) {
+        throw new Error('No comment was deleted. You may not have permission to delete this comment.');
+      }
+      
+      // Clear timeout on success
+      clearTimeout(timeoutId);
       
       // Remove from local state (parent comment and all its replies)
       setComments(prevComments => 
@@ -412,9 +444,25 @@ export default function ProductClient({ product, initialReviews, initialComments
       addToast(`Successfully deleted ${deletedCount} comment${deletedCount > 1 ? 's' : ''}.`, 'success');
       
     } catch (err: any) {
-      console.error('Failed to delete comment:', err);
-      addToast(err.message || 'Failed to delete comment.', 'error');
+      console.error('Failed to delete comment - full error:', err);
+      
+      // Clear timeout on error
+      clearTimeout(timeoutId);
+      
+      // Provide specific error messages
+      let errorMessage = 'Failed to delete comment.';
+      if (err.message?.includes('permission') || err.code === 'RLS_ERROR') {
+        errorMessage = 'You do not have permission to delete this comment.';
+      } else if (err.code === 'PGRST116') {
+        errorMessage = 'Comment not found or already deleted.';
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      addToast(errorMessage, 'error');
     } finally {
+      // Always clear loading state
+      console.log('Clearing loading state');
       setDeletingCommentId(null);
       setCommentToDelete(null);
     }
@@ -428,7 +476,10 @@ export default function ProductClient({ product, initialReviews, initialComments
     setDeletingCommentId(commentToDelete.id);
     
     try {
+      console.log('Admin deleting comment:', commentToDelete.id);
+      
       const replies = comments.filter(c => c.parent_id === commentToDelete.id);
+      console.log('Admin found replies to delete:', replies.length);
       
       // Delete all replies first (if any)
       if (replies.length > 0) {
@@ -439,21 +490,35 @@ export default function ProductClient({ product, initialReviews, initialComments
             .eq('id', reply.id);
             
           if (replyError) {
-            console.error(`Error deleting reply ${reply.id}:`, replyError);
-            // Continue with other replies even if one fails
+            console.error(`Admin error deleting reply ${reply.id}:`, replyError);
+          } else {
+            console.log(`Admin successfully deleted reply ${reply.id}`);
           }
         }
       }
       
       // Then delete the main comment (admin can delete any comment)
-      const { error } = await supabase
+      console.log(`Admin deleting main comment ${commentToDelete.id}...`);
+      const { error, data } = await supabase
         .from('product_comments')
         .delete()
-        .eq('id', commentToDelete.id);
+        .eq('id', commentToDelete.id)
+        .select(); // Add select to see what was deleted
+        
+      console.log('Admin delete response:', { error, data });
         
       if (error) {
-        console.error('Admin delete error:', error);
+        console.error('Admin delete error details:', {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint
+        });
         throw error;
+      }
+      
+      if (!data || data.length === 0) {
+        throw new Error('No comment was deleted. Comment may not exist.');
       }
       
       // Remove from local state (parent comment and all its replies)
@@ -465,9 +530,19 @@ export default function ProductClient({ product, initialReviews, initialComments
       addToast(`Admin deleted ${deletedCount} comment${deletedCount > 1 ? 's' : ''}.`, 'success');
       
     } catch (err: any) {
-      console.error('Failed to delete comment:', err);
-      addToast(err.message || 'Failed to delete comment.', 'error');
+      console.error('Admin failed to delete comment - full error:', err);
+      
+      let errorMessage = 'Failed to delete comment.';
+      if (err.code === 'PGRST116') {
+        errorMessage = 'Comment not found or already deleted.';
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      addToast(errorMessage, 'error');
     } finally {
+      // Always clear loading state
+      console.log('Admin clearing loading state');
       setDeletingCommentId(null);
       setCommentToDelete(null);
     }
