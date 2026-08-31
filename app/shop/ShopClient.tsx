@@ -238,6 +238,7 @@ export default function ShopClient({ initialProducts, initialCategories }: ShopC
                     src={getPrimaryImage(product)}
                     alt={`${product.name} - Handcrafted Photo Frame | Chandan Art Gallery Delhi`}
                     className="group-hover:scale-105 transition-transform duration-300"
+                    optimize={false}
                   />
                 </Link>
                 
