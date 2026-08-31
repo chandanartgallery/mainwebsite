@@ -140,7 +140,9 @@ export default async function ShopPage() {
             '@type': 'Offer',
             'priceCurrency': 'INR',
             'price': product.price || 0,
-            'availability': 'https://schema.org/InStock'
+            'availability': 'https://schema.org/InStock',
+            'validFrom': new Date().toISOString().split('T')[0], // Current date when price is set
+            'priceValidUntil': new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0]
           }
         }
       }))

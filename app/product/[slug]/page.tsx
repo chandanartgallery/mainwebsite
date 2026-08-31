@@ -186,6 +186,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       '@id': `https://chandanartgallery.in/product/${product.slug}#offer`,
       'priceCurrency': 'INR', 
       'price': product.price || 0,
+      'validFrom': product.created_at ? new Date(product.created_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
       'priceValidUntil': new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
       'availability': 'https://schema.org/InStock',
       'itemCondition': 'https://schema.org/NewCondition',
