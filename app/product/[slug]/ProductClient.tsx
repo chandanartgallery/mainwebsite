@@ -353,52 +353,124 @@ export default function ProductClient({ product, initialReviews, initialComments
     }
   };
 
-  // Delete Comment Handler
+  // Delete Comment Handler (handles cascading deletes for replies)
   const handleCommentDelete = async (commentId: string) => {
     if (!user) return;
+    
+    // Find if this is a parent comment with replies
+    const replies = comments.filter(c => c.parent_id === commentId);
+    const hasReplies = replies.length > 0;
+    
+    const confirmMessage = hasReplies 
+      ? `Are you sure you want to delete this comment? This will also delete ${replies.length} ${replies.length === 1 ? 'reply' : 'replies'}.`
+      : 'Are you sure you want to delete this comment?';
+    
+    if (!confirm(confirmMessage)) {
+      return;
+    }
     
     setDeletingCommentId(commentId);
     
     try {
+      // Delete all replies first (if any)
+      if (hasReplies) {
+        for (const reply of replies) {
+          const { error: replyError } = await supabase
+            .from('product_comments')
+            .delete()
+            .eq('id', reply.id);
+            
+          if (replyError) {
+            console.error(`Error deleting reply ${reply.id}:`, replyError);
+            // Continue with other replies even if one fails
+          }
+        }
+      }
+      
+      // Then delete the main comment
       const { error } = await supabase
         .from('product_comments')
         .delete()
         .eq('id', commentId)
-        .eq('user_id', user.id); // Can only delete own comments unless admin
+        .eq('user_id', user.id); // Users can only delete their own comments
         
-      if (error) throw error;
+      if (error) {
+        console.error('Delete error:', error);
+        throw error;
+      }
       
-      // Remove from local state
-      setComments(comments.filter(c => c.id !== commentId && c.parent_id !== commentId));
-      addToast('Comment deleted successfully.', 'success');
+      // Remove from local state (parent comment and all its replies)
+      setComments(prevComments => 
+        prevComments.filter(c => c.id !== commentId && c.parent_id !== commentId)
+      );
+      
+      const deletedCount = 1 + replies.length;
+      addToast(`Successfully deleted ${deletedCount} comment${deletedCount > 1 ? 's' : ''}.`, 'success');
+      
     } catch (err: any) {
-      console.error(err);
-      addToast('Failed to delete comment.', 'error');
+      console.error('Failed to delete comment:', err);
+      addToast(err.message || 'Failed to delete comment.', 'error');
     } finally {
       setDeletingCommentId(null);
     }
   };
 
-  // Admin Delete Comment Handler (can delete any comment)
+  // Admin Delete Comment Handler (can delete any comment with cascading)
   const handleAdminCommentDelete = async (commentId: string) => {
     if (role !== 'admin') return;
+    
+    // Find if this is a parent comment with replies
+    const replies = comments.filter(c => c.parent_id === commentId);
+    const hasReplies = replies.length > 0;
+    
+    const confirmMessage = hasReplies 
+      ? `Are you sure you want to delete this comment? This will also delete ${replies.length} ${replies.length === 1 ? 'reply' : 'replies'}. This action cannot be undone.`
+      : 'Are you sure you want to delete this comment? This action cannot be undone.';
+    
+    if (!confirm(confirmMessage)) {
+      return;
+    }
     
     setDeletingCommentId(commentId);
     
     try {
+      // Delete all replies first (if any)
+      if (hasReplies) {
+        for (const reply of replies) {
+          const { error: replyError } = await supabase
+            .from('product_comments')
+            .delete()
+            .eq('id', reply.id);
+            
+          if (replyError) {
+            console.error(`Error deleting reply ${reply.id}:`, replyError);
+            // Continue with other replies even if one fails
+          }
+        }
+      }
+      
+      // Then delete the main comment (admin can delete any comment)
       const { error } = await supabase
         .from('product_comments')
         .delete()
         .eq('id', commentId);
         
-      if (error) throw error;
+      if (error) {
+        console.error('Admin delete error:', error);
+        throw error;
+      }
       
-      // Remove from local state (including any replies)
-      setComments(comments.filter(c => c.id !== commentId && c.parent_id !== commentId));
-      addToast('Comment deleted by admin.', 'success');
+      // Remove from local state (parent comment and all its replies)
+      setComments(prevComments => 
+        prevComments.filter(c => c.id !== commentId && c.parent_id !== commentId)
+      );
+      
+      const deletedCount = 1 + replies.length;
+      addToast(`Admin deleted ${deletedCount} comment${deletedCount > 1 ? 's' : ''}.`, 'success');
+      
     } catch (err: any) {
-      console.error(err);
-      addToast('Failed to delete comment.', 'error');
+      console.error('Failed to delete comment:', err);
+      addToast(err.message || 'Failed to delete comment.', 'error');
     } finally {
       setDeletingCommentId(null);
     }
