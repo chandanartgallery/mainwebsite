@@ -93,6 +93,8 @@ export default function ProductClient({ product, initialReviews, initialComments
   const [replyingToId, setReplyingToId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
   const [deletingCommentId, setDeletingCommentId] = useState<string | null>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [commentToDelete, setCommentToDelete] = useState<{id: string, hasReplies: boolean, replyCount: number} | null>(null);
 
   // Wishlist state
   const [isWishlisted, setIsWishlisted] = useState(false);
@@ -353,27 +355,29 @@ export default function ProductClient({ product, initialReviews, initialComments
     }
   };
 
-  // Delete Comment Handler (handles cascading deletes for replies)
-  const handleCommentDelete = async (commentId: string) => {
-    if (!user) return;
-    
-    // Find if this is a parent comment with replies
+  // Show delete confirmation modal
+  const showDeleteConfirmation = (commentId: string) => {
     const replies = comments.filter(c => c.parent_id === commentId);
-    const hasReplies = replies.length > 0;
+    setCommentToDelete({
+      id: commentId,
+      hasReplies: replies.length > 0,
+      replyCount: replies.length
+    });
+    setDeleteModalOpen(true);
+  };
+
+  // Execute the actual deletion
+  const executeCommentDelete = async () => {
+    if (!user || !commentToDelete) return;
     
-    const confirmMessage = hasReplies 
-      ? `Are you sure you want to delete this comment? This will also delete ${replies.length} ${replies.length === 1 ? 'reply' : 'replies'}.`
-      : 'Are you sure you want to delete this comment?';
-    
-    if (!confirm(confirmMessage)) {
-      return;
-    }
-    
-    setDeletingCommentId(commentId);
+    setDeleteModalOpen(false);
+    setDeletingCommentId(commentToDelete.id);
     
     try {
+      const replies = comments.filter(c => c.parent_id === commentToDelete.id);
+      
       // Delete all replies first (if any)
-      if (hasReplies) {
+      if (replies.length > 0) {
         for (const reply of replies) {
           const { error: replyError } = await supabase
             .from('product_comments')
@@ -391,7 +395,7 @@ export default function ProductClient({ product, initialReviews, initialComments
       const { error } = await supabase
         .from('product_comments')
         .delete()
-        .eq('id', commentId)
+        .eq('id', commentToDelete.id)
         .eq('user_id', user.id); // Users can only delete their own comments
         
       if (error) {
@@ -401,7 +405,7 @@ export default function ProductClient({ product, initialReviews, initialComments
       
       // Remove from local state (parent comment and all its replies)
       setComments(prevComments => 
-        prevComments.filter(c => c.id !== commentId && c.parent_id !== commentId)
+        prevComments.filter(c => c.id !== commentToDelete.id && c.parent_id !== commentToDelete.id)
       );
       
       const deletedCount = 1 + replies.length;
@@ -412,30 +416,22 @@ export default function ProductClient({ product, initialReviews, initialComments
       addToast(err.message || 'Failed to delete comment.', 'error');
     } finally {
       setDeletingCommentId(null);
+      setCommentToDelete(null);
     }
   };
 
-  // Admin Delete Comment Handler (can delete any comment with cascading)
-  const handleAdminCommentDelete = async (commentId: string) => {
-    if (role !== 'admin') return;
+  // Admin delete function
+  const executeAdminCommentDelete = async () => {
+    if (role !== 'admin' || !commentToDelete) return;
     
-    // Find if this is a parent comment with replies
-    const replies = comments.filter(c => c.parent_id === commentId);
-    const hasReplies = replies.length > 0;
-    
-    const confirmMessage = hasReplies 
-      ? `Are you sure you want to delete this comment? This will also delete ${replies.length} ${replies.length === 1 ? 'reply' : 'replies'}. This action cannot be undone.`
-      : 'Are you sure you want to delete this comment? This action cannot be undone.';
-    
-    if (!confirm(confirmMessage)) {
-      return;
-    }
-    
-    setDeletingCommentId(commentId);
+    setDeleteModalOpen(false);
+    setDeletingCommentId(commentToDelete.id);
     
     try {
+      const replies = comments.filter(c => c.parent_id === commentToDelete.id);
+      
       // Delete all replies first (if any)
-      if (hasReplies) {
+      if (replies.length > 0) {
         for (const reply of replies) {
           const { error: replyError } = await supabase
             .from('product_comments')
@@ -453,7 +449,7 @@ export default function ProductClient({ product, initialReviews, initialComments
       const { error } = await supabase
         .from('product_comments')
         .delete()
-        .eq('id', commentId);
+        .eq('id', commentToDelete.id);
         
       if (error) {
         console.error('Admin delete error:', error);
@@ -462,7 +458,7 @@ export default function ProductClient({ product, initialReviews, initialComments
       
       // Remove from local state (parent comment and all its replies)
       setComments(prevComments => 
-        prevComments.filter(c => c.id !== commentId && c.parent_id !== commentId)
+        prevComments.filter(c => c.id !== commentToDelete.id && c.parent_id !== commentToDelete.id)
       );
       
       const deletedCount = 1 + replies.length;
@@ -473,6 +469,7 @@ export default function ProductClient({ product, initialReviews, initialComments
       addToast(err.message || 'Failed to delete comment.', 'error');
     } finally {
       setDeletingCommentId(null);
+      setCommentToDelete(null);
     }
   };
 
@@ -973,7 +970,7 @@ export default function ProductClient({ product, initialReviews, initialComments
                         {/* Delete button - show for comment author or admin */}
                         {user && (user.id === cmt.user_id || role === 'admin') && (
                           <button
-                            onClick={() => role === 'admin' ? handleAdminCommentDelete(cmt.id) : handleCommentDelete(cmt.id)}
+                            onClick={() => showDeleteConfirmation(cmt.id)}
                             disabled={deletingCommentId === cmt.id}
                             className="text-red-400 hover:text-red-600 transition-colors disabled:opacity-50"
                             title="Delete comment"
@@ -1065,7 +1062,7 @@ export default function ProductClient({ product, initialReviews, initialComments
                                 {/* Delete button for replies - show for reply author or admin */}
                                 {user && (user.id === reply.user_id || role === 'admin') && (
                                   <button
-                                    onClick={() => role === 'admin' ? handleAdminCommentDelete(reply.id) : handleCommentDelete(reply.id)}
+                                    onClick={() => showDeleteConfirmation(reply.id)}
                                     disabled={deletingCommentId === reply.id}
                                     className="text-red-400 hover:text-red-600 transition-colors disabled:opacity-50"
                                     title="Delete reply"
@@ -1091,6 +1088,72 @@ export default function ProductClient({ product, initialReviews, initialComments
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {deleteModalOpen && commentToDelete && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.5 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setDeleteModalOpen(false)}
+              className="fixed inset-0 bg-black z-50 cursor-pointer"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md"
+            >
+              <div className="bg-white dark:bg-neutral-900 p-6 rounded-xl shadow-xl border border-neutral-200 dark:border-neutral-800">
+                {/* Modal Header */}
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+                    <Trash2 className="w-5 h-5 text-red-600 dark:text-red-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">
+                      Delete Comment
+                    </h3>
+                    <p className="text-sm text-neutral-500">
+                      This action cannot be undone
+                    </p>
+                  </div>
+                </div>
+
+                {/* Modal Content */}
+                <div className="mb-6">
+                  <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">
+                    Are you sure you want to delete this comment?
+                    {commentToDelete.hasReplies && (
+                      <span className="block mt-2 font-medium text-orange-600 dark:text-orange-400">
+                        This will also delete {commentToDelete.replyCount} {commentToDelete.replyCount === 1 ? 'reply' : 'replies'}.
+                      </span>
+                    )}
+                  </p>
+                </div>
+
+                {/* Modal Actions */}
+                <div className="flex gap-3 justify-end">
+                  <button
+                    onClick={() => setDeleteModalOpen(false)}
+                    className="px-4 py-2 text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={role === 'admin' ? executeAdminCommentDelete : executeCommentDelete}
+                    className="px-4 py-2 text-sm font-medium bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                  >
+                    Delete{commentToDelete.hasReplies ? ` ${1 + commentToDelete.replyCount} Comments` : ' Comment'}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Review Submission Modal Dialog */}
       <AnimatePresence>
