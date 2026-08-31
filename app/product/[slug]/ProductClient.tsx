@@ -366,7 +366,7 @@ export default function ProductClient({ product, initialReviews, initialComments
     setDeleteModalOpen(true);
   };
 
-  // Execute the actual deletion
+  // Execute the actual deletion (unified for both users and admins)
   const executeCommentDelete = async () => {
     if (!user || !commentToDelete) return;
     
@@ -379,20 +379,31 @@ export default function ProductClient({ product, initialReviews, initialComments
       setDeletingCommentId(null);
       setCommentToDelete(null);
       addToast('Delete operation timed out. Please try again.', 'error');
-    }, 15000); // 15 second timeout
+    }, 15000);
     
     try {
       console.log('Starting comment deletion process for:', commentToDelete.id);
-      console.log('Current user:', user.id);
+      console.log('Current user:', user.id, 'Role:', role);
       
+      const targetComment = comments.find(c => c.id === commentToDelete.id);
       const replies = comments.filter(c => c.parent_id === commentToDelete.id);
+      
+      console.log('Target comment:', targetComment);
       console.log('Found replies to delete:', replies.length);
       
-      // Delete all replies first (if any)
+      // Check permissions
+      const canDelete = role === 'admin' || targetComment?.user_id === user.id;
+      if (!canDelete) {
+        throw new Error('You can only delete your own comments.');
+      }
+      
+      // Delete all replies first (if any) - admin can delete any reply, users only delete replies to their own comments
       if (replies.length > 0) {
         console.log('Deleting replies first...');
         for (const reply of replies) {
           console.log(`Deleting reply ${reply.id}...`);
+          
+          // For replies, we don't restrict by user_id since we're deleting all replies to the parent comment
           const { error: replyError } = await supabase
             .from('product_comments')
             .delete()
@@ -409,12 +420,18 @@ export default function ProductClient({ product, initialReviews, initialComments
       
       // Then delete the main comment
       console.log(`Deleting main comment ${commentToDelete.id}...`);
-      const { error, data } = await supabase
+      
+      let deleteQuery = supabase
         .from('product_comments')
         .delete()
-        .eq('id', commentToDelete.id)
-        .eq('user_id', user.id) // Users can only delete their own comments
-        .select(); // Add select to see what was actually deleted
+        .eq('id', commentToDelete.id);
+      
+      // Only add user_id filter for regular users (not admins)
+      if (role !== 'admin') {
+        deleteQuery = deleteQuery.eq('user_id', user.id);
+      }
+      
+      const { error, data } = await deleteQuery.select();
         
       console.log('Delete response:', { error, data });
         
@@ -441,7 +458,8 @@ export default function ProductClient({ product, initialReviews, initialComments
       );
       
       const deletedCount = 1 + replies.length;
-      addToast(`Successfully deleted ${deletedCount} comment${deletedCount > 1 ? 's' : ''}.`, 'success');
+      const action = role === 'admin' ? 'Admin deleted' : 'Successfully deleted';
+      addToast(`${action} ${deletedCount} comment${deletedCount > 1 ? 's' : ''}.`, 'success');
       
     } catch (err: any) {
       console.error('Failed to delete comment - full error:', err);
@@ -451,8 +469,8 @@ export default function ProductClient({ product, initialReviews, initialComments
       
       // Provide specific error messages
       let errorMessage = 'Failed to delete comment.';
-      if (err.message?.includes('permission') || err.code === 'RLS_ERROR') {
-        errorMessage = 'You do not have permission to delete this comment.';
+      if (err.message?.includes('permission') || err.message?.includes('only delete your own') || err.code === 'RLS_ERROR') {
+        errorMessage = 'You can only delete your own comments.';
       } else if (err.code === 'PGRST116') {
         errorMessage = 'Comment not found or already deleted.';
       } else if (err.message) {
@@ -463,86 +481,6 @@ export default function ProductClient({ product, initialReviews, initialComments
     } finally {
       // Always clear loading state
       console.log('Clearing loading state');
-      setDeletingCommentId(null);
-      setCommentToDelete(null);
-    }
-  };
-
-  // Admin delete function
-  const executeAdminCommentDelete = async () => {
-    if (role !== 'admin' || !commentToDelete) return;
-    
-    setDeleteModalOpen(false);
-    setDeletingCommentId(commentToDelete.id);
-    
-    try {
-      console.log('Admin deleting comment:', commentToDelete.id);
-      
-      const replies = comments.filter(c => c.parent_id === commentToDelete.id);
-      console.log('Admin found replies to delete:', replies.length);
-      
-      // Delete all replies first (if any)
-      if (replies.length > 0) {
-        for (const reply of replies) {
-          const { error: replyError } = await supabase
-            .from('product_comments')
-            .delete()
-            .eq('id', reply.id);
-            
-          if (replyError) {
-            console.error(`Admin error deleting reply ${reply.id}:`, replyError);
-          } else {
-            console.log(`Admin successfully deleted reply ${reply.id}`);
-          }
-        }
-      }
-      
-      // Then delete the main comment (admin can delete any comment)
-      console.log(`Admin deleting main comment ${commentToDelete.id}...`);
-      const { error, data } = await supabase
-        .from('product_comments')
-        .delete()
-        .eq('id', commentToDelete.id)
-        .select(); // Add select to see what was deleted
-        
-      console.log('Admin delete response:', { error, data });
-        
-      if (error) {
-        console.error('Admin delete error details:', {
-          message: error.message,
-          code: error.code,
-          details: error.details,
-          hint: error.hint
-        });
-        throw error;
-      }
-      
-      if (!data || data.length === 0) {
-        throw new Error('No comment was deleted. Comment may not exist.');
-      }
-      
-      // Remove from local state (parent comment and all its replies)
-      setComments(prevComments => 
-        prevComments.filter(c => c.id !== commentToDelete.id && c.parent_id !== commentToDelete.id)
-      );
-      
-      const deletedCount = 1 + replies.length;
-      addToast(`Admin deleted ${deletedCount} comment${deletedCount > 1 ? 's' : ''}.`, 'success');
-      
-    } catch (err: any) {
-      console.error('Admin failed to delete comment - full error:', err);
-      
-      let errorMessage = 'Failed to delete comment.';
-      if (err.code === 'PGRST116') {
-        errorMessage = 'Comment not found or already deleted.';
-      } else if (err.message) {
-        errorMessage = err.message;
-      }
-      
-      addToast(errorMessage, 'error');
-    } finally {
-      // Always clear loading state
-      console.log('Admin clearing loading state');
       setDeletingCommentId(null);
       setCommentToDelete(null);
     }
@@ -1042,13 +980,13 @@ export default function ProductClient({ product, initialReviews, initialComments
                       <span className="text-xs font-bold text-neutral-800 dark:text-white">{cmt.user_name}</span>
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] text-gray-400">{new Date(cmt.created_at).toLocaleDateString()}</span>
-                        {/* Delete button - show for comment author or admin */}
+                        {/* Delete button - show for comment author OR admin */}
                         {user && (user.id === cmt.user_id || role === 'admin') && (
                           <button
                             onClick={() => showDeleteConfirmation(cmt.id)}
                             disabled={deletingCommentId === cmt.id}
                             className="text-red-400 hover:text-red-600 transition-colors disabled:opacity-50"
-                            title="Delete comment"
+                            title={role === 'admin' ? 'Delete comment (Admin)' : 'Delete your comment'}
                           >
                             {deletingCommentId === cmt.id ? (
                               <Loader2 className="w-3 h-3 animate-spin" />
@@ -1134,13 +1072,13 @@ export default function ProductClient({ product, initialReviews, initialComments
                               </div>
                               <div className="flex items-center gap-2">
                                 <span className="text-[10px] text-gray-400">{new Date(reply.created_at).toLocaleDateString()}</span>
-                                {/* Delete button for replies - show for reply author or admin */}
+                                {/* Delete button for replies - show for reply author OR admin */}
                                 {user && (user.id === reply.user_id || role === 'admin') && (
                                   <button
                                     onClick={() => showDeleteConfirmation(reply.id)}
                                     disabled={deletingCommentId === reply.id}
                                     className="text-red-400 hover:text-red-600 transition-colors disabled:opacity-50"
-                                    title="Delete reply"
+                                    title={role === 'admin' ? 'Delete reply (Admin)' : 'Delete your reply'}
                                   >
                                     {deletingCommentId === reply.id ? (
                                       <Loader2 className="w-3 h-3 animate-spin" />
@@ -1218,7 +1156,7 @@ export default function ProductClient({ product, initialReviews, initialComments
                     Cancel
                   </button>
                   <button
-                    onClick={role === 'admin' ? executeAdminCommentDelete : executeCommentDelete}
+                    onClick={executeCommentDelete}
                     className="px-4 py-2 text-sm font-medium bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
                   >
                     Delete{commentToDelete.hasReplies ? ` ${1 + commentToDelete.replyCount} Comments` : ' Comment'}
