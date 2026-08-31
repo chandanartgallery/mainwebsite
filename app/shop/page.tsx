@@ -95,7 +95,7 @@ export default async function ShopPage() {
           product_images(image_url, is_primary, display_order)
         `)
         .order('created_at', { ascending: false })
-        .limit(30)
+        .limit(50)
     );
 
     if (productsResult.error) {

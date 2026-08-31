@@ -234,16 +234,10 @@ export default function ShopClient({ initialProducts, initialCategories }: ShopC
               {/* Product Image */}
               <div className={`relative ${viewMode === 'list' ? 'w-48 flex-shrink-0' : 'aspect-square'}`}>
                 <Link href={`/product/${product.slug}`}>
-                  {/* Temporary: Use simple img tag instead of SmartImage for debugging */}
-                  <img
+                  <SmartImage
                     src={getPrimaryImage(product)}
                     alt={`${product.name} - Handcrafted Photo Frame | Chandan Art Gallery Delhi`}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    loading="lazy"
-                    onError={(e) => {
-                      console.log('Image failed to load:', e.currentTarget.src);
-                      e.currentTarget.src = 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=800';
-                    }}
+                    className="group-hover:scale-105 transition-transform duration-300"
                   />
                 </Link>
                 
